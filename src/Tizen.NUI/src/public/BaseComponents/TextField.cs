@@ -1,5 +1,5 @@
 /*
- * Copyright(c) 2019 Samsung Electronics Co., Ltd.
+ * Copyright(c) 2021 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,21 +32,19 @@ namespace Tizen.NUI.BaseComponents
     {
         private string textFieldTextSid = null;
         private string textFieldPlaceHolderTextSid = null;
+        private string textFieldPlaceHolderTextFocusedSid = null;
         private bool systemlangTextFlag = false;
         private InputMethodContext inputMethodCotext = null;
-        private TextFieldSelectorData selectorData;
+        private float fontSizeScale = 1.0f;
+        private bool hasFontSizeChangedCallback = false;
 
         static TextField() { }
-
-        /// This will be public opened in tizen_6.0 after ACR done. Before ACR, need to be hidden as inhouse API.
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public TextFieldStyle Style => new TextFieldStyle(this);
 
         /// <summary>
         /// Creates the TextField control.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
-        public TextField() : this(Interop.TextField.TextField_New(), true)
+        public TextField() : this(Interop.TextField.New(), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
@@ -57,24 +55,22 @@ namespace Tizen.NUI.BaseComponents
         /// <param name="shown">false : Not displayed (hidden), true : displayed (shown)</param>
         /// This will be public opened in next release of tizen after ACR done. Before ACR, it is used as HiddenAPI (InhouseAPI).
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public TextField(bool shown) : this(Interop.TextField.TextField_New(), true)
+        public TextField(bool shown) : this(Interop.TextField.New(), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             SetVisible(shown);
         }
 
         /// <summary>
-        /// Get attribues, it is abstract function and must be override.
+        /// Get attributes, it is abstract function and must be override.
         /// </summary>
-        /// <since_tizen> 6 </since_tizen>
-        /// This will be public opened in tizen_6.0 after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected override ViewStyle GetViewStyle()
+        protected override ViewStyle CreateViewStyle()
         {
             return new TextFieldStyle();
         }
 
-        internal TextField(global::System.IntPtr cPtr, bool cMemoryOwn, ViewStyle viewStyle, bool shown = true) : base(Interop.TextField.TextField_SWIGUpcast(cPtr), cMemoryOwn, viewStyle)
+        internal TextField(global::System.IntPtr cPtr, bool cMemoryOwn, ViewStyle viewStyle, bool shown = true) : base(cPtr, cMemoryOwn, viewStyle)
         {
             if (!shown)
             {
@@ -82,7 +78,7 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
-        internal TextField(global::System.IntPtr cPtr, bool cMemoryOwn, bool shown = true) : base(Interop.TextField.TextField_SWIGUpcast(cPtr), cMemoryOwn)
+        internal TextField(global::System.IntPtr cPtr, bool cMemoryOwn, bool shown = true) : base(cPtr, cMemoryOwn, null)
         {
             if (!shown)
             {
@@ -90,7 +86,7 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
-        internal TextField(TextField handle, bool shown = true) : this(Interop.TextField.new_TextField__SWIG_1(TextField.getCPtr(handle)), true)
+        internal TextField(TextField handle, bool shown = true) : this(Interop.TextField.NewTextField(TextField.getCPtr(handle)), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
@@ -122,7 +118,6 @@ namespace Tizen.NUI.BaseComponents
             }
             set
             {
-                selectorData?.TranslatableText.UpdateIfNeeds(this, value);
                 SetValue(TranslatableTextProperty, value);
             }
         }
@@ -136,7 +131,7 @@ namespace Tizen.NUI.BaseComponents
             {
                 if (NUIApplication.MultilingualResourceManager == null)
                 {
-                    throw new ArgumentNullException("ResourceManager about multilingual is null");
+                    throw new ArgumentNullException(null, "ResourceManager about multilingual is null");
                 }
                 textFieldTextSid = value;
                 Text = SetTranslatable(textFieldTextSid);
@@ -161,7 +156,6 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValue(TranslatablePlaceholderTextProperty, value);
-                selectorData?.TranslatablePlaceholderText.UpdateIfNeeds(this, value);
             }
         }
         private string translatablePlaceholderText
@@ -174,10 +168,48 @@ namespace Tizen.NUI.BaseComponents
             {
                 if (NUIApplication.MultilingualResourceManager == null)
                 {
-                    throw new ArgumentNullException("ResourceManager about multilingual is null");
+                    throw new ArgumentNullException(null, "ResourceManager about multilingual is null");
                 }
                 textFieldPlaceHolderTextSid = value;
                 PlaceholderText = SetTranslatable(textFieldPlaceHolderTextSid);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// The TranslatablePlaceholderTextFocused property.<br />
+        /// The text can set the SID value.<br />
+        /// </summary>
+        /// <exception cref='ArgumentNullException'>
+        /// ResourceManager about multilingual is null.
+        /// </exception>
+        /// This will be public opened in tizen_6.5 after ACR done. Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string TranslatablePlaceholderTextFocused
+        {
+            get
+            {
+                return (string)GetValue(TranslatablePlaceholderTextFocusedProperty);
+            }
+            set
+            {
+                SetValue(TranslatablePlaceholderTextFocusedProperty, value);
+            }
+        }
+        private string translatablePlaceholderTextFocused
+        {
+            get
+            {
+                return textFieldPlaceHolderTextFocusedSid;
+            }
+            set
+            {
+                if (NUIApplication.MultilingualResourceManager == null)
+                {
+                    throw new ArgumentNullException(null, "ResourceManager about multilingual is null");
+                }
+                textFieldPlaceHolderTextFocusedSid = value;
+                PlaceholderTextFocused = SetTranslatable(textFieldPlaceHolderTextFocusedSid);
                 NotifyPropertyChanged();
             }
         }
@@ -195,7 +227,6 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValueAndForceSendChangeSignal(TextProperty, value);
-                selectorData?.Text.UpdateIfNeeds(this, value);
                 NotifyPropertyChanged();
             }
         }
@@ -247,13 +278,18 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValue(FontFamilyProperty, value);
-                selectorData?.FontFamily.UpdateIfNeeds(this, value);
                 NotifyPropertyChanged();
             }
         }
 
         /// <summary>
         /// The FontStyle property.
+        /// The fontStyle map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>width (string)</term><description>The width key defines occupied by each glyph. (values: ultraCondensed, extraCondensed, condensed, semiCondensed, normal, semiExpanded, expanded, extraExpanded, ultraExpanded)</description></item>
+        /// <item><term>weight (string)</term><description>The weight key defines the thickness or darkness of the glyphs. (values: thin, ultraLight, extraLight, light, demiLight, semiLight, book, normal, regular, medium, demiBold, semiBold, bold, ultraBold, extraBold, black, heavy, extraBlack)</description></item>
+        /// <item><term>slant (string)</term><description>The slant key defines whether to use italics. (values: normal, roman, italic, oblique)</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap FontStyle
@@ -282,7 +318,6 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValue(PointSizeProperty, value);
-                selectorData?.PointSize.UpdateIfNeeds(this, value);
                 NotifyPropertyChanged();
             }
         }
@@ -373,7 +408,6 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValue(TextColorProperty, value);
-                selectorData?.TextColor.UpdateIfNeeds(this, value);
                 NotifyPropertyChanged();
             }
         }
@@ -395,7 +429,6 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValue(PlaceholderTextColorProperty, value);
-                selectorData?.PlaceholderTextColor.UpdateIfNeeds(this, value);
                 NotifyPropertyChanged();
             }
         }
@@ -473,7 +506,6 @@ namespace Tizen.NUI.BaseComponents
             set
             {
                 SetValue(PrimaryCursorColorProperty, value);
-                selectorData?.PrimaryCursorColor.UpdateIfNeeds(this, value);
                 NotifyPropertyChanged();
             }
         }
@@ -637,6 +669,10 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The SelectionHandleImageLeft property.
+        /// The selectionHandleImageLeft map contains the following key :<br />
+        /// <list type="table">
+        /// <item><term>filename (string)</term><description>The path of image file</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap SelectionHandleImageLeft
@@ -654,6 +690,10 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The SelectionHandleImageRight property.
+        /// The selectionHandleImageRight map contains the following key :<br />
+        /// <list type="table">
+        /// <item><term>filename (string)</term><description>The path of image file</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap SelectionHandleImageRight
@@ -671,6 +711,10 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The SelectionHandlePressedImageLeft property.
+        /// The selectionHandlePressedImageLeft map contains the following key :<br />
+        /// <list type="table">
+        /// <item><term>filename (string)</term><description>The path of image file</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap SelectionHandlePressedImageLeft
@@ -688,6 +732,10 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The SelectionHandlePressedImageRight property.
+        /// The selectionHandlePressedImageRight map contains the following key :<br />
+        /// <list type="table">
+        /// <item><term>filename (string)</term><description>The path of image file</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap SelectionHandlePressedImageRight
@@ -705,6 +753,10 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The SelectionHandleMarkerImageLeft property.
+        /// The selectionHandleMarkerImageLeft map contains the following key :<br />
+        /// <list type="table">
+        /// <item><term>filename (string)</term><description>The path of image file</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap SelectionHandleMarkerImageLeft
@@ -722,6 +774,10 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The SelectionHandleMarkerImageRight property.
+        /// The selectionHandleMarkerImageRight map contains the following key :<br />
+        /// <list type="table">
+        /// <item><term>filename (string)</term><description>The path of image file</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap SelectionHandleMarkerImageRight
@@ -782,6 +838,20 @@ namespace Tizen.NUI.BaseComponents
         /// <summary>
         /// The InputMethodSettings property.
         /// </summary>
+        /// <remarks>
+        /// <see cref="InputMethod"/> is a class encapsulating the input method map. Please use the <see cref="InputMethod"/> class for this property.
+        /// </remarks>
+        /// <example>
+        /// The following example demonstrates how to set the InputMethodSettings property.
+        /// <code>
+        /// InputMethod method = new InputMethod();
+        /// method.PanelLayout = InputMethod.PanelLayoutType.Normal;
+        /// method.ActionButton = InputMethod.ActionButtonTitleType.Default;
+        /// method.AutoCapital = InputMethod.AutoCapitalType.Word;
+        /// method.Variation = 1;
+        /// textField.InputMethodSettings = method.OutputMap;
+        /// </code>
+        /// </example>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap InputMethodSettings
         {
@@ -853,6 +923,12 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The InputFontStyle property.
+        /// The inputFontStyle map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>width (string)</term><description>The width key defines occupied by each glyph. (values: ultraCondensed, extraCondensed, condensed, semiCondensed, normal, semiExpanded, expanded, extraExpanded, ultraExpanded)</description></item>
+        /// <item><term>weight (string)</term><description>The weight key defines the thickness or darkness of the glyphs. (values: thin, ultraLight, extraLight, light, demiLight, semiLight, book, normal, regular, medium, demiBold, semiBold, bold, ultraBold, extraBold, black, heavy, extraBlack)</description></item>
+        /// <item><term>slant (string)</term><description>The slant key defines whether to use italics. (values: normal, roman, italic, oblique)</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap InputFontStyle
@@ -887,6 +963,12 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The Underline property.
+        /// The underline map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>enable (bool)</term><description>Whether the underline is enabled (the default value is false)</description></item>
+        /// <item><term>color (Color)</term><description>The color of the underline (If not provided then the color of the text is used)</description></item>
+        /// <item><term>height (float)</term><description>The height in pixels of the underline (the default value is 1.f)</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap Underline
@@ -921,6 +1003,12 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The Shadow property.
+        /// The shadow map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>color (Color)</term><description>The color of the shadow (the default color is Color.Black)</description></item>
+        /// <item><term>offset (Vector2)</term><description>The offset in pixels of the shadow (If not provided then the shadow is not enabled)</description></item>
+        /// <item><term>blurRadius (float)</term><description>The radius of the Gaussian blur for the soft shadow (If not provided then the soft shadow is not enabled)</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap Shadow
@@ -989,6 +1077,11 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The Outline property.
+        /// The outline map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>color (Color)</term><description>The color of the outline (the default color is Color.White)</description></item>
+        /// <item><term>width (float)</term><description>The width in pixels of the outline (If not provided then the outline is not enabled)</description></item>
+        /// </list>
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public PropertyMap Outline
@@ -1023,7 +1116,27 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The HiddenInputSettings property.
+        /// The hiddenInputSettings map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>HiddenInputProperty.Mode (int)</term><description>The mode for input text display (Use HiddenInputModeType)</description></item>
+        /// <item><term>HiddenInputProperty.SubstituteCharacter (int)</term><description>All input characters are substituted by this character</description></item>
+        /// <item><term>HiddenInputProperty.SubstituteCount (int)</term><description>Length of text to show or hide, available when HideCount/ShowCount mode is used</description></item>
+        /// <item><term>HiddenInputProperty.ShowLastCharacterDuration (int)</term><description>Hide last character after this duration, available when ShowLastCharacter mode</description></item>
+        /// </list>
         /// </summary>
+        /// <remarks>
+        /// See <see cref="HiddenInputProperty"/> and <see cref="HiddenInputModeType"/> for a detailed description.
+        /// </remarks>
+        /// <example>
+        /// The following example demonstrates how to set the HiddenInputSettings property.
+        /// <code>
+        /// PropertyMap map = new PropertyMap();
+        /// map.Add(HiddenInputProperty.Mode, new PropertyValue((int)HiddenInputModeType.ShowLastCharacter));
+        /// map.Add(HiddenInputProperty.ShowLastCharacterDuration, new PropertyValue(500));
+        /// map.Add(HiddenInputProperty.SubstituteCharacter, new PropertyValue(0x2A));
+        /// textField.HiddenInputSettings = map;
+        /// </code>
+        /// </example>
         /// <since_tizen> 3 </since_tizen>
         public Tizen.NUI.PropertyMap HiddenInputSettings
         {
@@ -1121,14 +1234,133 @@ namespace Tizen.NUI.BaseComponents
             get
             {
                 string temp;
-                GetProperty(TextField.Property.SELECTED_TEXT).Get(out temp);
+                GetProperty(TextField.Property.SelectedText).Get(out temp);
                 return temp;
             }
         }
 
         /// <summary>
+        /// The start index for selection.
+        /// </summary>
+        /// <since_tizen> 8 </since_tizen>
+        /// This will be public opened in tizen_6.0 after ACR done, Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int SelectedTextStart
+        {
+            get
+            {
+                int temp;
+                GetProperty(TextField.Property.SelectedTextStart).Get(out temp);
+                return temp;
+            }
+            set
+            {
+                SetProperty(TextField.Property.SelectedTextStart, new PropertyValue(value));
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// The end index for selection.
+        /// </summary>
+        /// <since_tizen> 8 </since_tizen>
+        /// This will be public opened in tizen_6.0 after ACR done, Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int SelectedTextEnd
+        {
+            get
+            {
+                int temp;
+                GetProperty(TextField.Property.SelectedTextEnd).Get(out temp);
+                return temp;
+            }
+            set
+            {
+                SetProperty(TextField.Property.SelectedTextEnd, new PropertyValue(value));
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Enable editing in text control.
+        /// </summary>
+        /// <since_tizen> 8 </since_tizen>
+        /// This will be public opened in tizen_6.0 after ACR done, Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool EnableEditing
+        {
+            get
+            {
+                bool temp;
+                GetProperty(TextField.Property.EnableEditing).Get(out temp);
+                return temp;
+            }
+            set
+            {
+                SetProperty(TextField.Property.EnableEditing, new PropertyValue(value));
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Specify primary cursor (caret) position in text control.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int PrimaryCursorPosition
+        {
+            get
+            {
+                int temp;
+                using (PropertyValue propertyValue = GetProperty(TextField.Property.PrimaryCursorPosition))
+                {
+                    propertyValue.Get(out temp);
+                }
+                return temp;
+            }
+            set
+            {
+                using (PropertyValue propertyValue = new PropertyValue(value))
+                {
+                    SetProperty(TextField.Property.PrimaryCursorPosition, propertyValue);
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// The GrabHandleColor property.
+        /// </summary>
+        /// <remarks>
+        /// The property cascade chaining set is possible. For example, this (textField.GrabHandleColor.X = 0.1f;) is possible.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Color GrabHandleColor
+        {
+            get
+            {
+                Color temp = (Color)GetValue(GrabHandleColorProperty);
+                return new Color(OnGrabHandleColorChanged, temp.R, temp.G, temp.B, temp.A);
+            }
+            set
+            {
+                SetValue(GrabHandleColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// The Placeholder property.
-        /// Gets or sets the placeholder: text, color, font family, font style, point size, and pixel size.
+        /// The placeholder map contains the following keys :<br />
+        /// <list type="table">
+        /// <item><term>text (string)</term><description>The text to display when the TextField is empty and inactive</description></item>
+        /// <item><term>textFocused (string)</term><description>The text to display when the placeholder has focus</description></item>
+        /// <item><term>color (Color)</term><description>The color of the placeholder text</description></item>
+        /// <item><term>fontFamily (string)</term><description>The fontFamily of the placeholder text</description></item>
+        /// <item><term>fontStyle (PropertyMap)</term><description>The fontStyle of the placeholder text</description></item>
+        /// <item><term>pointSize (float)</term><description>The pointSize of the placeholder text</description></item>
+        /// <item><term>pixelSize (float)</term><description>The pixelSize of the placeholder text</description></item>
+        /// <item><term>ellipsis (bool)</term><description>The ellipsis of the placeholder text</description></item>
+        /// </list>
         /// </summary>
         /// <example>
         /// The following example demonstrates how to set the Placeholder property.
@@ -1219,6 +1451,52 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
+        /// <summary>
+        /// The FontSizeScale property. <br />
+        /// The default value is 1.0. <br />
+        /// If FontSizeScale.UseSystemSetting, will use the SystemSettings.FontSize internally. <br />
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        public float FontSizeScale
+        {
+            get
+            {
+                return fontSizeScale;
+            }
+            set
+            {
+                float newFontSizeScale;
+
+                if (fontSizeScale == value) return;
+
+                fontSizeScale = value;
+                if (fontSizeScale == Tizen.NUI.FontSizeScale.UseSystemSetting)
+                {
+                    SystemSettingsFontSize systemSettingsFontSize;
+
+                    try
+                    {
+                        systemSettingsFontSize = SystemSettings.FontSize;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("{0} Exception caught.", e);
+                        systemSettingsFontSize = SystemSettingsFontSize.Normal;
+                    }
+                    newFontSizeScale = TextUtils.GetFontSizeScale(systemSettingsFontSize);
+                    addFontSizeChangedCallback();
+                }
+                else
+                {
+                    newFontSizeScale = fontSizeScale;
+                    removeFontSizeChangedCallback();
+                }
+
+                SetValue(FontSizeScaleProperty, newFontSizeScale);
+                NotifyPropertyChanged();
+            }
+        }
+
         /// Only used by the IL of xaml, will never changed to not hidden.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool IsCreateByXaml
@@ -1235,21 +1513,9 @@ namespace Tizen.NUI.BaseComponents
                 {
                     this.TextChanged += (obj, e) =>
                     {
-                        this.Text = this.Text;
+                        this.Text = e.TextField.Text;
                     };
                 }
-            }
-        }
-
-        private TextFieldSelectorData SelectorData
-        {
-            get
-            {
-                if (selectorData == null)
-                {
-                    selectorData = new TextFieldSelectorData();
-                }
-                return selectorData;
             }
         }
 
@@ -1263,7 +1529,7 @@ namespace Tizen.NUI.BaseComponents
             if (inputMethodCotext == null)
             {
                 /*Avoid raising InputMethodContext reference count.*/
-                inputMethodCotext = new InputMethodContext(Interop.TextField.TextField_GetInputMethodContext(swigCPtr), true);
+                inputMethodCotext = new InputMethodContext(Interop.TextField.GetInputMethodContext(SwigCPtr), true);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             }
             return inputMethodCotext;
@@ -1277,7 +1543,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SelectWholeText()
         {
-            Interop.TextField.TextField_SelectWholeText(swigCPtr);
+            Interop.TextField.SelectWholeText(SwigCPtr);
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
 
@@ -1289,18 +1555,18 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SelectNone()
         {
-            Interop.TextField.TextField_SelectNone(swigCPtr);
+            _ = Interop.TextField.SelectNone(SwigCPtr);
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
 
         internal static global::System.Runtime.InteropServices.HandleRef getCPtr(TextField obj)
         {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.swigCPtr;
+            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         internal SWIGTYPE_p_Dali__SignalT_void_fDali__Toolkit__TextField_Dali__Toolkit__TextField__InputStyle__MaskF_t InputStyleChangedSignal()
         {
-            SWIGTYPE_p_Dali__SignalT_void_fDali__Toolkit__TextField_Dali__Toolkit__TextField__InputStyle__MaskF_t ret = new SWIGTYPE_p_Dali__SignalT_void_fDali__Toolkit__TextField_Dali__Toolkit__TextField__InputStyle__MaskF_t(Interop.TextField.TextField_InputStyleChangedSignal(swigCPtr), false);
+            SWIGTYPE_p_Dali__SignalT_void_fDali__Toolkit__TextField_Dali__Toolkit__TextField__InputStyle__MaskF_t ret = new SWIGTYPE_p_Dali__SignalT_void_fDali__Toolkit__TextField_Dali__Toolkit__TextField__InputStyle__MaskF_t(Interop.TextField.InputStyleChangedSignal(SwigCPtr));
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
         }
@@ -1317,12 +1583,18 @@ namespace Tizen.NUI.BaseComponents
                 return;
             }
 
+            if (systemlangTextFlag)
+            {
+                SystemSettings.LocaleLanguageChanged -= SystemSettings_LocaleLanguageChanged;
+            }
+
+            removeFontSizeChangedCallback();
+
             if (type == DisposeTypes.Explicit)
             {
                 //Called by User
                 //Release your own managed resources here.
                 //You should release all of your own disposable objects here.
-                selectorData?.Reset(this);
             }
 
             //Release your own unmanaged resources here.
@@ -1330,14 +1602,14 @@ namespace Tizen.NUI.BaseComponents
             //because the execution order of Finalizes is non-deterministic.
             if (this.HasBody())
             {
-                if (_textFieldMaxLengthReachedCallbackDelegate != null)
+                if (textFieldMaxLengthReachedCallbackDelegate != null)
                 {
-                    this.MaxLengthReachedSignal().Disconnect(_textFieldMaxLengthReachedCallbackDelegate);
+                    this.MaxLengthReachedSignal().Disconnect(textFieldMaxLengthReachedCallbackDelegate);
                 }
 
-                if (_textFieldTextChangedCallbackDelegate != null)
+                if (textFieldTextChangedCallbackDelegate != null)
                 {
-                    TextChangedSignal().Disconnect(_textFieldTextChangedCallbackDelegate);
+                    TextChangedSignal().Disconnect(textFieldTextChangedCallbackDelegate);
                 }
             }
 
@@ -1350,7 +1622,7 @@ namespace Tizen.NUI.BaseComponents
         {
             // In order to speed up IME hide, temporarily add
             GetInputMethodContext()?.DestroyContext();
-            Interop.TextField.delete_TextField(swigCPtr);
+            Interop.TextField.DeleteTextField(swigCPtr);
         }
 
         private string SetTranslatable(string textFieldSid)
@@ -1361,7 +1633,7 @@ namespace Tizen.NUI.BaseComponents
             {
                 if (systemlangTextFlag == false)
                 {
-                    SystemSettings.LocaleLanguageChanged += new WeakEventHandler<LocaleLanguageChangedEventArgs>(SystemSettings_LocaleLanguageChanged).Handler;
+                    SystemSettings.LocaleLanguageChanged += SystemSettings_LocaleLanguageChanged;
                     systemlangTextFlag = true;
                 }
                 return translatableText;
@@ -1383,64 +1655,115 @@ namespace Tizen.NUI.BaseComponents
             {
                 PlaceholderText = NUIApplication.MultilingualResourceManager?.GetString(textFieldPlaceHolderTextSid, new CultureInfo(e.Value.Replace("_", "-")));
             }
+            if (textFieldPlaceHolderTextFocusedSid != null)
+            {
+                PlaceholderTextFocused = NUIApplication.MultilingualResourceManager?.GetString(textFieldPlaceHolderTextFocusedSid, new CultureInfo(e.Value.Replace("_", "-")));
+            }
+        }
+
+        private void SystemSettingsFontSizeChanged(object sender, FontSizeChangedEventArgs e)
+        {
+            float newFontSizeScale = TextUtils.GetFontSizeScale(e.Value);
+            SetValue(FontSizeScaleProperty, newFontSizeScale);
+            NotifyPropertyChanged();
+        }
+
+        private void addFontSizeChangedCallback()
+        {
+            if (hasFontSizeChangedCallback != true)
+            {
+                try
+                {
+                    SystemSettings.FontSizeChanged += SystemSettingsFontSizeChanged;
+                    hasFontSizeChangedCallback = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("{0} Exception caught.", e);
+                    hasFontSizeChangedCallback = false;
+                }
+            }
+        }
+
+        private void removeFontSizeChangedCallback()
+        {
+            if (hasFontSizeChangedCallback == true)
+            {
+                try
+                {
+                    SystemSettings.FontSizeChanged -= SystemSettingsFontSizeChanged;
+                    hasFontSizeChangedCallback = false;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("{0} Exception caught.", e);
+                    hasFontSizeChangedCallback = true;
+                }
+            }
         }
 
         internal new class Property
         {
-            internal static readonly int TEXT = Interop.TextField.TextField_Property_TEXT_get();
-            internal static readonly int PLACEHOLDER_TEXT = Interop.TextField.TextField_Property_PLACEHOLDER_TEXT_get();
-            internal static readonly int PLACEHOLDER_TEXT_FOCUSED = Interop.TextField.TextField_Property_PLACEHOLDER_TEXT_FOCUSED_get();
-            internal static readonly int FONT_FAMILY = Interop.TextField.TextField_Property_FONT_FAMILY_get();
-            internal static readonly int FONT_STYLE = Interop.TextField.TextField_Property_FONT_STYLE_get();
-            internal static readonly int POINT_SIZE = Interop.TextField.TextField_Property_POINT_SIZE_get();
-            internal static readonly int MAX_LENGTH = Interop.TextField.TextField_Property_MAX_LENGTH_get();
-            internal static readonly int EXCEED_POLICY = Interop.TextField.TextField_Property_EXCEED_POLICY_get();
-            internal static readonly int HORIZONTAL_ALIGNMENT = Interop.TextField.TextField_Property_HORIZONTAL_ALIGNMENT_get();
-            internal static readonly int VERTICAL_ALIGNMENT = Interop.TextField.TextField_Property_VERTICAL_ALIGNMENT_get();
-            internal static readonly int TEXT_COLOR = Interop.TextField.TextField_Property_TEXT_COLOR_get();
-            internal static readonly int PLACEHOLDER_TEXT_COLOR = Interop.TextField.TextField_Property_PLACEHOLDER_TEXT_COLOR_get();
-            internal static readonly int PRIMARY_CURSOR_COLOR = Interop.TextField.TextField_Property_PRIMARY_CURSOR_COLOR_get();
-            internal static readonly int SECONDARY_CURSOR_COLOR = Interop.TextField.TextField_Property_SECONDARY_CURSOR_COLOR_get();
-            internal static readonly int ENABLE_CURSOR_BLINK = Interop.TextField.TextField_Property_ENABLE_CURSOR_BLINK_get();
-            internal static readonly int CURSOR_BLINK_INTERVAL = Interop.TextField.TextField_Property_CURSOR_BLINK_INTERVAL_get();
-            internal static readonly int CURSOR_BLINK_DURATION = Interop.TextField.TextField_Property_CURSOR_BLINK_DURATION_get();
-            internal static readonly int CURSOR_WIDTH = Interop.TextField.TextField_Property_CURSOR_WIDTH_get();
-            internal static readonly int GRAB_HANDLE_IMAGE = Interop.TextField.TextField_Property_GRAB_HANDLE_IMAGE_get();
-            internal static readonly int GRAB_HANDLE_PRESSED_IMAGE = Interop.TextField.TextField_Property_GRAB_HANDLE_PRESSED_IMAGE_get();
-            internal static readonly int SCROLL_THRESHOLD = Interop.TextField.TextField_Property_SCROLL_THRESHOLD_get();
-            internal static readonly int SCROLL_SPEED = Interop.TextField.TextField_Property_SCROLL_SPEED_get();
-            internal static readonly int SELECTION_HANDLE_IMAGE_LEFT = Interop.TextField.TextField_Property_SELECTION_HANDLE_IMAGE_LEFT_get();
-            internal static readonly int SELECTION_HANDLE_IMAGE_RIGHT = Interop.TextField.TextField_Property_SELECTION_HANDLE_IMAGE_RIGHT_get();
-            internal static readonly int SELECTION_HANDLE_PRESSED_IMAGE_LEFT = Interop.TextField.TextField_Property_SELECTION_HANDLE_PRESSED_IMAGE_LEFT_get();
-            internal static readonly int SELECTION_HANDLE_PRESSED_IMAGE_RIGHT = Interop.TextField.TextField_Property_SELECTION_HANDLE_PRESSED_IMAGE_RIGHT_get();
-            internal static readonly int SELECTION_HANDLE_MARKER_IMAGE_LEFT = Interop.TextField.TextField_Property_SELECTION_HANDLE_MARKER_IMAGE_LEFT_get();
-            internal static readonly int SELECTION_HANDLE_MARKER_IMAGE_RIGHT = Interop.TextField.TextField_Property_SELECTION_HANDLE_MARKER_IMAGE_RIGHT_get();
-            internal static readonly int SELECTION_HIGHLIGHT_COLOR = Interop.TextField.TextField_Property_SELECTION_HIGHLIGHT_COLOR_get();
-            internal static readonly int DECORATION_BOUNDING_BOX = Interop.TextField.TextField_Property_DECORATION_BOUNDING_BOX_get();
-            internal static readonly int INPUT_METHOD_SETTINGS = Interop.TextField.TextField_Property_INPUT_METHOD_SETTINGS_get();
-            internal static readonly int INPUT_COLOR = Interop.TextField.TextField_Property_INPUT_COLOR_get();
-            internal static readonly int ENABLE_MARKUP = Interop.TextField.TextField_Property_ENABLE_MARKUP_get();
-            internal static readonly int INPUT_FONT_FAMILY = Interop.TextField.TextField_Property_INPUT_FONT_FAMILY_get();
-            internal static readonly int INPUT_FONT_STYLE = Interop.TextField.TextField_Property_INPUT_FONT_STYLE_get();
-            internal static readonly int INPUT_POINT_SIZE = Interop.TextField.TextField_Property_INPUT_POINT_SIZE_get();
-            internal static readonly int UNDERLINE = Interop.TextField.TextField_Property_UNDERLINE_get();
-            internal static readonly int INPUT_UNDERLINE = Interop.TextField.TextField_Property_INPUT_UNDERLINE_get();
-            internal static readonly int SHADOW = Interop.TextField.TextField_Property_SHADOW_get();
-            internal static readonly int INPUT_SHADOW = Interop.TextField.TextField_Property_INPUT_SHADOW_get();
-            internal static readonly int EMBOSS = Interop.TextField.TextField_Property_EMBOSS_get();
-            internal static readonly int INPUT_EMBOSS = Interop.TextField.TextField_Property_INPUT_EMBOSS_get();
-            internal static readonly int OUTLINE = Interop.TextField.TextField_Property_OUTLINE_get();
-            internal static readonly int INPUT_OUTLINE = Interop.TextField.TextField_Property_INPUT_OUTLINE_get();
-            internal static readonly int HIDDEN_INPUT_SETTINGS = Interop.TextField.TextField_Property_HIDDEN_INPUT_SETTINGS_get();
-            internal static readonly int PIXEL_SIZE = Interop.TextField.TextField_Property_PIXEL_SIZE_get();
-            internal static readonly int ENABLE_SELECTION = Interop.TextField.TextField_Property_ENABLE_SELECTION_get();
-            internal static readonly int PLACEHOLDER = Interop.TextField.TextField_Property_PLACEHOLDER_get();
-            internal static readonly int ELLIPSIS = Interop.TextField.TextField_Property_ELLIPSIS_get();
-            internal static readonly int ENABLE_SHIFT_SELECTION = Interop.TextField.TextField_Property_ENABLE_SHIFT_SELECTION_get();
-            internal static readonly int MATCH_SYSTEM_LANGUAGE_DIRECTION = Interop.TextField.TextField_Property_MATCH_SYSTEM_LANGUAGE_DIRECTION_get();
-            internal static readonly int ENABLE_GRAB_HANDLE = Interop.TextField.TextField_Property_ENABLE_GRAB_HANDLE_get();
-            internal static readonly int ENABLE_GRAB_HANDLE_POPUP = Interop.TextField.TextField_Property_ENABLE_GRAB_HANDLE_POPUP_get();
-            internal static readonly int SELECTED_TEXT = Interop.TextField.TextField_Property_SELECTED_TEXT_get();
+            internal static readonly int TEXT = Interop.TextField.TextGet();
+            internal static readonly int PlaceholderText = Interop.TextField.PlaceholderTextGet();
+            internal static readonly int PlaceholderTextFocused = Interop.TextField.PlaceholderTextFocusedGet();
+            internal static readonly int FontFamily = Interop.TextField.FontFamilyGet();
+            internal static readonly int FontStyle = Interop.TextField.FontStyleGet();
+            internal static readonly int PointSize = Interop.TextField.PointSizeGet();
+            internal static readonly int MaxLength = Interop.TextField.MaxLengthGet();
+            internal static readonly int ExceedPolicy = Interop.TextField.ExceedPolicyGet();
+            internal static readonly int HorizontalAlignment = Interop.TextField.HorizontalAlignmentGet();
+            internal static readonly int VerticalAlignment = Interop.TextField.VerticalAlignmentGet();
+            internal static readonly int TextColor = Interop.TextField.TextColorGet();
+            internal static readonly int PlaceholderTextColor = Interop.TextField.PlaceholderTextColorGet();
+            internal static readonly int PrimaryCursorColor = Interop.TextField.PrimaryCursorColorGet();
+            internal static readonly int SecondaryCursorColor = Interop.TextField.SecondaryCursorColorGet();
+            internal static readonly int EnableCursorBlink = Interop.TextField.EnableCursorBlinkGet();
+            internal static readonly int CursorBlinkInterval = Interop.TextField.CursorBlinkIntervalGet();
+            internal static readonly int CursorBlinkDuration = Interop.TextField.CursorBlinkDurationGet();
+            internal static readonly int CursorWidth = Interop.TextField.CursorWidthGet();
+            internal static readonly int GrabHandleImage = Interop.TextField.GrabHandleImageGet();
+            internal static readonly int GrabHandlePressedImage = Interop.TextField.GrabHandlePressedImageGet();
+            internal static readonly int ScrollThreshold = Interop.TextField.ScrollThresholdGet();
+            internal static readonly int ScrollSpeed = Interop.TextField.ScrollSpeedGet();
+            internal static readonly int SelectionHandleImageLeft = Interop.TextField.SelectionHandleImageLeftGet();
+            internal static readonly int SelectionHandleImageRight = Interop.TextField.SelectionHandleImageRightGet();
+            internal static readonly int SelectionHandlePressedImageLeft = Interop.TextField.SelectionHandlePressedImageLeftGet();
+            internal static readonly int SelectionHandlePressedImageRight = Interop.TextField.SelectionHandlePressedImageRightGet();
+            internal static readonly int SelectionHandleMarkerImageLeft = Interop.TextField.SelectionHandleMarkerImageLeftGet();
+            internal static readonly int SelectionHandleMarkerImageRight = Interop.TextField.SelectionHandleMarkerImageRightGet();
+            internal static readonly int SelectionHighlightColor = Interop.TextField.SelectionHighlightColorGet();
+            internal static readonly int DecorationBoundingBox = Interop.TextField.DecorationBoundingBoxGet();
+            internal static readonly int InputMethodSettings = Interop.TextField.InputMethodSettingsGet();
+            internal static readonly int InputColor = Interop.TextField.InputColorGet();
+            internal static readonly int EnableMarkup = Interop.TextField.EnableMarkupGet();
+            internal static readonly int InputFontFamily = Interop.TextField.InputFontFamilyGet();
+            internal static readonly int InputFontStyle = Interop.TextField.InputFontStyleGet();
+            internal static readonly int InputPointSize = Interop.TextField.InputPointSizeGet();
+            internal static readonly int UNDERLINE = Interop.TextField.UnderlineGet();
+            internal static readonly int InputUnderline = Interop.TextField.InputUnderlineGet();
+            internal static readonly int SHADOW = Interop.TextField.ShadowGet();
+            internal static readonly int InputShadow = Interop.TextField.InputShadowGet();
+            internal static readonly int EMBOSS = Interop.TextField.EmbossGet();
+            internal static readonly int InputEmboss = Interop.TextField.InputEmbossGet();
+            internal static readonly int OUTLINE = Interop.TextField.OutlineGet();
+            internal static readonly int InputOutline = Interop.TextField.InputOutlineGet();
+            internal static readonly int HiddenInputSettings = Interop.TextField.HiddenInputSettingsGet();
+            internal static readonly int PixelSize = Interop.TextField.PixelSizeGet();
+            internal static readonly int EnableSelection = Interop.TextField.EnableSelectionGet();
+            internal static readonly int PLACEHOLDER = Interop.TextField.PlaceholderGet();
+            internal static readonly int ELLIPSIS = Interop.TextField.EllipsisGet();
+            internal static readonly int EnableShiftSelection = Interop.TextField.EnableShiftSelectionGet();
+            internal static readonly int MatchSystemLanguageDirection = Interop.TextField.MatchSystemLanguageDirectionGet();
+            internal static readonly int EnableGrabHandle = Interop.TextField.EnableGrabHandleGet();
+            internal static readonly int EnableGrabHandlePopup = Interop.TextField.EnableGrabHandlePopupGet();
+            internal static readonly int SelectedText = Interop.TextField.SelectedTextGet();
+            internal static readonly int SelectedTextStart = Interop.TextField.SelectedTextStartGet();
+            internal static readonly int SelectedTextEnd = Interop.TextField.SelectedTextEndGet();
+            internal static readonly int EnableEditing = Interop.TextField.EnableEditingGet();
+            internal static readonly int PrimaryCursorPosition = Interop.TextField.PrimaryCursorPositionGet();
+            internal static readonly int FontSizeScale = Interop.TextField.FontSizeScaleGet();
+            internal static readonly int GrabHandleColor = Interop.TextField.GrabHandleColorGet();
         }
 
         internal class InputStyle
@@ -1494,6 +1817,10 @@ namespace Tizen.NUI.BaseComponents
         private void OnTextColorChanged(float r, float g, float b, float a)
         {
             TextColor = new Color(r, g, b, a);
+        }
+        private void OnGrabHandleColorChanged(float r, float g, float b, float a)
+        {
+            GrabHandleColor = new Color(r, g, b, a);
         }
     }
 }

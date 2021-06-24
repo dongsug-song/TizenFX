@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2021 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace Tizen.NUI.BaseComponents
     {
         /// This will be public opened in tizen_5.0 after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static readonly BindableProperty FocusNavigationSupportProperty = BindableProperty.Create("FocusNavigationSupport", typeof(bool), typeof(CustomView), false, propertyChanged: (bindable, oldValue, newValue) =>
+        public static readonly BindableProperty FocusNavigationSupportProperty = BindableProperty.Create(nameof(FocusNavigationSupport), typeof(bool), typeof(CustomView), false, propertyChanged: (bindable, oldValue, newValue) =>
         {
             var customView = (CustomView)bindable;
             if (newValue != null)
@@ -44,7 +44,7 @@ namespace Tizen.NUI.BaseComponents
 
         /// This will be public opened in tizen_5.0 after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static readonly BindableProperty FocusGroupProperty = BindableProperty.Create("FocusGroup", typeof(bool), typeof(CustomView), false, propertyChanged: (bindable, oldValue, newValue) =>
+        public static readonly BindableProperty FocusGroupProperty = BindableProperty.Create(nameof(FocusGroup), typeof(bool), typeof(CustomView), false, propertyChanged: (bindable, oldValue, newValue) =>
         {
             var customView = (CustomView)bindable;
             if (newValue != null)
@@ -63,12 +63,11 @@ namespace Tizen.NUI.BaseComponents
         /// </summary>
         /// <param name="typeName">typename</param>
         /// <param name="behaviour">CustomView Behaviour</param>
-        /// <since_tizen> 3 </since_tizen>
-        /// This will be public opened in tizen_6.0 after ACR done. Before ACR, need to be hidden as inhouse API.
+        /// <param name="viewStyle">CustomView ViewStyle</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public CustomView(string typeName, CustomViewBehaviour behaviour, ViewStyle viewStyle) : base(typeName, new ViewWrapperImpl(behaviour), viewStyle)
+        public CustomView(string typeName, CustomViewBehaviour behaviour, ViewStyle viewStyle) : this(typeName, behaviour)
         {
-            Initialize();
+            InitializeStyle(viewStyle);
         }
 
         /// <summary>
@@ -139,12 +138,15 @@ namespace Tizen.NUI.BaseComponents
         }
 
         /// <summary>
-        /// This method is called after the control has been initialized.<br />
+        /// This method is called after the CustomView has been initialized.<br />
+        /// After OnInitialize, the view will apply the style if it exists in the theme or it was given from constructor.<br />
         /// Derived classes should do any second phase initialization by overriding this method.<br />
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public virtual void OnInitialize()
         {
+            SetAccessibilityConstructor(Role.Unknown);
+            AppendAccessibilityAttribute("class", this.GetType().Name);
         }
 
         /// <summary>
@@ -306,6 +308,7 @@ namespace Tizen.NUI.BaseComponents
         /// <param name="policy">The policy being set.</param>
         /// <param name="dimension">The policy is being set for.</param>
         /// <since_tizen> 3 </since_tizen>
+        [Obsolete("Deprecated. Since Tizen.NUI.ResizePolicyType is deprecated, OnSetResizePolicy is no longer supported. Please do not use this.")]
         public virtual void OnSetResizePolicy(ResizePolicyType policy, DimensionType dimension)
         {
         }
@@ -315,9 +318,10 @@ namespace Tizen.NUI.BaseComponents
         /// </summary>
         /// <returns>The view's natural size</returns>
         /// <since_tizen> 3 </since_tizen>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1721: Property names should not match get methods")]
         public new virtual Size2D GetNaturalSize()
         {
-            return sizeSetExplicitly;  // Returns the size set explicitly on View unless Overridden.
+            return (Size2D)GetValue(Size2DProperty);
         }
 
         /// <summary>
@@ -339,6 +343,7 @@ namespace Tizen.NUI.BaseComponents
         /// <param name="width">Width to use</param>
         /// <returns>The height based on the width</returns>
         /// <since_tizen> 3 </since_tizen>
+        [Obsolete("Deprecated in API9, will be removed in API11. Please use HeightForWidth property instead!")]
         public new virtual float GetHeightForWidth(float width)
         {
             return viewWrapperImpl.GetHeightForWidthBase(width);
@@ -351,6 +356,7 @@ namespace Tizen.NUI.BaseComponents
         /// <param name="height">Height to use</param>
         /// <returns>The width based on the width</returns>
         /// <since_tizen> 3 </since_tizen>
+        [Obsolete("Deprecated in API9, will be removed in API11. Please use WidthForHeight property instead!")]
         public new virtual float GetWidthForHeight(float height)
         {
             return viewWrapperImpl.GetWidthForHeightBase(height);
@@ -403,6 +409,7 @@ namespace Tizen.NUI.BaseComponents
         /// <param name="styleManager">The StyleManager object.</param>
         /// <param name="change">Information denoting what has changed.</param>
         /// <since_tizen> 3 </since_tizen>
+        [Obsolete("Deprecated in API9, Will be removed in API11.")]
         public virtual void OnStyleChange(StyleManager styleManager, StyleChangeType change)
         {
         }
@@ -430,11 +437,11 @@ namespace Tizen.NUI.BaseComponents
         /// <param name="currentFocusedView">The current focused view.</param>
         /// <param name="direction">The direction to move the focus towards.</param>
         /// <param name="loopEnabled">Whether the focus movement should be looped within the control.</param>
-        /// <returns>The next keyboard focusable view in this control or an empty handle if no view can be focused.</returns>
+        /// <returns>The next keyboard focusable view in this control or null if no view can be focused.</returns>
         /// <since_tizen> 3 </since_tizen>
         public virtual View GetNextFocusableView(View currentFocusedView, View.FocusDirection direction, bool loopEnabled)
         {
-            return new View();
+            return null;
         }
 
         /// <summary>
@@ -482,12 +489,135 @@ namespace Tizen.NUI.BaseComponents
         {
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override bool AccessibilityDoAction(string name)
+        {
+            if (name == AccessibilityActivateAction)
+            {
+                if (ActivateSignal?.Empty() == false)
+                {
+                    ActivateSignal?.Emit();
+                    return true;
+                }
+                else
+                {
+                    return OnAccessibilityActivated();
+                }
+            }
+            else if (name == AccessibilityReadingSkippedAction)
+            {
+                if (ReadingSkippedSignal?.Empty() == false)
+                {
+                    ReadingSkippedSignal?.Emit();
+                    return true;
+                }
+                else
+                {
+                    return OnAccessibilityReadingSkipped();
+                }
+            }
+            else if (name == AccessibilityReadingCancelledAction)
+            {
+                if (ReadingCancelledSignal?.Empty() == false)
+                {
+                    ReadingCancelledSignal?.Emit();
+                    return true;
+                }
+                else
+                {
+                    return OnAccessibilityReadingCancelled();
+                }
+            }
+            else if (name == AccessibilityReadingStoppedAction)
+            {
+                if (ReadingStoppedSignal?.Empty() == false)
+                {
+                    ReadingStoppedSignal?.Emit();
+                    return true;
+                }
+                else
+                {
+                    return OnAccessibilityReadingStopped();
+                }
+            }
+            else if (name == AccessibilityReadingPausedAction)
+            {
+                if (ReadingPausedSignal?.Empty() == false)
+                {
+                    ReadingPausedSignal?.Emit();
+                    return true;
+                }
+                else
+                {
+                    return OnAccessibilityReadingPaused();
+                }
+            }
+            else if (name == AccessibilityReadingResumedAction)
+            {
+                if (ReadingResumedSignal?.Empty() == false)
+                {
+                    ReadingResumedSignal?.Emit();
+                    return true;
+                }
+                else
+                {
+                    return OnAccessibilityReadingResumed();
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// This method is called when the control accessibility is activated.<br />
         /// Derived classes should override this to perform custom accessibility activation.<br />
         /// </summary>
         /// <returns>True if this control can perform accessibility activation.</returns>
         internal virtual bool OnAccessibilityActivated()
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// This method is called when reading is skipped.
+        /// </summary>
+        /// <returns>True if information was served.</returns>
+        internal virtual bool OnAccessibilityReadingSkipped()
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// This method is called when reading is cancelled.
+        /// </summary>
+        /// <returns>True if information was served.</returns>
+        internal virtual bool OnAccessibilityReadingCancelled()
+        {
+            return false;
+        }
+        /// <summary>
+        /// This method is called when reading is stopped.
+        /// </summary>
+        /// <returns>True if information was served.</returns>
+        internal virtual bool OnAccessibilityReadingStopped()
+        {
+            return false;
+        }
+        /// <summary>
+        /// This method is called when reading was paused.
+        /// </summary>
+        /// <returns>True if information was served.</returns>
+        internal virtual bool OnAccessibilityReadingPaused()
+        {
+            return false;
+        }
+        /// <summary>
+        /// This method is called when reading is resumed.
+        /// </summary>
+        /// <returns>True if information was served.</returns>
+        internal virtual bool OnAccessibilityReadingResumed()
         {
             return false;
         }
@@ -788,13 +918,12 @@ namespace Tizen.NUI.BaseComponents
             viewWrapperImpl.OnTap = new ViewWrapperImpl.OnTapDelegate(OnTap);
             viewWrapperImpl.OnLongPress = new ViewWrapperImpl.OnLongPressDelegate(OnLongPress);
 
-            // Make sure CustomView is initialized.
-            OnInitialize();
-
             // Set the StyleName the name of the View
             // We have to do this because the StyleManager on Native side can't workout it out
             // This will also ensure that the style of views/visuals initialized above are applied by the style manager.
             SetStyleName(this.GetType().Name);
+
+            OnInitialize();
         }
     }
 }

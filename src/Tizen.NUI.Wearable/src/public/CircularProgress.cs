@@ -158,7 +158,11 @@ namespace Tizen.NUI.Wearable
 
         #region Constructors
 
-        static CircularProgress() { }
+        static CircularProgress()
+        {
+            ThemeManager.AddPackageTheme(DefaultThemeCreator.Instance);
+        }
+
         /// <summary>
         /// The constructor of CircularProgress.
         /// Basically, CircularProgress is for full screen. (360 x 360)
@@ -166,7 +170,7 @@ namespace Tizen.NUI.Wearable
         /// User can set its size.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public CircularProgress() : base(new CircularProgressStyle())
+        public CircularProgress() : base()
         {
             Initialize();
         }
@@ -195,24 +199,6 @@ namespace Tizen.NUI.Wearable
 
 
         #region Properties
-
-        /// <summary>
-        /// Return a copied Style instance of CircularProgress
-        /// </summary>
-        /// <remarks>
-        /// It returns copied Style instance and changing it does not effect to the CircularProgress.
-        /// Style setting is possible by using constructor or the function of ApplyStyle(ViewStyle viewStyle)
-        /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new CircularProgressStyle Style
-        {
-            get
-            {
-                var result = new CircularProgressStyle(ViewStyle as CircularProgressStyle);
-                result.CopyPropertiesFromView(this);
-                return result;
-            }
-        }
 
         /// <summary>
         /// The thickness of the track and progress.

@@ -213,12 +213,16 @@ namespace Tizen.NUI.Wearable
 
         #region Constructors
 
-        static CircularSlider() { }
+        static CircularSlider()
+        {
+            ThemeManager.AddPackageTheme(DefaultThemeCreator.Instance);
+        }
+
         /// <summary>
         /// The constructor of CircularSlider.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public CircularSlider() : base(new CircularSliderStyle())
+        public CircularSlider() : base()
         {
             Initialize();
         }
@@ -246,24 +250,6 @@ namespace Tizen.NUI.Wearable
         #endregion Events
 
         #region Properties
-
-        /// <summary>
-        /// Return a copied Style instance of CircularSlider
-        /// </summary>
-        /// <remarks>
-        /// It returns copied Style instance and changing it does not effect to the CircularSlider.
-        /// Style setting is possible by using constructor or the function of ApplyStyle(ViewStyle viewStyle)
-        /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new CircularSliderStyle Style
-        {
-            get
-            {
-                var result = new CircularSliderStyle(ViewStyle as CircularSliderStyle);
-                result.CopyPropertiesFromView(this);
-                return result;
-            }
-        }
 
         /// <summary>
         /// The thickness of the track and progress.

@@ -196,7 +196,7 @@ namespace Tizen.Applications
                 err = Interop.ApplicationManager.AppManagerForeachAppInfo(cb, IntPtr.Zero);
                 if (err != Interop.ApplicationManager.ErrorCode.None)
                 {
-                    throw ApplicationManagerErrorFactory.GetException(err, "Failed to foreach the appinfo.");
+                    Log.Error(LogTag, "Failed to retrieve the application Info. err " + err.ToString());
                 }
                 return result;
             }).ConfigureAwait(false);
@@ -261,7 +261,20 @@ namespace Tizen.Applications
                     }
                     return false;
                 };
-                filter.Fetch(cb);
+
+                try
+                {
+                    filter.Fetch(cb);
+                }
+                catch (InvalidOperationException)
+                {
+                    Log.Error(LogTag, "InvalidOperationException occurs");
+                }
+                catch (ArgumentException)
+                {
+                    Log.Error(LogTag, "ArgumentException occurs");
+                }
+
                 return result;
             }).ConfigureAwait(false);
         }
@@ -295,7 +308,20 @@ namespace Tizen.Applications
                     }
                     return false;
                 };
-                filter.Fetch(cb);
+
+                try
+                {
+                    filter.Fetch(cb);
+                }
+                catch (InvalidOperationException)
+                {
+                    Log.Error(LogTag, "InvalidOperationException occurs");
+                }
+                catch (ArgumentException)
+                {
+                    Log.Error(LogTag, "ArgumentException occurs");
+                }
+
                 return result;
             }).ConfigureAwait(false);
         }
@@ -333,7 +359,7 @@ namespace Tizen.Applications
                 err = Interop.ApplicationManager.AppManagerForeachAppContext(cb, IntPtr.Zero);
                 if (err != Interop.ApplicationManager.ErrorCode.None)
                 {
-                    throw ApplicationManagerErrorFactory.GetException(err, "Failed to foreach appcontext.");
+                    Log.Error(LogTag, "Failed to retrieve the running app context. err " + err.ToString());
                 }
                 return result;
             }).ConfigureAwait(false);
@@ -372,7 +398,7 @@ namespace Tizen.Applications
                 err = Interop.ApplicationManager.AppManagerForeachRunningAppContext(cb, IntPtr.Zero);
                 if (err != Interop.ApplicationManager.ErrorCode.None)
                 {
-                    throw ApplicationManagerErrorFactory.GetException(err, "Failed to foreach appcontext.");
+                    Log.Error(LogTag, "Failed to retrieve the running app context. err " + err.ToString());
                 }
                 return result;
             }).ConfigureAwait(false);
@@ -447,13 +473,16 @@ namespace Tizen.Applications
                 }
                 using (ApplicationRunningContext context = new ApplicationRunningContext(clonedHandle))
                 {
-                    if (state == Interop.ApplicationManager.AppContextEvent.Launched)
+                    lock (s_applicationChangedEventLock)
                     {
-                        s_launchedHandler?.Invoke(null, new ApplicationLaunchedEventArgs { ApplicationRunningContext = context });
-                    }
-                    else if (state == Interop.ApplicationManager.AppContextEvent.Terminated)
-                    {
-                        s_terminatedHandler?.Invoke(null, new ApplicationTerminatedEventArgs { ApplicationRunningContext = context });
+                        if (state == Interop.ApplicationManager.AppContextEvent.Launched)
+                        {
+                            s_launchedHandler?.Invoke(null, new ApplicationLaunchedEventArgs { ApplicationRunningContext = context });
+                        }
+                        else if (state == Interop.ApplicationManager.AppContextEvent.Terminated)
+                        {
+                            s_terminatedHandler?.Invoke(null, new ApplicationTerminatedEventArgs { ApplicationRunningContext = context });
+                        }
                     }
                 }
             };
@@ -488,13 +517,16 @@ namespace Tizen.Applications
 
             s_eventCallback = (string appType, string appId, Interop.ApplicationManager.AppManagerEventType eventType, Interop.ApplicationManager.AppManagerEventState eventState, IntPtr eventHandle, IntPtr UserData) =>
             {
-                if (eventType == Interop.ApplicationManager.AppManagerEventType.Enable)
+                lock (s_eventLock)
                 {
-                    s_enabledHandler?.Invoke(null, new ApplicationEnabledEventArgs(appId, (ApplicationEventState)eventState));
-                }
-                else if (eventType == Interop.ApplicationManager.AppManagerEventType.Disable)
-                {
-                    s_disabledHandler?.Invoke(null, new ApplicationDisabledEventArgs(appId, (ApplicationEventState)eventState));
+                    if (eventType == Interop.ApplicationManager.AppManagerEventType.Enable)
+                    {
+                        s_enabledHandler?.Invoke(null, new ApplicationEnabledEventArgs(appId, (ApplicationEventState)eventState));
+                    }
+                    else if (eventType == Interop.ApplicationManager.AppManagerEventType.Disable)
+                    {
+                        s_disabledHandler?.Invoke(null, new ApplicationDisabledEventArgs(appId, (ApplicationEventState)eventState));
+                    }
                 }
             };
             err = Interop.ApplicationManager.AppManagerSetEventCallback(_eventHandle, s_eventCallback, IntPtr.Zero);

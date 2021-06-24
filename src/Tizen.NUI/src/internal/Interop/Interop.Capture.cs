@@ -1,4 +1,20 @@
-﻿
+﻿/*
+ * Copyright(c) 2021 Samsung Electronics Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 namespace Tizen.NUI
 {
     using global::System;
@@ -37,7 +53,7 @@ namespace Tizen.NUI
 
             [DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_Capture_Start_4")]
             public static extern void Start4(HandleRef capture, HandleRef source, HandleRef position, HandleRef size, string path, HandleRef clearColor);
-            
+
             [DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_Capture_SetImageQuality")]
             public static extern void SetImageQuality(HandleRef capture, uint quality);
 
@@ -69,7 +85,10 @@ namespace Tizen.NUI
             public static extern IntPtr GetNativeImageSourcePtr(HandleRef jarg1);
 
             [DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_Capture_GenerateUrl")]
-            public static extern string GenerageUrl(HandleRef capture);
+            public static extern string GenerateUrl(HandleRef capture);
+
+            [DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_Capture_GetCapturedBuffer")]
+            public static extern IntPtr GetCapturedBuffer(HandleRef capture);
 
         }
     }

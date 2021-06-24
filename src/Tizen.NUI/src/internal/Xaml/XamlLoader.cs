@@ -1,3 +1,19 @@
+/*
+ * Copyright(c) 2021 Samsung Electronics Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 //
 // XamlLoader.cs
 //
@@ -42,14 +58,15 @@ namespace Tizen.NUI.Xaml.Internals
 {
     /// This will be public opened in tizen_6.0 after ACR done. Before ACR, need to be hidden as inhouse API.
     [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete ("Replaced by ResourceLoader")]
+    [Obsolete("Replaced by ResourceLoader")]
     public static class XamlLoader
     {
         static Func<Type, string> xamlFileProvider;
 
         /// This will be public opened in tizen_6.0 after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Func<Type, string> XamlFileProvider {
+        public static Func<Type, string> XamlFileProvider
+        {
             get { return xamlFileProvider; }
             internal set
             {
@@ -132,6 +149,14 @@ namespace Tizen.NUI.Xaml
             using (var textReader = new StringReader(xaml))
             using (var reader = XmlReader.Create(textReader))
             {
+                Load(view, reader);
+            }
+        }
+
+        public static void Load(object view, XmlReader reader)
+        {
+            if (reader != null)
+            {
                 while (reader.Read())
                 {
                     //Skip until element
@@ -170,6 +195,16 @@ namespace Tizen.NUI.Xaml
             object inflatedView = null;
             using (var textreader = new StringReader(xaml))
             using (var reader = XmlReader.Create(textreader))
+            {
+                inflatedView = Create(reader, doNotThrow);
+            }
+            return inflatedView;
+        }
+
+        public static object Create(XmlReader reader, bool doNotThrow = false)
+        {
+            object inflatedView = null;
+            if (reader != null)
             {
                 while (reader.Read())
                 {
