@@ -11,10 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="" />
+    <PackageReference Include="System.Reflection" Version="" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="" />
   </ItemGroup>
 
   <ItemGroup>
