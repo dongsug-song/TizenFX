@@ -1646,20 +1646,13 @@ namespace Tizen.NUI.BaseComponents
         }
 
         /// <summary>
-        /// Set InputFilter to TextEditor. <br />
+        /// Set InputFilter to TextEditor.
         /// </summary>
         /// <param name="inputFilter">The InputFilter</param>
         /// <remarks>
         /// <see cref="Tizen.NUI.Text.InputFilter"/> filters input based on regular expressions. <br />
-        /// Users can set the Accepted or Rejected regular expression set, or both. <br />
-        /// If both are used, Rejected has higher priority. <br />
-        /// The character set must follow the regular expression rules. <br />
-        /// Behaviour can not be guaranteed for incorrect grammars. <br />
-        /// Refer the link below for detailed rules. <br />
-        /// The functions in std::regex library use the ECMAScript grammar: <br />
-        /// http://cplusplus.com/reference/regex/ECMAScript/ <br />
         /// InputFiltered signal is emitted when the input is filtered by InputFilter <br />
-        /// See <see cref="InputFiltered"/>, <see cref="InputFilterType"/> and <see cref="InputFilteredEventArgs"/> for a detailed description. <br />
+        /// See <see cref="InputFiltered"/>, <see cref="InputFilterType"/> and <see cref="InputFilteredEventArgs"/> for a detailed description.
         /// </remarks>
         /// <example>
         /// The following example demonstrates how to use the SetInputFilter method.
@@ -1670,7 +1663,7 @@ namespace Tizen.NUI.BaseComponents
         /// editor.SetInputFilter(inputFilter); // acceptable inputs are 4, 5, 6, 7, 8, 9
         /// </code>
         /// </example>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public void SetInputFilter(InputFilter inputFilter)
         {
             SetProperty(TextEditor.Property.InputFilter, new PropertyValue(TextMapHelper.GetInputFilterMap(inputFilter)));
@@ -1683,7 +1676,7 @@ namespace Tizen.NUI.BaseComponents
         /// <remarks>
         /// <see cref="Tizen.NUI.Text.InputFilter"/>
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public InputFilter GetInputFilter()
         {
             var map = new PropertyMap();
@@ -1732,73 +1725,38 @@ namespace Tizen.NUI.BaseComponents
             get
             {
                 PropertyMap map = (PropertyMap)GetValue(PlaceholderProperty);
-                PropertyValue value = null;
+                string defalutText = "";
 
-                // text
-                value = map.Find(0);
-                if (null != value)
+                if (TextMapHelper.IsValue(map, 0))
+                    map.Add("text", TextMapHelper.GetStringFromMap(map, 0, defalutText));
+
+                if (TextMapHelper.IsValue(map, 1))
+                    map.Add("textFocused", TextMapHelper.GetStringFromMap(map, 1, defalutText));
+                
+                if (TextMapHelper.IsValue(map, 2))
+                    map.Add("color", TextMapHelper.GetColorFromMap(map, 2));
+                
+                if (TextMapHelper.IsValue(map, 3))
+                    map.Add("fontFamily", TextMapHelper.GetStringFromMap(map, 3, defalutText));
+
+                if (TextMapHelper.IsValue(map, 4))
                 {
-                    value.Get(out string text);
-                    map.Add("text", new PropertyValue(text));
+                    var fontStyle = new PropertyMap();
+                    map.Find(4).Get(fontStyle);
+                    var fontStyleValue = new PropertyValue(fontStyle);
+                    map.Add("fontStyle", fontStyleValue);
+                    fontStyleValue.Dispose();
+                    fontStyle.Dispose();
                 }
 
-                // textFocused
-                value = map.Find(1);
-                if (null != value)
-                {
-                    value.Get(out string textFocused);
-                    map.Add("textFocused", new PropertyValue(textFocused));
-                }
-
-                // color
-                value = map.Find(2);
-                if (null != value)
-                {
-                    Color color = new Color();
-                    value.Get(color);
-                    map.Add("color", new PropertyValue(color));
-                }
-
-                // fontFamily
-                value = map.Find(3);
-                if (null != value)
-                {
-                    value.Get(out string fontFamily);
-                    map.Add("fontFamily", new PropertyValue(fontFamily));
-                }
-
-                // fontStyle
-                value = map.Find(4);
-                if (null != value)
-                {
-                    PropertyMap fontStyle = new PropertyMap();
-                    value.Get(fontStyle);
-                    map.Add("fontStyle", new PropertyValue(fontStyle));
-                }
-
-                // pointSize
-                value = map.Find(5);
-                if (null != value)
-                {
-                    value.Get(out float pointSize);
-                    map.Add("pointSize", new PropertyValue(pointSize));
-                }
-
-                // pixelSize
-                value = map.Find(6);
-                if (null != value)
-                {
-                    value.Get(out float pixelSize);
-                    map.Add("pixelSize", new PropertyValue(pixelSize));
-                }
-
-                // ellipsis
-                value = map.Find(7);
-                if (null != value)
-                {
-                    value.Get(out bool ellipsis);
-                    map.Add("ellipsis", new PropertyValue(ellipsis));
-                }
+                if (TextMapHelper.IsValue(map, 5))
+                    map.Add("pointSize", TextMapHelper.GetNullableFloatFromMap(map, 5));
+                
+                if (TextMapHelper.IsValue(map, 6))
+                    map.Add("pixelSize", TextMapHelper.GetNullableFloatFromMap(map, 6));
+                
+                if (TextMapHelper.IsValue(map, 7))
+                    map.Add("ellipsis", TextMapHelper.GetBoolFromMap(map, 7, false));
 
                 return map;
             }
