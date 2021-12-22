@@ -29,6 +29,7 @@ namespace Tizen.NUI.BaseComponents
     {
         private bool disposed = false;
         private bool? focusable;
+        private bool? focusableChildren;
         private bool? focusableInTouch;
         private bool? positionUsesPivotPoint;
         private Position parentOrigin;
@@ -105,6 +106,17 @@ namespace Tizen.NUI.BaseComponents
         {
             get => (bool?)GetValue(FocusableProperty);
             set => SetValue(FocusableProperty, value);
+        }
+
+        /// <summary>
+        /// Whether the children of this view can be focusable by keyboard navigation. If user sets this to false, the children of this view will not be focused.
+        /// Note : Default value is true.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool? FocusableChildren
+        {
+            get => (bool?)GetValue(FocusableChildrenProperty);
+            set => SetValue(FocusableChildrenProperty, value);
         }
 
         /// <summary>
@@ -256,7 +268,6 @@ namespace Tizen.NUI.BaseComponents
         /// This view's size is set to the view's size multiplied by or added to this factor, depending on ResizePolicyType.<br />
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
-        [Obsolete("Deprecated. Since Tizen.NUI.ResizePolicyType is deprecated, OnSetResizePolicy is no longer supported. Instead, please use parent view having Tizen.NUI.RelativeLayout as its Layout.")]
         public Vector3 SizeModeFactor
         {
             get => (Vector3)GetValue(SizeModeFactorProperty);
@@ -267,7 +278,6 @@ namespace Tizen.NUI.BaseComponents
         /// Gets or sets the width resize policy to be used.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
-        [Obsolete("Deprecated. Please set Tizen.NUI.View.Layout and use Tizen.NUI.View.WidthSpecification instead.")]
         public ResizePolicyType? WidthResizePolicy
         {
             get => (ResizePolicyType?)GetValue(WidthResizePolicyProperty);
@@ -278,7 +288,6 @@ namespace Tizen.NUI.BaseComponents
         /// Gets or sets the height resize policy to be used.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
-        [Obsolete("Deprecated. Please set Tizen.NUI.View.Layout and use Tizen.NUI.View.HeightSpecification instead.")]
         public ResizePolicyType? HeightResizePolicy
         {
             get => (ResizePolicyType?)GetValue(HeightResizePolicyProperty);
@@ -424,6 +433,7 @@ namespace Tizen.NUI.BaseComponents
         /// <summary>
         /// The radius for the rounded corners of the View.
         /// The values in Vector4 are used in clockwise order from top-left to bottom-left : Vector4(top-left-corner, top-right-corner, bottom-right-corner, bottom-left-corner).
+        /// Each radius will clamp internally to the half of smaller of the view's width or height.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
         public Vector4 CornerRadius
@@ -433,7 +443,7 @@ namespace Tizen.NUI.BaseComponents
         }
 
         /// <summary>
-        /// Whether the CornerRadius property value is relative (percentage [0.0f to 1.0f] of the view size) or absolute (in world units).
+        /// Whether the CornerRadius property value is relative (percentage [0.0f to 0.5f] of the view size) or absolute (in world units).
         /// It is absolute by default.
         /// When the policy is relative, the corner radius is relative to the smaller of the view's width and height.
         /// </summary>
@@ -447,7 +457,7 @@ namespace Tizen.NUI.BaseComponents
         /// <summary>
         /// The width for the borderline of the View.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public float? BorderlineWidth
         {
             get => (float?)GetValue(BorderlineWidthProperty);
@@ -457,7 +467,7 @@ namespace Tizen.NUI.BaseComponents
         /// <summary>
         /// The color for the borderline of the View.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public Color BorderlineColor
         {
             get => (Color)GetValue(BorderlineColorProperty);
@@ -466,12 +476,12 @@ namespace Tizen.NUI.BaseComponents
 
         /// <summary>
         /// The Relative offset for the borderline of the View.
-        /// recommand [-1.0f to 1.0f] range.
-        /// If -1.0f, borderline draw inside of View.
-        /// If 1.0f, borderline draw outside of View.
-        /// If 0.0f, borderline draw half at inside and half at outside.
+        /// Recommended range : [-1.0f to 1.0f].
+        /// If -1.0f, draw borderline inside of the View.
+        /// If 1.0f, draw borderline outside of the View.
+        /// If 0.0f, draw borderline half inside and half outside.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public float? BorderlineOffset
         {
             get => (float?)GetValue(BorderlineOffsetProperty);
@@ -560,6 +570,7 @@ namespace Tizen.NUI.BaseComponents
             }
 
             IncludeDefaultStyle = source.IncludeDefaultStyle;
+            SolidNull = source.SolidNull;
         }
 
         /// <summary>

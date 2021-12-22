@@ -25,7 +25,7 @@ namespace Tizen.NUI.Components
     /// Menu is a class which contains a set of MenuItems and has one of them selected.
     /// </summary>
     /// <since_tizen> 9 </since_tizen>
-    public class Menu : Control
+    public partial class Menu : Control
     {
         private Window window = null;
         private Layer layer = null;
@@ -160,6 +160,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(AnchorProperty) as View;
+            }
+            set
+            {
+                SetValue(AnchorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private View InternalAnchor
+        {
+            get
+            {
                 return anchor;
             }
 
@@ -194,6 +206,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return (RelativePosition)GetValue(HorizontalPositionToAnchorProperty);
+            }
+            set
+            {
+                SetValue(HorizontalPositionToAnchorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private RelativePosition InternalHorizontalPositionToAnchor
+        {
+            get
+            {
                 return horizontalPosition;
             }
 
@@ -221,6 +245,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
         public RelativePosition VerticalPositionToAnchor
+        {
+            get
+            {
+                return (RelativePosition)GetValue(VerticalPositionToAnchorProperty);
+            }
+            set
+            {
+                SetValue(VerticalPositionToAnchorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private RelativePosition InternalVerticalPositionToAnchor
         {
             get
             {
@@ -387,6 +423,8 @@ namespace Tizen.NUI.Components
             WidthSpecification = LayoutParamPolicies.WrapContent;
             HeightSpecification = LayoutParamPolicies.WrapContent;
 
+            BackgroundColor = Color.Transparent;
+
             // Menu is added to Anchor so Menu should exclude layouting because
             // if Anchor has Layout, then Menu is displayed at an incorrect position.
             ExcludeLayouting = true;
@@ -412,6 +450,9 @@ namespace Tizen.NUI.Components
                 ScrollingDirection = ScrollableBase.Direction.Vertical,
                 ScrollEnabled = true,
                 HideScrollbar = false,
+
+                // FIXME: This color should be in DefaultThemeCommon.cs.
+                BackgroundColor = new Color("#EEEFF1"),
             };
         }
 
@@ -469,7 +510,7 @@ namespace Tizen.NUI.Components
             while (parent)
             {
                 root = parent;
-                parent = parent.GetParent() as View;
+                parent = parent?.GetParent() as View;
             }
 
             return root;

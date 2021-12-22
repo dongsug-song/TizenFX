@@ -38,18 +38,14 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Get URI from native image source.
+        /// Generate Url from native image source.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public string Url
+        public ImageUrl GenerateUrl()
         {
-            get
-            {
-                string uri = "";
-                uri = Interop.NativeImageSource.GenerateUrl(this.SwigCPtr.Handle);
-                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
-                return uri;
-            }
+            ImageUrl ret = new ImageUrl(Interop.NativeImageSource.GenerateUrl(this.SwigCPtr.Handle), true);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+            return ret;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -67,11 +63,6 @@ namespace Tizen.NUI
             Bits16,
             Bits24,
             Bits32,
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(NativeImageSource obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

@@ -30,6 +30,14 @@ namespace Tizen.NUI
         {
         }
 
+        /// This will not be public opened.
+        /// <param name="swigCPtr"></param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override void ReleaseSwigCPtr(System.Runtime.InteropServices.HandleRef swigCPtr)
+        {
+            Interop.WebPolicyDecisionMaker.DeleteWebPolicyDecision(swigCPtr);
+        }
+
         /// <summary>
         /// Decision type
         /// </summary>
@@ -99,7 +107,7 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Gets the url that request policy decision.
+        /// Gets the URL that request policy decision.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string Url

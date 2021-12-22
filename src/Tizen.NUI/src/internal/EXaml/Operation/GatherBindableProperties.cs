@@ -26,10 +26,10 @@ namespace Tizen.NUI.EXaml
 {
     internal class GatherBindableProperties : Operation
     {
-        public GatherBindableProperties(GlobalDataList globalDataList, int typeIndex, string propertyName)
+        public GatherBindableProperties(GlobalDataList globalDataList, List<object> operationInfo)
         {
-            this.typeIndex = typeIndex;
-            this.propertyName = propertyName;
+            typeIndex = (int)operationInfo[0];
+            propertyName = operationInfo[1] as string;
             this.globalDataList = globalDataList;
         }
 
@@ -38,6 +38,11 @@ namespace Tizen.NUI.EXaml
         public void Do()
         {
             var type = globalDataList.GatheredTypes[typeIndex];
+            if (null == type)
+            {
+                throw new Exception($"Type of index {typeIndex} is null");
+            }
+
             var field = type.GetField(fi => fi.Name == propertyName && fi.IsStatic && fi.IsPublic);
             if (null == field)
             {

@@ -111,7 +111,7 @@ namespace Tizen.Uix.Tts
         /// <since_tizen> 3 </since_tizen>
         InvalidParameter,
         /// <summary>
-        /// No answer from the STT service.
+        /// No answer from the TTS service.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         TimedOut,
@@ -126,7 +126,7 @@ namespace Tizen.Uix.Tts
         /// <since_tizen> 3 </since_tizen>
         PermissionDenied,
         /// <summary>
-        /// STT not supported.
+        /// TTS not supported.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         NotSupported,
@@ -154,7 +154,22 @@ namespace Tizen.Uix.Tts
         /// Audio policy blocked.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
-        AudioPolicyBlocked
+        AudioPolicyBlocked,
+        /// <summary>
+        /// Not supported feature of current engine.
+        /// </summary>
+        /// <since_tizen> 10 </since_tizen>
+        NotSupportedFeature,
+        /// <summary>
+        /// Service reset.
+        /// </summary>
+        /// <since_tizen> 10 </since_tizen>
+        ServiceReset,
+        /// <summary>
+        /// Screen reader off.
+        /// </summary>
+        /// <since_tizen> 10 </since_tizen>
+        ScreenReaderOff
     };
 
     /// <summary>
@@ -202,6 +217,7 @@ namespace Tizen.Uix.Tts
         private event EventHandler<ErrorOccurredEventArgs> _errorOccurred;
         private event EventHandler<DefaultVoiceChangedEventArgs> _defaultVoiceChanged;
         private event EventHandler<EngineChangedEventArgs> _engineChanged;
+        private event EventHandler<ScreenReaderChangedEventArgs> _screenReaderChanged;
         private bool disposedValue = false;
         private readonly Object _stateChangedLock = new Object();
         private readonly Object _utteranceStartedLock = new Object();
@@ -209,12 +225,14 @@ namespace Tizen.Uix.Tts
         private readonly Object _errorOccurredLock = new Object();
         private readonly Object _defaultVoiceChangedLock = new Object();
         private readonly Object _engineChangedLock = new Object();
+        private readonly Object _screenReaderChangedLock = new Object();
         private TtsStateChangedCB _stateDelegate;
         private TtsUtteranceStartedCB _utteranceStartedResultDelegate;
         private TtsUtteranceCompletedCB _utteranceCompletedResultDelegate;
         private TtsErrorCB _errorDelegate;
         private TtsDefaultVoiceChangedCB _voiceChangedDelegate;
         private TtsEngineChangedCB _engineDelegate;
+        private TtsScreenReaderChangedCB _screenReaderDelegate;
         private TtsSupportedVoiceCB _supportedvoiceDelegate;
 
         /// <summary>
@@ -528,6 +546,50 @@ namespace Tizen.Uix.Tts
         }
 
         /// <summary>
+        /// Event to be invoked to detect screen reader status change.
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        public event EventHandler<ScreenReaderChangedEventArgs> ScreenReaderChanged
+        {
+            add
+            {
+                lock (_screenReaderChangedLock)
+                {
+                    if (_screenReaderChanged == null)
+                    {
+                        _screenReaderDelegate = (IntPtr handle, bool isOn, IntPtr userData) =>
+                        {
+                            ScreenReaderChangedEventArgs args = new ScreenReaderChangedEventArgs(isOn);
+                            _screenReaderChanged?.Invoke(this, args);
+                        };
+                        TtsError error = TtsSetScreenReaderChangedCB(_handle, _screenReaderDelegate, IntPtr.Zero);
+                        if (error != TtsError.None)
+                        {
+                            Log.Error(LogTag, "Add ScreenReaderChanged Failed with error " + error);
+                        }
+                    }
+                    _screenReaderChanged += value;
+                }
+            }
+
+            remove
+            {
+                lock (_screenReaderChangedLock)
+                {
+                    _screenReaderChanged -= value;
+                    if (_screenReaderChanged == null)
+                    {
+                        TtsError error = TtsUnsetScreenReaderChangedCB(_handle);
+                        if (error != TtsError.None)
+                        {
+                            Log.Error(LogTag, "Remove ScreenReaderChanged Failed with error " + error);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the default voice set by the user.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
@@ -565,7 +627,7 @@ namespace Tizen.Uix.Tts
         /// The Default Voice SupportedVoice value, 0 if unable to get the value.
         /// </returns>
         /// <pre>
-        /// The State should be ready.
+        /// The Client must be in the <see cref="State.Ready"/> state.
         /// </pre>
         public uint MaxTextSize
         {
@@ -629,7 +691,7 @@ namespace Tizen.Uix.Tts
         /// <exception cref="OutOfMemoryException">This exception can be due to out Of memory.</exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The State should be created.
+        /// The Client must be in the <see cref="State.Created"/> state.
         /// </pre>
         public Mode CurrentMode
         {
@@ -659,6 +721,36 @@ namespace Tizen.Uix.Tts
         }
 
         /// <summary>
+        /// Gets the current status of screen reader.
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        /// <value>
+        /// The current status of screen reader.
+        /// </value>
+        /// <returns>
+        /// Boolean value whether screen reader is on or off.
+        /// </returns>
+        /// <feature>
+        /// http://tizen.org/feature/speech.synthesis
+        /// </feature>
+        /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
+        public bool IsScreenReaderOn
+        {
+            get
+            {
+                bool isOn = true;
+                TtsError error = TtsCheckScreenReaderOn(_handle, out isOn);
+                if (error != TtsError.None)
+                {
+                    Log.Error(LogTag, "Fail to check screen reader on with error " + error);
+                    return false;
+                }
+
+                return isOn;
+            }
+        }
+
+        /// <summary>
         /// Sets the application credential.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
@@ -672,7 +764,7 @@ namespace Tizen.Uix.Tts
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <exception cref="ArgumentException">This exception can be due to improper value provided while setting the value.</exception>
         /// <pre>
-        /// The State should be created or ready.
+        /// The Client must be in the <see cref="State.Created"/> or <see cref="State.Ready"/> state.
         /// </pre>
         public void SetCredential(string credential)
         {
@@ -691,13 +783,17 @@ namespace Tizen.Uix.Tts
         /// <feature>
         /// http://tizen.org/feature/speech.synthesis
         /// </feature>
-        /// <exception cref="InvalidOperationException">This exception can be due to an invalid state.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// This exception can be due to the following reasons while setting the value:
+        /// 1. Invalid state
+        /// 2. Screen reader off
+        /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The State must be Created.
+        /// The Client must be in the <see cref="State.Created"/> state.
         /// </pre>
         /// <post>
-        /// If this function is successful, the TTS state will be ready.
+        /// If this function is successful, the Client will be in the <see cref="State.Ready"/> state.
         /// If this function is unsuccessful, ErrorOccurred event will be invoked.
         /// </post>
         public void Prepare()
@@ -711,7 +807,7 @@ namespace Tizen.Uix.Tts
         }
 
         /// <summary>
-        /// Disconnects from the STT service.
+        /// Disconnects from the TTS service.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         /// <feature>
@@ -720,10 +816,10 @@ namespace Tizen.Uix.Tts
         /// <exception cref="InvalidOperationException">This exception can be due to an invalid state.</exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The state must be ready.
+        /// The Client must be in the <see cref="State.Ready"/> state.
         /// </pre>
         /// <post>
-        /// If this function is successful, the TTS state will be created.
+        /// If this function is successful, the Client will be in the <see cref="State.Created"/> state.
         /// </post>
         public void Unprepare()
         {
@@ -793,7 +889,7 @@ namespace Tizen.Uix.Tts
         /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The state must be ready.
+        /// The Client must be in the <see cref="State.Ready"/> state.
         /// </pre>
         public string GetPrivateData(string key)
         {
@@ -830,7 +926,7 @@ namespace Tizen.Uix.Tts
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <exception cref="ArgumentException">This exception can be due to improper value provided while setting the value.</exception>
         /// <pre>
-        /// The state must be ready.
+        /// The Client must be in the <see cref="State.Ready"/> state.
         /// </pre>
         public void SetPrivateData(string key, string data)
         {
@@ -859,7 +955,7 @@ namespace Tizen.Uix.Tts
         /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The state must be created.
+        /// The Client must be in the <see cref="State.Created"/> state.
         /// </pre>
         public SpeedRange GetSpeedRange()
         {
@@ -879,10 +975,10 @@ namespace Tizen.Uix.Tts
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         /// <remarks>
-        /// Locale MUST be set for UTF-8 text validation check.
+        /// Locale MUST be set for text validation check.
         /// </remarks>
         /// <param name="text">
-        /// An input text based UTF-8.
+        /// An input text.
         /// </param>
         /// <param name="language">
         /// The language selected from the SupportedVoice.Language Property obtained from GetSupportedVoices()(e.g. 'NULL'(Automatic),'en_US').
@@ -904,12 +1000,13 @@ namespace Tizen.Uix.Tts
         /// 1. Invalid State
         /// 2. Operation Failure
         /// 3. Invalid Voice
+        /// 4. Screen reader off
         /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <exception cref="UnauthorizedAccessException">This exception can be due to permission denied.</exception>
         /// <exception cref="ArgumentException">This exception can be due to improper value provided while setting the value.</exception>
         /// <pre>
-        /// The state must be ready or playing or paused.
+        /// The Client must be in the <see cref="State.Ready"/>, <see cref="State.Playing"/>, or <see cref="State.Paused"/> state.
         /// </pre>
         public int AddText(string text, string language, int voiceType, int speed)
         {
@@ -936,14 +1033,15 @@ namespace Tizen.Uix.Tts
         /// 1. Invalid State
         /// 2. Operation Failure
         /// 3. Out of Network
+        /// 4. Screen reader off
         /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <exception cref="UnauthorizedAccessException">This exception can be due to permission denied.</exception>
         /// <pre>
-        /// The state must be ready or paused.
+        /// The Client must be in the <see cref="State.Ready"/> or <see cref="State.Paused"/> state.
         /// </pre>
         /// <post>
-        /// If this function succeeds, the TTS state will be playing.
+        /// If this function succeeds, the Client will be in the <see cref="State.Playing"/> state.
         /// </post>
         public void Play()
         {
@@ -966,13 +1064,14 @@ namespace Tizen.Uix.Tts
         /// This exception can be due to the following reasons:
         /// 1. Invalid Stat
         /// 2. Operation Failure
+        /// 3. Screen reader off
         /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The state must be ready or playing or paused.
+        /// The Client must be in the <see cref="State.Ready"/>, <see cref="State.Playing"/>, or <see cref="State.Paused"/> state.
         /// </pre>
         /// <post>
-        /// If this function succeeds, the TTS state will be ready.
+        /// If this function succeeds, the Client will be in the <see cref="State.Ready"/> state.
         /// This function will remove all text added via AddText() and synthesized sound data.
         /// </post>
         public void Stop()
@@ -996,13 +1095,14 @@ namespace Tizen.Uix.Tts
         /// This exception can be due to the following reasons:
         /// 1. Invalid State
         /// 2. Operation Failure
+        /// 3. Screen reader off
         /// </exception>
         /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
         /// <pre>
-        /// The state must be playing.
+        /// The Client must be in the <see cref="State.Playing"/> state.
         /// </pre>
         /// <post>
-        /// If this function succeeds, the TTS state will be Paused.
+        /// If this function succeeds, the Client will be in the <see cref="State.Paused"/> state.
         /// </post>
         public void Pause()
         {
@@ -1012,6 +1112,41 @@ namespace Tizen.Uix.Tts
                 Log.Error(LogTag, "Pause Failed with error " + error);
                 throw ExceptionFactory.CreateException(error);
             }
+        }
+
+        /// <summary>
+        /// Repeats the last played text.
+        /// </summary>
+        /// <since_tizen> 10 </since_tizen>
+        /// <returns>
+        /// The RepeatedText value that stores the text to repeat and utterance ID.
+        /// </returns>
+        /// <feature>
+        /// http://tizen.org/feature/speech.synthesis
+        /// </feature>
+        /// <exception cref="InvalidOperationException">
+        /// This exception can be due to the following reasons:
+        /// 1. Invalid State
+        /// 2. Operation Failure
+        /// 3. Screen reader off
+        /// </exception>
+        /// <exception cref="NotSupportedException">This exception can be due to TTS not supported.</exception>
+        /// <pre>
+        /// The Client must be in the <see cref="State.Ready"/> state.
+        /// </pre>
+        /// <post>
+        /// If this function succeeds, the Client will be in the <see cref="State.Playing"/> state.
+        /// </post>
+        public RepeatedText Repeat()
+        {
+            TtsError error = TtsRepeat(_handle, out string text, out int uttId);
+            if (error != TtsError.None)
+            {
+                Log.Error(LogTag, "Repeat Failed with error " + error);
+                throw ExceptionFactory.CreateException(error);
+            }
+
+            return new RepeatedText(text, uttId);
         }
 
         /// <summary>

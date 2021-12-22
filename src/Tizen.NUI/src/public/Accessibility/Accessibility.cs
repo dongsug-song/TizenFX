@@ -20,9 +20,6 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Tizen.NUI.BaseComponents;
 using System.Diagnostics.CodeAnalysis;
-#if (NUI_DEBUG_ON)
-using tlog = Tizen.Log;
-#endif
 
 namespace Tizen.NUI.Accessibility
 {
@@ -61,6 +58,23 @@ namespace Tizen.NUI.Accessibility
         {
             get => accessibility;
         }
+
+        /// <summary>
+        /// Flag to check whether the state of Accessibility is enabled or not.
+        /// </summary>
+        /// <remarks>
+        /// Getter returns true if Accessibility is enabled, false otherwise.
+        /// </remarks>
+        /// This will be public opened after ACR done. (Before ACR, need to be hidden as Inhouse API)
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool Enabled
+        {
+            get
+            {
+                return (bool)Interop.Accessibility.IsEnabled();
+            }
+        }
+
         #endregion Property
 
 
@@ -308,13 +322,12 @@ namespace Tizen.NUI.Accessibility
 
         private void SayFinishedEventCallback(int result)
         {
-            tlog.Fatal(tag, $"sayFinishedEventCallback(res={result}) called!");
+            NUILog.Debug($"sayFinishedEventCallback(res={result}) called!");
             sayFinishedEventHandler?.Invoke(this, new SayFinishedEventArgs(result));
         }
 
         private View dummy;
 
-        private static string tag = "NUITEST";
         #endregion Private
     }
 
@@ -339,7 +352,7 @@ namespace Tizen.NUI.Accessibility
         internal SayFinishedEventArgs(int result)
         {
             State = (Accessibility.SayFinishedState)(result);
-            tlog.Fatal("NUITEST", $"SayFinishedEventArgs Constructor! State={State}");
+            NUILog.Debug($"SayFinishedEventArgs Constructor! State={State}");
         }
     }
 }

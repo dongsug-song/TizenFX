@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Tizen.Multimedia, " + Tizen.NUI.PublicKey.TizenFX)]
 [assembly: InternalsVisibleTo("Tizen.NUI.Wearable, " + Tizen.NUI.PublicKey.TizenFX)]
 [assembly: InternalsVisibleTo("Tizen.NUI.Components, " + Tizen.NUI.PublicKey.TizenFX)]
+[assembly: InternalsVisibleTo("Tizen.NUI.Extension, " + Tizen.NUI.PublicKey.TizenFX)]
 
 [assembly: InternalsVisibleTo("Tizen.TV.NUI, " + Tizen.NUI.PublicKey.TizenTV)]
 [assembly: InternalsVisibleTo("Tizen.TV.NUI.Component, " + Tizen.NUI.PublicKey.TizenTV)]
@@ -36,6 +37,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("NuiSample, " + Tizen.NUI.PublicKey.Sample)]
 [assembly: InternalsVisibleTo("Tizen.NUI.Devel.Tests, " + Tizen.NUI.PublicKey.Sample)]
+[assembly: InternalsVisibleTo("Tizen.NUI.Components.Devel.Tests, " + Tizen.NUI.PublicKey.Sample)]
 
 namespace Tizen.NUI
 {

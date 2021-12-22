@@ -26,7 +26,7 @@ namespace Tizen.NUI.Components
     /// The Progress class is used to show the ongoing status with a long narrow bar.
     /// </summary>
     /// <since_tizen> 6 </since_tizen>
-    public class Progress : Control
+    public partial class Progress : Control
     {
         /// <summary>
         /// MaxValueProperty
@@ -131,6 +131,26 @@ namespace Tizen.NUI.Components
             return instance.state;
         });
 
+        /// <summary>
+        /// IsEnabledProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(Progress), true, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Progress)bindable;
+            if (newValue != null)
+            {
+                bool newEnabled = (bool)newValue;
+                if (instance.isEnabled != newEnabled)
+                {
+                    instance.isEnabled = newEnabled;
+                    instance.Sensitive = newEnabled;
+                    instance.UpdateStates();
+                }
+            }
+        },
+        defaultValueCreator: (bindable) => ((Progress)bindable).isEnabled);
+
         /// This needs to be considered more if public-open is necessary.
         private ProgressStatusType state = ProgressStatusType.Determinate;
 
@@ -145,6 +165,7 @@ namespace Tizen.NUI.Components
         private float currentValue = 0;
         private float bufferValue = 0;
         private Animation indeterminateAnimation = null;
+        bool isEnabled = true;
 
         static Progress() { }
         /// <summary>
@@ -174,48 +195,6 @@ namespace Tizen.NUI.Components
         public Progress(ProgressStyle progressStyle) : base(progressStyle)
         {
             Initialize();
-        }
-
-        /// <summary>
-        /// Prevents from showing child widgets in AT-SPI tree.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected override bool AccessibilityShouldReportZeroChildren()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// Minimum value.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected override double AccessibilityGetMinimum()
-        {
-            if (this.ProgressState == Components.Progress.ProgressStatusType.Determinate)
-                return (double)MinValue;
-            else return 0.0;
-        }
-
-        /// <summary>
-        /// Current value.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected override double AccessibilityGetCurrent()
-        {
-            if (this.ProgressState == Components.Progress.ProgressStatusType.Determinate)
-                return (double)CurrentValue;
-            else return 0.0;
-        }
-
-        /// <summary>
-        /// Maximum value.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        protected override double AccessibilityGetMaximum()
-        {
-            if (this.ProgressState == Components.Progress.ProgressStatusType.Determinate)
-                return (double)MaxValue;
-            else return 0.0;
         }
 
         /// <summary>
@@ -258,6 +237,18 @@ namespace Tizen.NUI.Components
         /// <since_tizen> 6 </since_tizen>
         public string TrackImageURL
         {
+            get
+            {
+                return GetValue(TrackImageURLProperty) as string;
+            }
+            set
+            {
+                SetValue(TrackImageURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalTrackImageURL
+        {
             get => trackImage.ResourceUrl;
             set => trackImage.ResourceUrl = value;
         }
@@ -267,6 +258,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public string ProgressImageURL
+        {
+            get
+            {
+                return GetValue(ProgressImageURLProperty) as string;
+            }
+            set
+            {
+                SetValue(ProgressImageURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalProgressImageURL
         {
             get => progressImage.ResourceUrl;
             set => progressImage.ResourceUrl = value;
@@ -278,6 +281,18 @@ namespace Tizen.NUI.Components
         /// <since_tizen> 6 </since_tizen>
         public string BufferImageURL
         {
+            get
+            {
+                return GetValue(BufferImageURLProperty) as string;
+            }
+            set
+            {
+                SetValue(BufferImageURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalBufferImageURL
+        {
             get => bufferImage.ResourceUrl;
             set => bufferImage.ResourceUrl = value;
         }
@@ -288,6 +303,18 @@ namespace Tizen.NUI.Components
         /// <exception cref="NullReferenceException">Thrown when setting null value.</exception>
         /// <since_tizen> 9 </since_tizen>
         public string IndeterminateImageUrl
+        {
+            get
+            {
+                return GetValue(IndeterminateImageUrlProperty) as string;
+            }
+            set
+            {
+                SetValue(IndeterminateImageUrlProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalIndeterminateImageUrl
         {
             get
             {
@@ -319,6 +346,18 @@ namespace Tizen.NUI.Components
         /// <since_tizen> 6 </since_tizen>
         public Color TrackColor
         {
+            get
+            {
+                return GetValue(TrackColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(TrackColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalTrackColor
+        {
             get => trackImage.BackgroundColor;
             set => trackImage.BackgroundColor = value;
         }
@@ -329,6 +368,18 @@ namespace Tizen.NUI.Components
         /// <since_tizen> 6 </since_tizen>
         public Color ProgressColor
         {
+            get
+            {
+                return GetValue(ProgressColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(ProgressColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalProgressColor
+        {
             get => progressImage.BackgroundColor;
             set => progressImage.BackgroundColor = value;
         }
@@ -338,6 +389,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public Color BufferColor
+        {
+            get
+            {
+                return GetValue(BufferColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(BufferColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalBufferColor
         {
             get => bufferImage.BackgroundColor;
             set => bufferImage.BackgroundColor = value;
@@ -388,7 +451,7 @@ namespace Tizen.NUI.Components
             set
             {
                 SetValue(CurrentValueProperty, value);
-                if (IsHighlighted)
+                if (Accessibility.Accessibility.Enabled && IsHighlighted)
                 {
                     EmitAccessibilityEvent(AccessibilityPropertyChangeEvent.Value);
                 }
@@ -424,6 +487,22 @@ namespace Tizen.NUI.Components
             set
             {
                 SetValue(ProgressStateProperty, value);
+            }
+        }
+
+        /// <summary>
+        /// Flag to decide enable or disable in Progress.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool IsEnabled
+        {
+            get
+            {
+                return (bool)GetValue(IsEnabledProperty);
+            }
+            set
+            {
+                SetValue(IsEnabledProperty, value);
             }
         }
 
@@ -463,6 +542,63 @@ namespace Tizen.NUI.Components
                 {
                     indeterminateImage.URL = progressStyle.IndeterminateImageUrl;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Prevents from showing child widgets in AT-SPI tree.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override bool AccessibilityShouldReportZeroChildren()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Gets minimum value for Accessibility.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override double AccessibilityGetMinimum()
+        {
+            if (this.ProgressState == Progress.ProgressStatusType.Determinate)
+            {
+                return (double)MinValue;
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current value for Accessibility.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override double AccessibilityGetCurrent()
+        {
+            if (this.ProgressState == Progress.ProgressStatusType.Determinate)
+            {
+                return (double)CurrentValue;
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
+
+        /// <summary>
+        /// Gets maximum value for Accessibility.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override double AccessibilityGetMaximum()
+        {
+            if (this.ProgressState == Progress.ProgressStatusType.Determinate)
+            {
+                return (double)MaxValue;
+            }
+            else
+            {
+                return 0.0;
             }
         }
 
@@ -590,6 +726,22 @@ namespace Tizen.NUI.Components
         /// <param name="statusType">New status type</param>
         protected void ChangeImageState(ProgressStatusType statusType)
         {
+            if (!IsEnabled)
+            {
+                ControlState = ControlState.Disabled;
+
+                indeterminateAnimation?.Stop();
+                indeterminateAnimation = null;
+
+                if (null != indeterminateImage)
+                {
+                    indeterminateImage.Opacity = 0.0f;
+                }
+                progressImage.Hide();
+                bufferImage.Hide();
+                return;
+            }
+
             if (statusType == ProgressStatusType.Buffering)
             {
                 indeterminateAnimation?.Stop();

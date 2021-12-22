@@ -18,6 +18,7 @@
 using System;
 using Tizen.NUI.Binding;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Tizen.NUI
 {
@@ -1029,7 +1030,7 @@ namespace Tizen.NUI
                         R = Math.Min(1.0f, ((float)Convert.ToInt32(components[0], 10)) / 255.0f);
                         G = Math.Min(1.0f, ((float)Convert.ToInt32(components[1], 10)) / 255.0f);
                         B = Math.Min(1.0f, ((float)Convert.ToInt32(components[2], 10)) / 255.0f);
-                        A = Math.Min(1.0f, float.Parse(components[3]));
+                        A = Math.Min(1.0f, float.Parse(components[3], CultureInfo.InvariantCulture));
                     }
                 }
             }
@@ -1103,7 +1104,7 @@ namespace Tizen.NUI
                 Interop.Vector4.RSet(SwigCPtr, ValueCheck(value));
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(R, G, B, A);
+                callback?.Invoke(value, G, B, A);
             }
             get
             {
@@ -1136,7 +1137,7 @@ namespace Tizen.NUI
                 Interop.Vector4.GSet(SwigCPtr, ValueCheck(value));
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(R, G, B, A);
+                callback?.Invoke(R, value, B, A);
             }
             get
             {
@@ -1169,7 +1170,7 @@ namespace Tizen.NUI
                 Interop.Vector4.BSet(SwigCPtr, ValueCheck(value));
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(R, G, B, A);
+                callback?.Invoke(R, G, value, A);
             }
             get
             {
@@ -1202,7 +1203,7 @@ namespace Tizen.NUI
                 Interop.Vector4.ASet(SwigCPtr, ValueCheck(value));
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(R, G, B, A);
+                callback?.Invoke(R, G, B, value);
             }
             get
             {
@@ -1411,11 +1412,6 @@ namespace Tizen.NUI
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public object Clone() => new Color(this);
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(Color obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
-        }
 
         internal static Color GetColorFromPtr(global::System.IntPtr cPtr)
         {

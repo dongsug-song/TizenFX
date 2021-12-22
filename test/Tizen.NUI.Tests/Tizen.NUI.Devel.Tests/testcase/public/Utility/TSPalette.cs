@@ -14,6 +14,7 @@ namespace Tizen.NUI.Devel.Tests
     public class PublicPaletteTest
     {
         private const string tag = "NUITEST";
+        private string image_path = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "picture.png";
 
         [SetUp]
         public void Init()
@@ -40,7 +41,7 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = ImageLoader.LoadImageFromFile(image_path))
                 {
                     var testingTarget = Palette.Generate(buffer);
                     Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -69,9 +70,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(150, 120, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -127,9 +128,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -161,9 +162,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -195,9 +196,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -229,9 +230,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -263,9 +264,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -297,9 +298,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -331,9 +332,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -365,9 +366,9 @@ namespace Tizen.NUI.Devel.Tests
 
             try
             {
-                using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
+                using (PixelBuffer buffer = new PixelBuffer(10, 8, PixelFormat.A8))
                 {
-                    using (Rectangle region = new Rectangle(24, 24, 24, 24))
+                    using (Rectangle region = new Rectangle(2, 2, 2, 2))
                     {
                         var testingTarget = Palette.Generate(buffer, region);
                         Assert.IsNotNull(testingTarget, "Can't create success object Palette");
@@ -483,61 +484,61 @@ namespace Tizen.NUI.Devel.Tests
             tlog.Debug(tag, $"PaletteSwatchGetBodyTextColor END (OK)");
         }
 
-        //[Test]
-        //[Category("P1")]
-        //[Description("Palette GenerateAsync.")]
-        //[Property("SPEC", "Tizen.NUI.Palette.GenerateAsync M")]
-        //[Property("SPEC_URL", "-")]
-        //[Property("CRITERIA", "MR")]
-        //[Property("AUTHOR", "guowei.wang@samsung.com")]
-        //public void PaletteGenerateAsync()
-        //{
-        //    tlog.Debug(tag, $"PaletteGenerateAsync START");
+        [Test]
+        [Category("P1")]
+        [Description("Palette GenerateAsync.")]
+        [Property("SPEC", "Tizen.NUI.Palette.GenerateAsync M")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "MR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void PaletteGenerateAsync()
+        {
+            tlog.Debug(tag, $"PaletteGenerateAsync START");
 
-        //    try
-        //    {
-        //        using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
-        //        {
-        //            _ = Palette.GenerateAsync(buffer);
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        tlog.Debug(tag, e.Message.ToString());
-        //        Assert.Fail("Caught Exception: Failed!");
-        //    }
+            try
+            {
+                using (PixelBuffer buffer = new PixelBuffer(2, 2, PixelFormat.A8))
+                {
+                    _ = Palette.GenerateAsync(buffer);
+                }
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception: Failed!");
+            }
 
-        //    tlog.Debug(tag, $"PaletteGenerateAsync END (OK)");
-        //}
+            tlog.Debug(tag, $"PaletteGenerateAsync END (OK)");
+        }
 
-        //[Test]
-        //[Category("P1")]
-        //[Description("Palette GenerateAsync. With Rectangle.")]
-        //[Property("SPEC", "Tizen.NUI.Palette.GenerateAsync M")]
-        //[Property("SPEC_URL", "-")]
-        //[Property("CRITERIA", "MR")]
-        //[Property("AUTHOR", "guowei.wang@samsung.com")]
-        //public void PaletteGenerateAsyncWithRectangle()
-        //{
-        //    tlog.Debug(tag, $"PaletteGenerateAsyncWithRectangle START");
+        [Test]
+        [Category("P1")]
+        [Description("Palette GenerateAsync. With Rectangle.")]
+        [Property("SPEC", "Tizen.NUI.Palette.GenerateAsync M")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "MR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void PaletteGenerateAsyncWithRectangle()
+        {
+            tlog.Debug(tag, $"PaletteGenerateAsyncWithRectangle START");
 
-        //    try
-        //    {
-        //        using (PixelBuffer buffer = new PixelBuffer(100, 80, PixelFormat.A8))
-        //        {
-        //            using (Rectangle region = new Rectangle(24, 24, 24, 24))
-        //            {
-        //                _ = Palette.GenerateAsync(buffer, region);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        tlog.Debug(tag, e.Message.ToString());
-        //        Assert.Fail("Caught Exception: Failed!");
-        //    }
+            try
+            {
+                using (PixelBuffer buffer = new PixelBuffer(2, 2, PixelFormat.A8))
+                {
+                    using (Rectangle region = new Rectangle(1, 1, 1, 1))
+                    {
+                        _ = Palette.GenerateAsync(buffer, region);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception: Failed!");
+            }
 
-        //    tlog.Debug(tag, $"PaletteGenerateAsyncWithRectangle END (OK)");
-        //}
+            tlog.Debug(tag, $"PaletteGenerateAsyncWithRectangle END (OK)");
+        }
     }
 }

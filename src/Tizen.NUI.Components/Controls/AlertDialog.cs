@@ -26,7 +26,7 @@ namespace Tizen.NUI.Components
     /// AlertDialog class shows a dialog with title, message and action buttons.
     /// </summary>
     /// <since_tizen> 9 </since_tizen>
-    public class AlertDialog : Control
+    public partial class AlertDialog : Control
     {
         private string title = null;
         private string message = null;
@@ -42,8 +42,6 @@ namespace Tizen.NUI.Components
         // FIXME: Now AlertDialog.Padding Top and Bottom increases AlertDialog size incorrectly.
         //        Until the bug is fixed, padding view is added after action content.
         private View defaultActionContentPadding = null;
-
-        private AlertDialogStyle alertDialogStyle => ViewStyle as AlertDialogStyle;
 
         private bool styleApplied = false;
 
@@ -124,20 +122,27 @@ namespace Tizen.NUI.Components
 
             base.ApplyStyle(viewStyle);
 
+            var alertDialogStyle = viewStyle as AlertDialogStyle;
+
+            if (alertDialogStyle == null)
+            {
+                return;
+            }
+
             // Apply Title style.
-            if ((alertDialogStyle?.TitleTextLabel != null) && (DefaultTitleContent is TextLabel))
+            if ((alertDialogStyle.TitleTextLabel != null) && (DefaultTitleContent is TextLabel))
             {
                 ((TextLabel)DefaultTitleContent)?.ApplyStyle(alertDialogStyle.TitleTextLabel);
             }
 
             // Apply Message style.
-            if ((alertDialogStyle?.MessageTextLabel != null) && (DefaultContent is TextLabel))
+            if ((alertDialogStyle.MessageTextLabel != null) && (DefaultContent is TextLabel))
             {
                 ((TextLabel)DefaultContent)?.ApplyStyle(alertDialogStyle.MessageTextLabel);
             }
 
             // Apply ActionContent style.
-            if (alertDialogStyle?.ActionContent != null)
+            if (alertDialogStyle.ActionContent != null)
             {
                 DefaultActionContent?.ApplyStyle(alertDialogStyle.ActionContent);
             }
@@ -155,6 +160,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
         public string Title
+        {
+            get
+            {
+                return GetValue(TitleProperty) as string;
+            }
+            set
+            {
+                SetValue(TitleProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalTitle
         {
             get
             {
@@ -184,6 +201,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
         public View TitleContent
+        {
+            get
+            {
+                return GetValue(TitleContentProperty) as View;
+            }
+            set
+            {
+                SetValue(TitleContentProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private View InternalTitleContent
         {
             get
             {
@@ -226,6 +255,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(MessageProperty) as string;
+            }
+            set
+            {
+                SetValue(MessageProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalMessage
+        {
+            get
+            {
                 return message;
             }
             set
@@ -252,6 +293,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
         public View Content
+        {
+            get
+            {
+                return GetValue(ContentProperty) as View;
+            }
+            set
+            {
+                SetValue(ContentProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private View InternalContent
         {
             get
             {
@@ -337,6 +390,18 @@ namespace Tizen.NUI.Components
         /// <since_tizen> 9 </since_tizen>
         public View ActionContent
         {
+            get
+            {
+                return GetValue(ActionContentProperty) as View;
+            }
+            set
+            {
+                SetValue(ActionContentProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private View InternalActionContent
+        {
              get
              {
                 return actionContent;
@@ -407,11 +472,11 @@ namespace Tizen.NUI.Components
         /// Informs AT-SPI bridge about the set of AT-SPI states associated with this object.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        protected override AccessibilityStates AccessibilityCalculateStates()
+        protected override AccessibilityStates AccessibilityCalculateStates(ulong states)
         {
-            var states = base.AccessibilityCalculateStates();
-            FlagSetter(ref states, AccessibilityStates.Modal, true);
-            return states;
+            var accessibilityStates = base.AccessibilityCalculateStates(states);
+            FlagSetter(ref accessibilityStates, AccessibilityStates.Modal, true);
+            return accessibilityStates;
         }
 
 

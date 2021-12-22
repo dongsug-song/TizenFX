@@ -13,36 +13,117 @@ namespace Tizen.NUI.Devel.Tests
     internal class PublicThemeTest
     {
         private const string tag = "NUITEST";
+        private Theme theme = null;
+        private string path = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "Test_Theme.xaml";
+        private string image = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "picture.png";
+        private string IOException_file = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "1.xaml";
+        private string ParseException_file = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "Test_View.xaml";
+        private IEnumerable<KeyValuePair<string, string>> changedResources = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Version", "2.0") };
 
         [SetUp]
         public void Init()
         {
             tlog.Info(tag, "Init() is called!");
+            theme = new Theme(path);
         }
 
         [TearDown]
         public void Destroy()
         {
+            theme = null;
             tlog.Info(tag, "Destroy() is called!");
         }
 
         [Test]
-        [Category("P1")]
-        [Description("Create a Theme object.")]
+        [Category("P2")]
+        [Description("Theme construcotr. xaml file path is null.")]
         [Property("SPEC", "Tizen.NUI.Theme.Theme C")]
         [Property("SPEC_URL", "-")]
         [Property("CRITERIA", "CONSTR")]
         [Property("COVPARAM", "")]
-        public void ThemeConstructor()
+        public void ThemeConstructorWithUnavailablePath()
         {
-            tlog.Debug(tag, $"ThemeConstructor START");
+            tlog.Debug(tag, $"ThemeConstructorWithUnavailablePath START");
 
-            Theme a1 = new Theme("");
-            Theme b1 = new Theme("/root/noexist.xml");
-            Theme C1 = new Theme("/etc/info.ini");
+            try
+            {
+                var testingTarget = new Theme("");
+            }
+            catch (ArgumentNullException e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                tlog.Debug(tag, $"ThemeConstructorWithUnavailablePath END (OK)");
+                Assert.Pass("Caught ArgumentNullException : Passed!");
+            }
+        }
 
-            tlog.Debug(tag, $"ThemeConstructor END (OK)");
-            Assert.Pass("ThemeConstructor");
+        [Test]
+        [Category("P2")]
+        [Description("Theme construcotr. Could not parse.")]
+        [Property("SPEC", "Tizen.NUI.Theme.Theme C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("COVPARAM", "")]
+        public void ThemeConstructorWithFileCouldNotBeParsed()
+        {
+            tlog.Debug(tag, $"ThemeConstructorWithFileCouldNotBeParsed START");
+
+            try
+            {
+                var testingTarget = new Theme(image);
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                tlog.Debug(tag, $"ThemeConstructorWithFileCouldNotBeParsed END (OK)");
+                Assert.Pass("Caught Exception : Passed!");
+            }
+        }
+
+        [Test]
+        [Category("P2")]
+        [Description("Theme construcotr. IOException.")]
+        [Property("SPEC", "Tizen.NUI.Theme.Theme C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("COVPARAM", "")]
+        public void ThemeConstructorIOException()
+        {
+            tlog.Debug(tag, $"ThemeConstructorIOException START");
+
+            try
+            {
+                var testingTarget = new Theme(IOException_file);
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                tlog.Debug(tag, $"ThemeConstructorIOException END (OK)");
+                Assert.Pass("Caught IOException : Passed!");
+            }
+        }
+
+        [Test]
+        [Category("P2")]
+        [Description("Theme construcotr. XamlParseException.")]
+        [Property("SPEC", "Tizen.NUI.Theme.Theme C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("COVPARAM", "")]
+        public void ThemeConstructorXamlParseException()
+        {
+            tlog.Debug(tag, $"ThemeConstructorXamlParseException START");
+
+            try
+            {
+                var testingTarget = new Theme(ParseException_file);
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                tlog.Debug(tag, $"ThemeConstructorXamlParseException END (OK)");
+                Assert.Pass("Caught XamlParseException : Passed!");
+            }
         }
 
         [Test]
@@ -55,13 +136,12 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeBasedOn()
         {
             tlog.Debug(tag, $"ThemeBasedOn START");
-            Theme a1 = new Theme();
 
-            string b1 = a1.BasedOn;
-            a1.BasedOn = b1;
+            var baseOn = "Tizen.NUI.Theme.Common";
+            theme.BasedOn = baseOn;
+            tlog.Debug(tag, "BaseOn : " + theme.BasedOn);
 
             tlog.Debug(tag, $"ThemeBasedOn END (OK)");
-            Assert.Pass("ThemeBasedOn");
         }
 
         [Test]
@@ -74,12 +154,11 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeIsResourcesCreated()
         {
             tlog.Debug(tag, $"ThemeIsResourcesCreated START");
-            Theme a1 = new Theme();
 
-            bool b1 = a1.IsResourcesCreated;
+            var result = theme.IsResourcesCreated;
+            tlog.Debug(tag, "IsResourcesCreated : " + result);
 
             tlog.Debug(tag, $"ThemeIsResourcesCreated END (OK)");
-            Assert.Pass("ThemeIsResourcesCreated");
         }
 
         [Test]
@@ -92,31 +171,85 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeResources()
         {
             tlog.Debug(tag, $"ThemeResources START");
-            Theme a1 = new Theme();
 
-            ResourceDictionary b1 = a1.Resources;
+            var result = theme.Resources;
+            tlog.Debug(tag, "Resources : " + result);
+
+            theme.SetChangedResources(changedResources);
+
+            // resources == value
+            theme.Resources = result;
+            tlog.Debug(tag, "Resouces : " + theme.Resources);
+
+            // resources != null
+            ResourceDictionary dic = new ResourceDictionary();
+            theme.Resources = dic;
+            tlog.Debug(tag, "Resouces : " + theme.Resources);
 
             tlog.Debug(tag, $"ThemeResources END (OK)");
-            Assert.Pass("ThemeResources");
         }
 
-        //[Test]
-        //[Category("P1")]
-        //[Description("test Theme this .")]
-        //[Property("SPEC", "Tizen.NUI.Theme.this A")]
-        //[Property("SPEC_URL", "-")]
-        //[Property("CRITERIA", "PRW")]
-        //[Property("COVPARAM", "")]
-        //public void Themethis()
-        //{
-        //    tlog.Debug(tag, $"Themethis START");
-        //    Theme a1 = new Theme();
+        [Test]
+        [Category("P1")]
+        [Description("test Theme this .")]
+        [Property("SPEC", "Tizen.NUI.Theme.this  A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
+        [Property("COVPARAM", "")]
+        public void ThemeThis()
+        {
+            tlog.Debug(tag, $"ThemeThis START");
 
-        //    ViewStyle b1 = a1.styleName;
+            ViewStyle style = new ViewStyle()
+            {
+                Color = Color.Cyan,
+            };
 
-        //    tlog.Debug(tag, $"Themethis END (OK)");
-        //    Assert.Pass("Themethis");
-        //}
+            theme.AddStyle("style", style);
+
+            tlog.Debug(tag, "Count : " + theme.Count);
+            tlog.Debug(tag, "theme[\"style\"] : " + theme["style"]);
+
+            ViewStyle newStyle = new ViewStyle()
+            {
+                Size = new Size(100, 50),
+                Color = Color.Red
+            };
+
+            theme["Style"] = newStyle;
+            tlog.Debug(tag, "theme[\"style\"] : " + theme["style"]);
+
+            tlog.Debug(tag, $"ThemeThis END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("test Theme this .")]
+        [Property("SPEC", "Tizen.NUI.Theme.this  A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
+        [Property("COVPARAM", "")]
+        public void ThemeThisSetVauleIsNUll()
+        {
+            tlog.Debug(tag, $"ThemeThisSetVauleIsNUll START");
+
+            ViewStyle style = new ViewStyle()
+            {
+                Color = Color.Cyan,
+            };
+
+            theme.AddStyle("style", style);
+
+            tlog.Debug(tag, "Count : " + theme.Count);
+            tlog.Debug(tag, "theme[\"style\"] : " + theme["style"]);
+
+            ViewStyle newStyle = null;
+
+            theme["Style"] = newStyle;
+            tlog.Debug(tag, "theme[\"style\"] : " + theme["style"]);
+
+            tlog.Debug(tag, $"ThemeThisSetVauleIsNUll END (OK)");
+        }
 
         [Test]
         [Category("P1")]
@@ -128,48 +261,18 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeClear()
         {
             tlog.Debug(tag, $"ThemeClear START");
-            Theme a1 = new Theme();
-
-            a1.Clear();
-
+            
+            try
+            {
+                theme.Clear();
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception : Failed!");
+            }
+            
             tlog.Debug(tag, $"ThemeClear END (OK)");
-            Assert.Pass("ThemeClear");
-        }
-
-        [Test]
-        [Category("P1")]
-        [Description("test Theme HasStyle .")]
-        [Property("SPEC", "Tizen.NUI.Theme.HasStyle  M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("COVPARAM", "")]
-        public void ThemeHasStyle()
-        {
-            tlog.Debug(tag, $"ThemeHasStyle START");
-            Theme a1 = new Theme();
-
-            a1.HasStyle("red");
-
-            tlog.Debug(tag, $"ThemeHasStyle END (OK)");
-            Assert.Pass("ThemeHasStyle");
-        }
-
-        [Test]
-        [Category("P1")]
-        [Description("test Theme RemoveStyle .")]
-        [Property("SPEC", "Tizen.NUI.Theme.RemoveStyle  M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("COVPARAM", "")]
-        public void ThemeRemoveStyle()
-        {
-            tlog.Debug(tag, $"ThemeRemoveStyle START");
-            Theme a1 = new Theme();
-
-            a1.RemoveStyle("red");
-
-            tlog.Debug(tag, $"ThemeRemoveStyle END (OK)");
-            Assert.Pass("ThemeRemoveStyle");
         }
 
         [Test]
@@ -182,15 +285,54 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeAddStyle()
         {
             tlog.Debug(tag, $"ThemeAddStyle START");
-            Theme a1 = new Theme();
 
-            ViewStyle v1 = new ViewStyle();
-            a1.AddStyle("red", v1);
+            ViewStyle style = new ViewStyle()
+            {
+                Color = Color.Cyan,
+            };
 
-            a1.AddStyle(null, v1);
+            try
+            {
+                theme.AddStyle("style", style);
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception : Failed!");
+            }
+
+            tlog.Debug(tag, "HasStyle : " + theme.HasStyle("style"));
+            tlog.Debug(tag, "RemoveStyle : " + theme.RemoveStyle("style"));
 
             tlog.Debug(tag, $"ThemeAddStyle END (OK)");
-            Assert.Pass("ThemeAddStyle");
+        }
+
+        [Test]
+        [Category("P2")]
+        [Description("test Theme AddStyle .")]
+        [Property("SPEC", "Tizen.NUI.Theme.AddStyle  M")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "MR")]
+        [Property("COVPARAM", "")]
+        public void ThemeAddStyleNullStyleName()
+        {
+            tlog.Debug(tag, $"ThemeAddStyleNullStyleName START");
+
+            ViewStyle style = new ViewStyle()
+            {
+                Color = Color.Cyan,
+            };
+
+            try
+            {
+                theme.AddStyle(null, style);
+            }
+            catch (ArgumentNullException e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                tlog.Debug(tag, $"ThemeAddStyleNullStyleName END (OK)");
+                Assert.Pass("Caught Exception : Passed!");
+            }
         }
 
         [Test]
@@ -203,17 +345,23 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeClone()
         {
             tlog.Debug(tag, $"ThemeClone START");
-            Theme a1 = new Theme();
 
-            a1.Clone();
+            try
+            {
+                theme.Clone();
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception : Failed!");
+            }
 
-            tlog.Debug(tag, $"ThemeAddStyle END (OK)");
-            Assert.Pass("ThemeAddStyle");
+            tlog.Debug(tag, $"ThemeClone END (OK)");
         }
 
         [Test]
         [Category("P1")]
-        [Description("test Theme Merge .")]
+        [Description("Theme Merge .")]
         [Property("SPEC", "Tizen.NUI.Theme.Merge  M")]
         [Property("SPEC_URL", "-")]
         [Property("CRITERIA", "MR")]
@@ -221,84 +369,78 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeMerge()
         {
             tlog.Debug(tag, $"ThemeMerge START");
-            Theme a1 = new Theme();
 
-            a1.Merge("./opt/etc/skel/apps_rw/mobilebff/tizen-manifest.xml");
-            Theme t1 = new Theme();
-            a1.Merge(t1);
+            var testingTarget = new Theme();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<Theme>(testingTarget, "should be an instance of testing target class!");
 
-            Theme t2 = null;
-            a1.Merge(t2);
+            ViewStyle style = new ViewStyle()
+            {
+                Size = new Size2D(100, 30),
+                Focusable = true
+            };
+            testingTarget.Version = "0.1";
+            testingTarget.AddStyle("myStyle", style);
+
+            try
+            {
+                theme.Merge(testingTarget); // merge with Theme
+                theme.Merge(path);  // merge with xaml file
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception: Failed!");
+            }
 
             tlog.Debug(tag, $"ThemeMerge END (OK)");
-            Assert.Pass("ThemeMerge");
         }
 
         [Test]
-        [Category("P1")]
-        [Description("test Theme MergeWithoutClone .")]
-        [Property("SPEC", "Tizen.NUI.Theme.MergeWithoutClone  M")]
+        [Category("P2")]
+        [Description("Theme Merge. Parameter is null.")]
+        [Property("SPEC", "Tizen.NUI.Theme.Merge  M")]
         [Property("SPEC_URL", "-")]
         [Property("CRITERIA", "MR")]
         [Property("COVPARAM", "")]
-        public void ThemeMergeWithoutClone()
+        public void ThemeMergeWithNullParameter()
         {
-            tlog.Debug(tag, $"ThemeMergeWithoutClone START");
-            Theme a1 = new Theme();
-            Theme b1 = new Theme();
+            tlog.Debug(tag, $"ThemeMergeWithNullParameter START");
 
-            Theme t2 = null;
-            a1.Merge(t2);
-
-            string tmp = a1.Id;
-            a1.Id = null;
-
-            a1.Merge(b1);
-
-            a1.Id = tmp;
-            tmp = a1.Version;
-            a1.Version = null;
-            a1.Merge(b1);
-
-            tlog.Debug(tag, $"ThemeMergeWithoutClone END (OK)");
-            Assert.Pass("ThemeMergeWithoutClone");
+            try
+            {
+                Theme newtheme = null;
+                theme.Merge(newtheme);
+            }
+            catch (ArgumentNullException e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                tlog.Debug(tag, $"ThemeMergeWithNullParameter END (OK)");
+                Assert.Pass("Caught ArgumentNullException: Passed!");
+            }
         }
 
         [Test]
-        [Category("P1")]
-        [Description("test Theme ApplyExternalTheme .")]
-        [Property("SPEC", "Tizen.NUI.Theme.ApplyExternalTheme  M")]
+        [Category("P2")]
+        [Description("Theme Merge.")]
+        [Property("SPEC", "Tizen.NUI.Theme.Merge  M")]
         [Property("SPEC_URL", "-")]
         [Property("CRITERIA", "MR")]
         [Property("COVPARAM", "")]
-        public void ThemeApplyExternalTheme()
+        public void ThemeMergeIdAndVersionIsNull()
         {
-            tlog.Debug(tag, $"ThemeApplyExternalTheme START");
-            Theme a1 = new Theme();
-            Theme b1 = new Theme();
+            tlog.Debug(tag, $"ThemeMergeIdAndVersionIsNull START");
+            
+            var testingTarget = new Theme();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<Theme>(testingTarget, "should be an instance of testing target class!");
+            
+            testingTarget.Merge(theme);
+            Assert.AreEqual(testingTarget.Id, theme.Id, "Should be equal!");
+            Assert.AreEqual(testingTarget.Version, theme.Version, "Should be equal!");
 
-            Dictionary<string, string> theme = new Dictionary<string, string>
-            {
-                { "aaa", "111" },
-                { "bbb", "222" }
-            };
-
-            DictionaryExternalTheme c1 = new DictionaryExternalTheme("myid", "myversion", theme);
-
-            Type componentType = typeof(string);
-            Type styleType = typeof(string);
-            ExternalThemeKeyList e1 = new ExternalThemeKeyList(componentType, styleType);
-
-            HashSet<ExternalThemeKeyList> keyListSet = new HashSet<ExternalThemeKeyList>
-            {
-                e1
-            };
-
-            a1.ApplyExternalTheme(c1, keyListSet);
-            a1.ApplyExternalTheme(c1, null);
-
-            tlog.Debug(tag, $"ThemeApplyExternalTheme END (OK)");
-            Assert.Pass("ThemeApplyExternalTheme");
+            testingTarget = null;
+            tlog.Debug(tag, $"ThemeMergeIdAndVersionIsNull END (OK)");
         }
 
         [Test]
@@ -311,28 +453,11 @@ namespace Tizen.NUI.Devel.Tests
         public void ThemeHasSameIdAndVersion()
         {
             tlog.Debug(tag, $"ThemeHasSameIdAndVersion START");
-            Theme a1 = new Theme();
-            a1.HasSameIdAndVersion(null);
+
+            var result = theme.HasSameIdAndVersion("Tizen.NUI.Theme.Wearable", "1.0");
+            tlog.Debug(tag, "HasSameIdAndVersion : " + result);
 
             tlog.Debug(tag, $"ThemeHasSameIdAndVersion END (OK)");
-            Assert.Pass("ThemeHasSameIdAndVersion");
-        }
-        [Test]
-        [Category("P1")]
-        [Description("test Theme OnThemeResourcesChanged .")]
-        [Property("SPEC", "Tizen.NUI.Theme.OnThemeResourcesChanged  M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("COVPARAM", "")]
-        public void ThemeOnThemeResourcesChanged()
-        {
-            tlog.Debug(tag, $"ThemeOnThemeResourcesChanged START");
-            Theme a1 = new Theme();
-
-            a1.OnThemeResourcesChanged();
-
-            tlog.Debug(tag, $"ThemeOnThemeResourcesChanged END (OK)");
-            Assert.Pass("ThemeOnThemeResourcesChanged");
         }
     }
 }

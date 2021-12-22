@@ -383,16 +383,36 @@ namespace Tizen.NUI.BaseComponents
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
 
+        /// <summary>
+        /// Get native player handle.
+        /// <example>
+        /// How to get native player handle
+        /// <code>
+        /// VideoView videoView = new VideoView();
+        /// videoView.ResourceUrl = "some video path";
+        /// var handle = videoView.NativeHandle;
+        /// if(handle.IsInvalid == false)
+        /// {
+        ///     IntPtr nativeHandle = handle.DangerousGetHandle();
+        ///     // do something with nativeHandle
+        /// }
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        public SafeHandle NativeHandle
+        {
+            get
+            {
+                return new NUI.SafeNativePlayerHandle(this);
+            }
+        }
+
         internal VideoViewSignal FinishedSignal()
         {
             VideoViewSignal ret = new VideoViewSignal(Interop.VideoView.FinishedSignal(SwigCPtr), false);
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(VideoView obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         /// <summary>
@@ -486,6 +506,7 @@ namespace Tizen.NUI.BaseComponents
     /// Contains and encapsulates Native Player handle.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Deprecated in API9, will be removed in API11. Please use VideoView.NativeHandle instead!")]
     public class SafeNativePlayerHandle : SafeHandle
     {
         /// <summary>

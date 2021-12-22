@@ -10,7 +10,7 @@ namespace Tizen.NUI.Devel.Tests
 
     [TestFixture]
     [Description("Internal/Transition/TransitionItem")]
-    class TSTransitionItem
+    public class InternalTransitionItemTest
     {
         private const string tag = "NUITEST";
 
@@ -37,88 +37,54 @@ namespace Tizen.NUI.Devel.Tests
         {
             tlog.Debug(tag, $"TransitionItemConstructor START");
 
-            View currentView = new View()
+            using (View source = new View() { Position = new Position(0, 0), Size = new Size(100, 50) })
             {
-                Name = "currentPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            currentView.TransitionOptions.TransitionTag = "Transition";
-            currentView.TransitionOptions.EnableTransition = true;
+                using (View dest = new View() { Position = new Position(120, 50), Size = new Size(100, 50) })
+                {
+                    using (TimePeriod timePeriod = new TimePeriod(300))
+                    {
+                        using (AlphaFunction alphaFunction = new AlphaFunction(AlphaFunction.BuiltinFunctions.Default))
+                        {
+                            var testingTarget = new TransitionItem(source, dest, true, timePeriod, alphaFunction);
+                            Assert.IsNotNull(testingTarget, "Should be not null!");
+                            Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
 
-            View newView = new View()
-            {
-                Name = "newPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            newView.TransitionOptions.TransitionTag = "Transition";
-            newView.TransitionOptions.EnableTransition = true;
-
-            AlphaFunction alphaFunction = new AlphaFunction(AlphaFunction.BuiltinFunctions.Default);
-            TimePeriod timePeriod = new TimePeriod(500);
-
-            var testingTarget = new TransitionItem(currentView, newView, timePeriod, alphaFunction);
-            Assert.IsNotNull(testingTarget, "Should be not null!");
-            Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
-
-            newView.Dispose();
-            currentView.Dispose();
-            timePeriod.Dispose();
-            alphaFunction.Dispose();
-            testingTarget.Dispose();
+                            testingTarget.Dispose();
+                        }
+                    }
+                }
+            }
+                
             tlog.Debug(tag, $"TransitionItemConstructor END (OK)");
         }
 
         [Test]
         [Category("P1")]
-        [Description("TransitionItem ShowSourceAfterFinished.")]
-        [Property("SPEC", "Tizen.NUI.TransitionItem.ShowSourceAfterFinished A")]
+        [Description("TransitionItem constructor.")]
+        [Property("SPEC", "Tizen.NUI.TransitionItem.TransitionItem C")]
         [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "PROW")]
+        [Property("CRITERIA", "CONSTR")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void TransitionItemShowSourceAfterFinished()
+        public void TransitionItemConstructorWithTransitionItem()
         {
-            tlog.Debug(tag, $"TransitionItemShowSourceAfterFinished START");
+            tlog.Debug(tag, $"TransitionItemConstructorWithTransitionItem START");
 
-            View currentView = new View()
+            using (View view = new View())
             {
-                Name = "currentPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            currentView.TransitionOptions.TransitionTag = "Transition";
-            currentView.TransitionOptions.EnableTransition = true;
+                using (TransitionItem item = new TransitionItem(view.SwigCPtr.Handle, false))
+                {
+                    var testingTarget = new TransitionItem(item);
+                    Assert.IsNotNull(testingTarget, "Should be not null!");
+                    Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
 
-            View newView = new View()
-            {
-                Name = "newPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            newView.TransitionOptions.TransitionTag = "Transition";
-            newView.TransitionOptions.EnableTransition = true;
+                    testingTarget.Dispose();
+                    // disposed
+                    testingTarget.Dispose();
+                }
 
-            AlphaFunction alphaFunction = new AlphaFunction(AlphaFunction.BuiltinFunctions.Default);
-            TimePeriod timePeriod = new TimePeriod(500);
-
-            var testingTarget = new TransitionItem(currentView, newView, timePeriod, alphaFunction);
-            Assert.IsNotNull(testingTarget, "Should be not null!");
-            Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
-
-            try
-            {
-                testingTarget.ShowSourceAfterFinished = true;
-            }
-            catch (Exception e)
-            {
-                tlog.Error(tag, "Caught Exception" + e.ToString());
-                LogUtils.Write(LogUtils.DEBUG, LogUtils.TAG, "Caught Exception" + e.ToString());
-                Assert.Fail("Caught Exception" + e.ToString());
             }
 
-            newView.Dispose();
-            currentView.Dispose();
-            timePeriod.Dispose();
-            alphaFunction.Dispose();
-            testingTarget.Dispose();
-            tlog.Debug(tag, $"TransitionItemShowSourceAfterFinished END (OK)");
+            tlog.Debug(tag, $"TransitionItemConstructorWithTransitionItem END (OK)");
         }
 
         [Test]
@@ -132,94 +98,26 @@ namespace Tizen.NUI.Devel.Tests
         {
             tlog.Debug(tag, $"TransitionItemAssign START");
 
-            View currentView = new View()
+            using (View view = new View())
             {
-                Name = "currentPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            currentView.TransitionOptions.TransitionTag = "Transition";
-            currentView.TransitionOptions.EnableTransition = true;
+                var testingTarget = new TransitionItem(view.SwigCPtr.Handle, false);
+                Assert.IsNotNull(testingTarget, "Should be not null!");
+                Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
 
-            View newView = new View()
-            {
-                Name = "newPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            newView.TransitionOptions.TransitionTag = "Transition";
-            newView.TransitionOptions.EnableTransition = true;
+                try
+                {
+                    testingTarget.Assign(testingTarget);
+                }
+                catch (Exception e)
+                {
+                    tlog.Debug(tag, e.Message.ToString());
+                    Assert.Fail("Caught Exception: Failed!");
+                }
 
-            AlphaFunction alphaFunction = new AlphaFunction(AlphaFunction.BuiltinFunctions.Default);
-            TimePeriod timePeriod = new TimePeriod(500);
-
-            var testingTarget = new TransitionItem(currentView, newView, timePeriod, alphaFunction);
-            Assert.IsNotNull(testingTarget, "Should be not null!");
-            Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
-
-            using (TransitionItem rhs = new TransitionItem(testingTarget))
-            {
-                var result = testingTarget.Assign(rhs);
-                Assert.IsNotNull(result, "Should be not null!");
-                Assert.IsInstanceOf<TransitionItem>(result, "Should be an Instance of TransitionItem!");
-            }
-
-            currentView?.Dispose();
-            newView?.Dispose();
-            timePeriod?.Dispose();
-            alphaFunction?.Dispose();
-            testingTarget?.Dispose();
-            tlog.Debug(tag, $"TransitionItemAssign END (OK)");
-        }
-
-        [Test]
-        [Category("P1")]
-        [Description("TransitionItem Dispose.")]
-        [Property("SPEC", "Tizen.NUI.TransitionItem.Dispose M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void TransitionItemDispose()
-        {
-            tlog.Debug(tag, $"TransitionItemDispose START");
-
-            View currentView = new View()
-            {
-                Name = "currentPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            currentView.TransitionOptions.TransitionTag = "Transition";
-            currentView.TransitionOptions.EnableTransition = true;
-
-            View newView = new View()
-            {
-                Name = "newPage",
-                TransitionOptions = new TransitionOptions(Window.Instance)
-            };
-            newView.TransitionOptions.TransitionTag = "Transition";
-            newView.TransitionOptions.EnableTransition = true;
-
-            AlphaFunction alphaFunction = new AlphaFunction(AlphaFunction.BuiltinFunctions.Default);
-            TimePeriod timePeriod = new TimePeriod(500);
-
-            var testingTarget = new TransitionItem(currentView, newView, timePeriod, alphaFunction);
-            Assert.IsNotNull(testingTarget, "Should be not null!");
-            Assert.IsInstanceOf<TransitionItem>(testingTarget, "Should be an Instance of TransitionItem!");
-
-            try
-            {
                 testingTarget.Dispose();
             }
-            catch (Exception e)
-            {
-                tlog.Error(tag, "Caught Exception" + e.ToString());
-                LogUtils.Write(LogUtils.DEBUG, LogUtils.TAG, "Caught Exception" + e.ToString());
-                Assert.Fail("Caught Exception" + e.ToString());
-            }
 
-            currentView?.Dispose();
-            newView?.Dispose();
-            timePeriod?.Dispose();
-            alphaFunction?.Dispose();
-            tlog.Debug(tag, $"TransitionItemDispose END (OK)");
+            tlog.Debug(tag, $"TransitionItemAssign END (OK)");
         }
     }
 }

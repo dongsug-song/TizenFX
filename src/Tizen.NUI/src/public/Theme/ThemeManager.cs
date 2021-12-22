@@ -94,7 +94,7 @@ namespace Tizen.NUI
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static string PlatformThemeId
         {
-            get => platformTheme?.Id;
+            get => platformTheme?.Id ?? (platformThemeEnabled ? baseTheme.Id : null);
         }
 
         /// <summary>
@@ -160,6 +160,10 @@ namespace Tizen.NUI
             {
                 newTheme.Id = "NONAME";
             }
+
+            StyleManager.Instance.SetBrokenImageUrl(StyleManager.BrokenImageType.Small, newTheme.SmallBrokenImageUrl ?? "");
+            StyleManager.Instance.SetBrokenImageUrl(StyleManager.BrokenImageType.Normal, newTheme.BrokenImageUrl ?? "");
+            StyleManager.Instance.SetBrokenImageUrl(StyleManager.BrokenImageType.Large, newTheme.LargeBrokenImageUrl ?? "");
 
             userTheme = newTheme;
             UpdateThemeForInitialize();
@@ -519,7 +523,7 @@ namespace Tizen.NUI
         {
             Debug.Assert(baseTheme != null);
 
-            var platformThemeId = platformTheme?.Id;
+            var platformThemeId = PlatformThemeId;
             var userThemeId = userTheme?.Id;
             ThemeChangedInternal.Invoke(null, new ThemeChangedEventArgs(userThemeId, platformThemeId, platformThemeUpdated));
             ThemeChanged?.Invoke(null, new ThemeChangedEventArgs(userThemeId, platformThemeId, platformThemeUpdated));

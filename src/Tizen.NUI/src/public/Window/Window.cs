@@ -59,6 +59,25 @@ namespace Tizen.NUI
         }
 
         /// <summary>
+        /// A helper method to get the current window where the view is added
+        /// </summary>
+        /// <param name="view">The View added to the window</param>
+        /// <returns>A Window.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        static public Window Get(View view)
+        {
+            if (view == null)
+            {
+                NUILog.Error("if there is no view, it can not get a window");
+                return null;
+            }
+
+            Window ret = Registry.GetManagedBaseHandleFromNativePtr(Interop.Window.Get(View.getCPtr(view))) as Window;
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return ret;
+        }
+
+        /// <summary>
         /// Creates a new Window.<br />
         /// This creates an extra window in addition to the default main window<br />
         /// </summary>
@@ -280,6 +299,54 @@ namespace Tizen.NUI
             NotSupported,
         }
 
+        /// <summary>
+        /// Enumeration for window resized mode by display server.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public enum ResizeDirection
+        {
+            /// <summary>
+            /// Start resizing window to the top-left edge.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            TopLeft = 1,
+            /// <summary>
+            /// Start resizing window to the top side.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            Top = 2,
+            /// <summary>
+            /// Start resizing window to the top-right edge.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            TopRight = 3,
+            /// <summary>
+            /// Start resizing window to the left side.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            Left = 4,
+            /// <summary>
+            /// Start resizing window to the right side.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            Right = 5,
+            /// <summary>
+            /// Start resizing window to the bottom-left edge.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            BottomLeft = 6,
+            /// <summary>
+            /// Start resizing window to the bottom side.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            Bottom = 7,
+            /// <summary>
+            /// Start resizing window to the bottom-right edge.
+            /// </summary>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            BottomRight = 8,
+        }
+
 
         /// <summary>
         /// The stage instance property (read-only).<br />
@@ -290,6 +357,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Gets or sets a window type.
+        /// Most of window type can be set to use WindowType, except for IME type.
+        /// IME type can be set to use one of NUIApplication's constrcutors.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public WindowType Type
@@ -659,7 +728,7 @@ namespace Tizen.NUI
         /// <since_tizen> 3 </since_tizen>
         public void SetInputRegion(Rectangle inputRegion)
         {
-            Interop.Window.SetInputRegion(SwigCPtr, Rectangle.getCPtr(inputRegion));
+            Interop.Window.IncludeInputRegion(SwigCPtr, Rectangle.getCPtr(inputRegion));
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
 
@@ -1056,6 +1125,26 @@ namespace Tizen.NUI
         }
 
         /// <summary>
+        /// Sets parent window of the window.
+        /// After setting that, these windows do together when raise-up, lower and iconified/deiconified.
+        /// This function has the additional flag whether the child is located above or below of the parent.
+        /// </summary>
+        /// <param name="parent">The parent window.</param>
+        /// <param name="belowParent">The flag is whether the child is located above or below of the parent.</param>
+        /// <feature> http://tizen.org/feature/opengles.surfaceless_context </feature>
+        /// <exception cref="NotSupportedException">The required feature is not supported.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SetParent(Window parent, bool belowParent)
+        {
+            if (IsSupportedMultiWindow() == false)
+            {
+                NUILog.Error("This device does not support surfaceless_context. So Window cannot be created. ");
+            }
+            Interop.Window.SetParentWithStack(SwigCPtr, Window.getCPtr(parent), belowParent);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
         /// Unsets parent window of the window.
         /// After unsetting, the window is disconnected his parent window.
         /// </summary>
@@ -1100,11 +1189,6 @@ namespace Tizen.NUI
             {
                 view.ObjectDump();
             }
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(Window obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         internal static bool IsInstalled()
@@ -1382,6 +1466,79 @@ namespace Tizen.NUI
         }
 
         /// <summary>
+        /// Enables the floating mode of window.
+        /// The floating mode is to support window is moved or resized by display server.
+        /// For example, if the video-player window sets the floating mode,
+        /// then display server changes its geometry and handles it like a popup.
+        /// The way of handling floating mode window is decided by display server.
+        /// A special display server(as a Tizen display server) supports this mode.
+        /// </summary>
+        /// <param name="enable">Enable floating mode or not.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void EnableFloatingMode(bool enable)
+        {
+            Interop.Window.EnableFloatingMode(SwigCPtr, enable);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
+        /// Requests to display server for the window is moved by display server.
+        /// It can be work with setting window floating mode.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void RequestMoveToServer()
+        {
+            Interop.Window.RequestMoveToServer(SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
+        ///  Requests to display server for the window is resized by display server.
+        /// It can be work with setting window floating mode.
+        /// </summary>
+        /// <param name="direction">It is indicated the window's side or edge for starting point.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void RequestResizeToServer(ResizeDirection direction)
+        {
+            Interop.Window.RequestResizeToServer(SwigCPtr, (int)direction);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
+        /// Includes input region.
+        /// This function inlcudes input regions.
+        /// It can be used multiple times and supports multiple regions.
+        /// It means input region will be extended.
+        /// This input is related to mouse and touch event.
+        /// If device has touch screen, this function is useful.
+        /// Otherwise device does not have that, we can use it after connecting mouse to the device.
+        /// </summary>
+        /// <param name="inputRegion">The included region to accept input events.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void IncludeInputRegion(Rectangle inputRegion)
+        {
+            Interop.Window.IncludeInputRegion(SwigCPtr, Rectangle.getCPtr(inputRegion));
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
+        /// This function excludes input regions.
+        /// It can be used multiple times and supports multiple regions.
+        /// It means input region will be reduced.
+        /// Nofice, should be set input area by IncludeInputRegion() before this function is used.
+        /// This input is related to mouse and touch event.
+        /// If device has touch screen, this function is useful.
+        /// Otherwise device does not have that, we can use it after connecting mouse to the device.
+        /// </summary>
+        /// <param name="inputRegion">The excluded region to except input events.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void ExcludeInputRegion(Rectangle inputRegion)
+        {
+            Interop.Window.ExcludeInputRegion(SwigCPtr, Rectangle.getCPtr(inputRegion));
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
         /// Add FrameUpdateCallback
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1570,5 +1727,28 @@ namespace Tizen.NUI
             return ret;
         }
 
+        /// <summary>
+        /// Get Native Window handle.
+        /// <example>
+        /// How to get Native Window handle
+        /// <code>
+        /// Window window = NUIApplication.GetDefaultWindow();
+        /// var handle = window.NativeHandle;
+        /// if(handle.IsInvalid == false)
+        /// {
+        ///     IntPtr nativeHandle = handle.DangerousGetHandle();
+        ///     // do something with nativeHandle
+        /// }
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        public SafeHandle NativeHandle
+        {
+            get
+            {
+                return new NUI.SafeNativeWindowHandle(this);
+            }
+        }
     }
 }

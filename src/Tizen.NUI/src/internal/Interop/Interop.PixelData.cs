@@ -25,7 +25,7 @@ namespace Tizen.NUI
             public static extern global::System.IntPtr Upcast(global::System.IntPtr jarg1);
 
             [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_PixelData_New")]
-            public static extern global::System.IntPtr New([global::System.Runtime.InteropServices.In, global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.LPArray)] byte[] jarg1, uint jarg2, uint jarg3, uint jarg4, int jarg5, int jarg6);
+            public static extern global::System.IntPtr New([global::System.Runtime.InteropServices.In, global::System.Runtime.InteropServices.MarshalAs(global::System.Runtime.InteropServices.UnmanagedType.LPArray)] byte[] jarg1, uint jarg2, uint jarg3, uint jarg4, int jarg5);
 
             [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_new_PixelData__SWIG_0")]
             public static extern global::System.IntPtr NewPixelData();
@@ -49,7 +49,7 @@ namespace Tizen.NUI
             public static extern int GetPixelFormat(global::System.Runtime.InteropServices.HandleRef jarg1);
 
             [global::System.Runtime.InteropServices.DllImport(NDalicPINVOKE.Lib, EntryPoint = "CSharp_Dali_PixelData_GenerateUrl")]
-            public static extern string GenerateUrl(global::System.IntPtr handle);
+            public static extern global::System.IntPtr GenerateUrl(global::System.IntPtr handle);
         }
     }
 }

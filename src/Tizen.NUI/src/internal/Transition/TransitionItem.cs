@@ -15,13 +15,12 @@
  *
  */
 
+using System;
+using System.ComponentModel;
+using Tizen.NUI.BaseComponents;
+
 namespace Tizen.NUI
 {
-    using System;
-    using System.ComponentModel;
-
-    using Tizen.NUI.BaseComponents;
-
     /// <summary>
     /// TransitionItem is an object to set Transition of View pair those have same TransitionTag.
     /// TransitionItem object is required for each View pair and this is added to the TransitionSet to play.
@@ -32,7 +31,7 @@ namespace Tizen.NUI
         /// Creates an initialized transition.<br />
         /// </summary>
         /// <remarks>DurationmSeconds must be greater than zero.</remarks>
-        public TransitionItem(View source, View destination, TimePeriod timePeriod, AlphaFunction alphaFunction) : this(Interop.TransitionItem.New(source.SwigCPtr, destination.SwigCPtr, timePeriod.SwigCPtr), true)
+        public TransitionItem(View source, View destination, bool useDestinationTarget, TimePeriod timePeriod, AlphaFunction alphaFunction) : this(Interop.TransitionItem.New(source.SwigCPtr, destination.SwigCPtr, useDestinationTarget, timePeriod.SwigCPtr), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             AlphaFunction = alphaFunction;
@@ -40,11 +39,6 @@ namespace Tizen.NUI
 
         internal TransitionItem(global::System.IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn)
         {
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(TransitionItem obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         internal TransitionItem(TransitionItem handle) : this(Interop.TransitionItem.NewTransitionItem(TransitionItem.getCPtr(handle)), true)

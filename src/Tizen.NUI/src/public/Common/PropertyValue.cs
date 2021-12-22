@@ -15,6 +15,7 @@
  *
  */
 
+using System;
 using System.ComponentModel;
 
 namespace Tizen.NUI
@@ -242,6 +243,43 @@ namespace Tizen.NUI
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
+
+
+        /// <summary>
+        /// Hidden API (Inhouse API).
+        /// Dispose. 
+        /// </summary>
+        /// <remarks>
+        /// Following the guide of https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose.
+        /// This will replace "protected virtual void Dispose(DisposeTypes type)" which is exactly same in functionality.
+        /// </remarks>
+        /// <param name="disposing">true in order to free managed objects</param>
+        // Protected implementation of Dispose pattern.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            //perform dipose here without being added to DisposeQueue.
+            if (SwigCMemOwn && SwigCPtr.Handle != IntPtr.Zero)
+            {
+                if (disposing)
+                {
+                    base.Dispose(DisposeTypes.Explicit);
+                }
+                else
+                {
+                    base.Dispose(DisposeTypes.Implicit);
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+
 
         /// <summary>
         /// An extension to the property value class that allows us to create a
@@ -619,11 +657,6 @@ namespace Tizen.NUI
             bool ret = Interop.PropertyValue.GetExtents(SwigCPtr, Extents.getCPtr(extentsValue));
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(PropertyValue obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         internal bool Get(Matrix3 matrixValue)

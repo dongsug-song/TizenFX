@@ -52,14 +52,7 @@ namespace Tizen.NUI
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected IEnumerable<LayoutItem> IterateLayoutChildren()
         {
-            for (int i = 0; i < LayoutChildren.Count; i++)
-            {
-                LayoutItem childLayout = LayoutChildren[i];
-                if (!childLayout?.Owner?.ExcludeLayouting ?? false)
-                {
-                    yield return childLayout;
-                }
-            }
+            return LayoutChildren.Where<LayoutItem>(childLayout => childLayout.SetPositionByLayout);
         }
 
         /// <summary>
@@ -145,59 +138,44 @@ namespace Tizen.NUI
             RequestLayout();
         }
 
-
         /// <summary>
-        /// Sets the sibling order of the layout item so the layout can be defined within the same parent.
+        /// Sets the order of the child layout in the layout group.
         /// </summary>
-        /// <param name="order">the sibling order of the layout item</param>
-        /// <since_tizen> 6 </since_tizen>
-        /// This will be public opened in tizen_next after ACR done. Before ACR, need to be hidden as inhouse API.
+        /// <param name="child">the child layout in the layout group</param>
+        /// <param name="order">the order of the child layout in the layout group</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void ChangeLayoutSiblingOrder(int order)
+        public void ChangeLayoutChildOrder(LayoutItem child, int order)
         {
-            if (Owner != null)
+            if ((child != null) && (LayoutChildren.Count > order))
             {
-                var ownerParent = Owner.GetParent() as View;
-                if (ownerParent != null)
-                {
-                    var parent = ownerParent.Layout as LayoutGroup;
-
-                    if (parent != null && parent.LayoutChildren.Count > order)
-                    {
-                        parent.LayoutChildren.Remove(this);
-                        parent.LayoutChildren.Insert(order, this);
-                    }
-                }
+                LayoutChildren.Remove(child);
+                LayoutChildren.Insert(order, child);
+                RequestLayout();
             }
-            RequestLayout();
         }
 
         // Attaches to View ChildAdded signal so called when a View is added to a view.
         private void AddChildToLayoutGroup(View child)
         {
+            if (View.LayoutingDisabled)
+            {
+                return;
+            }
             // Only give children a layout if their parent is an explicit container or a pure View.
             // Pure View meaning not derived from a View, e.g a Legacy container.
             // layoutSet flag is true when the View became a layout using the set Layout API opposed to automatically due to it's parent.
             // First time the set Layout API is used by any View the Window no longer has layoutingDisabled.
 
             // If child already has a Layout then don't change it.
-            if (!View.LayoutingDisabled && (null == child.Layout))
+            if (null == child.Layout)
             {
-                // Only wrap View with a Layout if a child a pure View or Layout explicitly set on this Layout
-                if ((true == Owner.LayoutSet || GetType() == typeof(View)))
-                {
-                    // If child of this layout is a pure View then assign it a LayoutGroup
-                    // If the child is derived from a View then it may be a legacy or existing container hence will do layouting itself.
-                    child.Layout = (child as TextLabel)?.CreateTextLayout() ?? new AbsoluteLayout();
-                }
+                // If child view does not have Layout, then default layout is automatically set to the child view.
+                // The Layout is automatically added to this LayoutGroup when child view sets Layout.
+                child.Layout = child.CreateDefaultLayout();
             }
             else
             {
-                // Add child layout to this LayoutGroup (Setting parent in the process)
-                if (child.Layout != null)
-                {
-                    Add(child.Layout);
-                }
+                Add(child.Layout);
             }
             // Parent transitions are not attached to children.
         }
@@ -421,9 +399,12 @@ namespace Tizen.NUI
 
         internal override void OnMeasureIndependentChildren(MeasureSpecification widthMeasureSpec, MeasureSpecification heightMeasureSpec)
         {
-            foreach (LayoutItem childLayout in LayoutChildren.Where(item => item?.Owner?.ExcludeLayouting ?? false))
+            foreach (var childLayout in LayoutChildren)
             {
-                MeasureChildWithoutPadding(childLayout, widthMeasureSpec, heightMeasureSpec);
+                if (!childLayout.SetPositionByLayout)
+                {
+                    MeasureChildWithoutPadding(childLayout, widthMeasureSpec, heightMeasureSpec);
+                }
             }
         }
 
@@ -449,7 +430,7 @@ namespace Tizen.NUI
 
                     View owner = Owner;
 
-                    if (owner)
+                    if (owner != null)
                     {
                         // Margin and Padding only supported when child anchor point is TOP_LEFT.
                         if (owner.PivotPoint == PivotPoint.TopLeft || (owner.PositionUsesPivotPoint == false))
@@ -469,15 +450,18 @@ namespace Tizen.NUI
         /// </summary>
         internal override void OnLayoutIndependentChildren(bool changed, LayoutLength left, LayoutLength top, LayoutLength right, LayoutLength bottom)
         {
-            foreach (LayoutItem childLayout in LayoutChildren.Where(item => item?.Owner?.ExcludeLayouting ?? false))
+            foreach (var childLayout in LayoutChildren)
             {
-                LayoutLength childWidth = childLayout.MeasuredWidth.Size;
-                LayoutLength childHeight = childLayout.MeasuredHeight.Size;
+                if (!childLayout.SetPositionByLayout)
+                {
+                    LayoutLength childWidth = childLayout.MeasuredWidth.Size;
+                    LayoutLength childHeight = childLayout.MeasuredHeight.Size;
 
-                LayoutLength childPositionX = new LayoutLength(childLayout.Owner.PositionX);
-                LayoutLength childPositionY = new LayoutLength(childLayout.Owner.PositionY);
+                    LayoutLength childPositionX = new LayoutLength(childLayout.Owner.PositionX);
+                    LayoutLength childPositionY = new LayoutLength(childLayout.Owner.PositionY);
 
-                childLayout.Layout(childPositionX, childPositionY, childPositionX + childWidth, childPositionY + childHeight, true);
+                    childLayout.Layout(childPositionX, childPositionY, childPositionX + childWidth, childPositionY + childHeight, true);
+                }
             }
         }
 
@@ -490,10 +474,6 @@ namespace Tizen.NUI
             // Layout takes ownership of it's owner's children.
             foreach (View view in Owner.Children)
             {
-                if (view is TextLabel)
-                {
-                    view.Layout = (view as TextLabel)?.CreateTextLayout();
-                }
                 AddChildToLayoutGroup(view);
             }
 

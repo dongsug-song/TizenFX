@@ -41,6 +41,7 @@ namespace Tizen.NUI
         /// <summary>
         /// Enum that provides the tags of items for the context menu.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public enum ItemTag
         {
             NoAction = 0,
@@ -140,6 +141,7 @@ namespace Tizen.NUI
         /// <summary>
         /// Enum that defines the types of the items for the context menu.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public enum ItemType
         {
             Action,
@@ -185,7 +187,7 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Gets the link url of context menu item.
+        /// Gets the link URL of context menu item.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string LinkUrl
@@ -197,7 +199,7 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Gets the image url of context menu item.
+        /// Gets the image URL of context menu item.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string ImageUrl
@@ -231,11 +233,6 @@ namespace Tizen.NUI
                 IntPtr result = Interop.WebContextMenuItem.GetParentMenu(SwigCPtr);
                 return new WebContextMenu(result, true);
             }
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(WebContextMenuItem obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
     }
 }

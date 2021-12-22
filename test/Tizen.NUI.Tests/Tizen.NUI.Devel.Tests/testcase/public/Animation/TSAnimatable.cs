@@ -63,7 +63,7 @@ namespace Tizen.NUI.Devel.Tests
             testingTarget.RegisterProperty("dummy", new PropertyValue(6));
             var index = testingTarget.GetPropertyIndex("dummy");
             var result = testingTarget.GetPropertyName(index);
-            Assert.AreEqual("dummy", result, "should be eaqual.");
+            Assert.AreEqual("dummy", result, "should be equal.");
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"AnimatableGetPropertyName END (OK)");
@@ -160,7 +160,7 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsTrue(10001001 == index);
 
             var result = view.GetPropertyType(index);
-            Assert.AreEqual(PropertyType.Map, result, "should be eaqual.");
+            Assert.AreEqual(PropertyType.Map, result, "should be equal.");
 
             view.Dispose();
             tlog.Debug(tag, $"AnimatableGetGetPropertyType END (OK)");
@@ -185,7 +185,7 @@ namespace Tizen.NUI.Devel.Tests
             var index = testingTarget.GetPropertyIndex("dummy");
             testingTarget.SetProperty(index, new PropertyValue(8));
             testingTarget.GetProperty(index).Get(out int result);
-            Assert.AreEqual(8, result, "should be eaqual.");
+            Assert.AreEqual(8, result, "should be equal.");
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"AnimatableSetProperty END (OK)");
@@ -209,7 +209,7 @@ namespace Tizen.NUI.Devel.Tests
             testingTarget.RegisterProperty("dummy", new PropertyValue(6));
             var index = testingTarget.GetPropertyIndex("dummy");
             testingTarget.GetProperty(index).Get(out int result);
-            Assert.AreEqual(6, result, "should be eaqual.");
+            Assert.AreEqual(6, result, "should be equal.");
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"AnimatableRegisterProperty END (OK)");
@@ -233,7 +233,7 @@ namespace Tizen.NUI.Devel.Tests
             testingTarget.RegisterProperty("dummy", new PropertyValue(6), PropertyAccessMode.Animatable);
             var index = testingTarget.GetPropertyIndex("dummy");
             testingTarget.GetProperty(index).Get(out int result);
-            Assert.AreEqual(6, result, "should be eaqual.");
+            Assert.AreEqual(6, result, "should be equal.");
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"AnimatableRegisterPropertyWithAccessMode END (OK)");
@@ -257,7 +257,7 @@ namespace Tizen.NUI.Devel.Tests
             testingTarget.RegisterProperty("dummy", new PropertyValue(6), PropertyAccessMode.Animatable);
             var index = testingTarget.GetPropertyIndex("dummy");
             testingTarget.GetProperty(index).Get(out int result);
-            Assert.AreEqual(6, result, "should be eaqual.");
+            Assert.AreEqual(6, result, "should be equal.");
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"AnimatableGetProperty END (OK)");
@@ -362,6 +362,56 @@ namespace Tizen.NUI.Devel.Tests
             dummy.Dispose();
             testingTarget.Dispose();
             tlog.Debug(tag, $"AnimatableRemovePropertyNotifications END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("Animatable GetPropertyCount")]
+        [Property("SPEC", "Tizen.NUI.Animatable.GetPropertyCount M")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "MR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void AnimatableGetPropertyCount()
+        {
+            tlog.Debug(tag, $"AnimatableGetPropertyCount START");
+
+            var testingTarget = new Animatable();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<Animatable>(testingTarget, "should be an instance of Animatable class!");
+
+            tlog.Debug(tag, "PropertyCount : " + testingTarget.GetPropertyCount());
+
+            testingTarget.Dispose();
+            tlog.Debug(tag, $"AnimatableGetPropertyCount END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("Animatable RemoveConstraints")]
+        [Property("SPEC", "Tizen.NUI.Animatable.RemoveConstraints M")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "MR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void AnimatableRemoveConstraints()
+        {
+            tlog.Debug(tag, $"AnimatableRemoveConstraints START");
+
+            var testingTarget = new Animatable();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<Animatable>(testingTarget, "should be an instance of Animatable class!");
+
+            try
+            {
+                testingTarget.RemoveConstraints();
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception : Failed!");
+            }
+
+            testingTarget.Dispose();
+            tlog.Debug(tag, $"AnimatableRemoveConstraints END (OK)");
         }
     }
 }

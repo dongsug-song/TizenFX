@@ -29,32 +29,6 @@ namespace Tizen.NUI.Devel.Tests
 
         [Test]
         [Category("P1")]
-        [Description("TextEditor constructor.")]
-        [Property("SPEC", "Tizen.NUI.TextEditor.TextEditor C")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "CONSTR")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        [Obsolete]
-        public void TextEditorConstructor()
-        {
-            tlog.Debug(tag, $"TextEditorConstructor START");
-
-            TextEditorStyle style = new TextEditorStyle()
-            {
-                FontFamily = "BreezeSans",
-                FontStyle = new PropertyMap().Add("weight", new PropertyValue("regular")),
-            };
-
-            var testingTarget = new TextEditor(style);
-            Assert.IsNotNull(testingTarget, "Can't create success object TextEditor");
-            Assert.IsInstanceOf<TextEditor>(testingTarget, "Should be an instance of TextEditor type.");
-
-            testingTarget.Dispose();
-            tlog.Debug(tag, $"TextEditorConstructor END (OK)");
-        }
-
-        [Test]
-        [Category("P1")]
         [Description("TextEditor constructor. With status of Shown.")]
         [Property("SPEC", "Tizen.NUI.TextEditor.TextEditor C")]
         [Property("SPEC_URL", "-")]
@@ -89,8 +63,13 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Can't create success object TextEditor");
             Assert.IsInstanceOf<TextEditor>(testingTarget, "Should be an instance of TextEditor type.");
 
-            testingTarget.TranslatableText = "textEditorTextSid";
-            Assert.AreEqual("textEditorTextSid", testingTarget.TranslatableText, "Should be equal!");
+            tlog.Debug(tag, "TranslatableText : " + testingTarget.TranslatableText);
+
+            if (Tizen.NUI.NUIApplication.MultilingualResourceManager != null)
+            {
+                testingTarget.TranslatableText = "textEditorTextSid";
+                Assert.AreEqual("textEditorTextSid", testingTarget.TranslatableText, "Should be equal!");
+            }
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"TextEditorTranslatableText END (OK)");
@@ -112,8 +91,13 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Can't create success object TextEditor");
             Assert.IsInstanceOf<TextEditor>(testingTarget, "Should be an instance of TextEditor type.");
 
-            testingTarget.TranslatablePlaceholderText = "textEditorTextSid";
-            Assert.AreEqual("textEditorTextSid", testingTarget.TranslatablePlaceholderText, "Should be equal!");
+            tlog.Debug(tag, "TranslatablePlaceholderText : " + testingTarget.TranslatablePlaceholderText);
+
+            if (Tizen.NUI.NUIApplication.MultilingualResourceManager != null)
+            {
+                testingTarget.TranslatablePlaceholderText = "textEditorTextSid";
+                Assert.AreEqual("textEditorTextSid", testingTarget.TranslatablePlaceholderText, "Should be equal!");
+            }
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"TextEditorTranslatablePlaceholderText END (OK)");

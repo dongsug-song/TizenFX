@@ -22,15 +22,16 @@ using System.Text;
 using Tizen.NUI.BaseComponents;
 using Tizen.NUI.Binding;
 using Tizen.NUI.Binding.Internals;
+using Tizen.NUI.Xaml;
 
 namespace Tizen.NUI.EXaml
 {
     internal class AddToCollectionProperty : Operation
     {
-        public AddToCollectionProperty(GlobalDataList globalDataList, int instanceIndex, object value)
+        public AddToCollectionProperty(GlobalDataList globalDataList, List<object> operationInfo)
         {
-            this.instanceIndex = instanceIndex;
-            this.value = value;
+            instanceIndex = (int)operationInfo[0];
+            value = operationInfo[1];
             this.globalDataList = globalDataList;
         }
 
@@ -45,12 +46,15 @@ namespace Tizen.NUI.EXaml
                 if (value is Instance)
                 {
                     int valueIndex = (value as Instance).Index;
-                    collection.Add(globalDataList.GatheredInstances[valueIndex]);
+                    value = globalDataList.GatheredInstances[valueIndex];
                 }
-                else
+
+                if (value is IMarkupExtension markupExtension)
                 {
-                    collection.Add(value);
+                    value = markupExtension.ProvideValue(null);
                 }
+
+                collection.Add(value);
             }
         }
 

@@ -22,6 +22,22 @@ namespace Tizen.NUI.Devel.Tests
             return false;
         }
 
+        internal class MyNUIApplication : NUIApplication
+        {
+            public MyNUIApplication() : base()
+            { }
+
+            public void MyOnTerminate()
+            {
+                base.OnTerminate();
+            }
+
+            public void MyOnLocaleChanged(LocaleChangedEventArgs e)
+            {
+                base.OnLocaleChanged(e);
+            }
+        }
+
         [SetUp]
         public void Init()
         {
@@ -49,7 +65,8 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
 
-            testingTarget.Dispose();
+            tlog.Debug(tag, "Window : " + testingTarget.Window);
+
             tlog.Debug(tag, $"NUIApplicationConstructor END (OK)");
         }
 
@@ -70,9 +87,10 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
 
+            tlog.Debug(tag, "ApplicationHandle : " + testingTarget.ApplicationHandle);
+
             pos.Dispose();
             size.Dispose();
-            testingTarget.Dispose();
             tlog.Debug(tag, $"NUIApplicationConstructorWithWindowSizeAndPosition END (OK)");
         }
 
@@ -91,7 +109,6 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
 
-            testingTarget.Dispose();
             tlog.Debug(tag, $"NUIApplicationConstructorWithStyleSheet END (OK)");
         }
 
@@ -110,7 +127,6 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
 
-            testingTarget.Dispose();
             tlog.Debug(tag, $"NUIApplicationConstructorWithStyleSheetAndWindowSizeAndPostion END (OK)");
         }
 
@@ -127,9 +143,8 @@ namespace Tizen.NUI.Devel.Tests
 
             var testingTarget = new NUIApplication("stylesheet", NUIApplication.WindowMode.Opaque);
             Assert.IsNotNull(testingTarget, "Should be not null.");
-            Assert.IsNotNull(testingTarget, "NUIApplication Should return NUIApplication instance.");
+            Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
 
-            testingTarget.Dispose();
             tlog.Debug(tag, $"NUIApplicationConstructorWithStringAndWindowMode END (OK)");
         }
 
@@ -146,10 +161,85 @@ namespace Tizen.NUI.Devel.Tests
 
             var testingTarget = new NUIApplication("stylesheet", NUIApplication.WindowMode.Opaque, new Size(100, 200), new Position(200, 300));
             Assert.IsNotNull(testingTarget, "Should be not null.");
-            Assert.IsNotNull(testingTarget, "NUIApplication Should return NUIApplication instance.");
+            Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
 
-            testingTarget.Dispose();
             tlog.Debug(tag, $"NUIApplicationConstructorWithStringAndWindowModeAndWindowSizeAndPosition END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("NUIApplication constructor. With BackendType.")]
+        [Property("SPEC", "Tizen.NUI.NUIApplication.NUIApplication C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void NUIApplicationConstructorWithBackendType()
+        {
+            tlog.Debug(tag, $"NUIApplicationConstructorWithBackendType START");
+
+            var testingTarget = new NUIApplication(Graphics.BackendType.Vulkan);
+            Assert.IsNotNull(testingTarget, "Should be not null.");
+            Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
+
+            tlog.Debug(tag, $"NUIApplicationConstructorWithBackendType END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("NUIApplication constructor. With ThemeOptions.")]
+        [Property("SPEC", "Tizen.NUI.NUIApplication.NUIApplication C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void NUIApplicationConstructorWithThemeOptions()
+        {
+            tlog.Debug(tag, $"NUIApplicationConstructorWithThemeOptions START");
+
+            var testingTarget = new NUIApplication(NUIApplication.ThemeOptions.PlatformThemeEnabled);
+            Assert.IsNotNull(testingTarget, "Should be not null.");
+            Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
+
+            tlog.Debug(tag, $"NUIApplicationConstructorWithThemeOptions END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("NUIApplication constructor. With windowSize, windowPosition and options.")]
+        [Property("SPEC", "Tizen.NUI.NUIApplication.NUIApplication C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void NUIApplicationConstructorWithSizePositionAndThemeOptions()
+        {
+            tlog.Debug(tag, $"NUIApplicationConstructorWithSizePositionAndThemeOptions START");
+
+            Size2D windowSize = new Size2D(100, 50);
+            Position2D windowPosition = new Position2D(20, 30);
+            var testingTarget = new NUIApplication(windowSize, windowPosition, NUIApplication.ThemeOptions.PlatformThemeEnabled);
+            Assert.IsNotNull(testingTarget, "Should be not null.");
+            Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
+
+            windowSize.Dispose();
+            windowPosition.Dispose();
+            tlog.Debug(tag, $"NUIApplicationConstructorWithSizePositionAndThemeOptions END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("NUIApplication constructor. Support IME window.")]
+        [Property("SPEC", "Tizen.NUI.NUIApplication.NUIApplication C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void NUIApplicationConstructorForImeWindow()
+        {
+            tlog.Debug(tag, $"NUIApplicationConstructorForImeWindow START");
+
+            var testingTarget = new NUIApplication("", NUIApplication.WindowMode.Opaque, WindowType.Dialog);
+            Assert.IsNotNull(testingTarget, "Should be not null.");
+            Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of NUIApplication type.");
+
+            tlog.Debug(tag, $"NUIApplicationConstructorForImeWindow END (OK)");
         }
 
         [Test]
@@ -234,7 +324,6 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<Window>(testingTarget, "Should be an instance of Window type.");
 
-            testingTarget.Dispose();
             tlog.Debug(tag, $"NUIApplicationGetDefaultWindow END (OK)");
         }
 
@@ -283,66 +372,58 @@ namespace Tizen.NUI.Devel.Tests
 
         [Test]
         [Category("P1")]
-        [Description("NUIApplication SendLaunchRequest")]
-        [Property("SPEC", "Tizen.NUI.NUIApplication.SendLaunchRequest M")]
+        [Description("NUIApplication OnTerminate")]
+        [Property("SPEC", "Tizen.NUI.NUIApplication.OnTerminate M")]
         [Property("SPEC_URL", "-")]
         [Property("CRITERIA", "MR")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void NUIApplicationSendLaunchRequest()
+        public void NUIApplicationOnTerminate()
         {
-            tlog.Debug(tag, $"NUIApplicationSendLaunchRequest START");
+            tlog.Debug(tag, $"NUIApplicationOnTerminate START");
 
-            var testingTarget = new NUIApplication();
+            var testingTarget = new MyNUIApplication();
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of Window type.");
 
-            TransitionOptions transitionOption = new TransitionOptions(Window.Instance);
-            testingTarget.TransitionOptions = transitionOption;
-            transitionOption.EnableTransition = true;
-
-            var appControl = new Applications.AppControl(true);
             try
             {
-                testingTarget.SendLaunchRequest(appControl);
+                testingTarget.MyOnTerminate();
             }
             catch (Exception e)
             {
-                tlog.Error(tag, "Caught Exception" + e.ToString());
-                LogUtils.Write(LogUtils.DEBUG, LogUtils.TAG, "Caught Exception" + e.ToString());
-                Assert.Fail("Caught Exception" + e.ToString());
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception : Failed!");
             }
 
-            transitionOption.Dispose();
-            testingTarget.Dispose();
-            tlog.Debug(tag, $"NUIApplicationSendLaunchRequest END (OK)");
+            tlog.Debug(tag, $"NUIApplicationOnTerminate END (OK)");
         }
 
         [Test]
         [Category("P1")]
-        [Description("NUIApplication TransitionOptions")]
-        [Property("SPEC", "Tizen.NUI.NUIApplication.TransitionOptions A")]
+        [Description("NUIApplication OnLocaleChanged")]
+        [Property("SPEC", "Tizen.NUI.NUIApplication.OnLocaleChanged M")]
         [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "PRW")]
+        [Property("CRITERIA", "MR")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void NUIApplicationTransitionOptions()
+        public void NUIApplicationOnLocaleChanged()
         {
-            tlog.Debug(tag, $"NUIApplicationTransitionOptions START");
+            tlog.Debug(tag, $"NUIApplicationOnLocaleChanged START");
 
-            var testingTarget = new NUIApplication();
+            var testingTarget = new MyNUIApplication();
             Assert.IsNotNull(testingTarget, "Should be not null.");
             Assert.IsInstanceOf<NUIApplication>(testingTarget, "Should be an instance of Window type.");
 
-            TransitionOptions transitionOption = new TransitionOptions(Window.Instance);
-            testingTarget.TransitionOptions = transitionOption;
+            try
+            {
+                testingTarget.MyOnLocaleChanged(new LocaleChangedEventArgs("Shanghai"));
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, e.Message.ToString());
+                Assert.Fail("Caught Exception : Failed!");
+            }
 
-            var result = testingTarget.TransitionOptions;
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<TransitionOptions>(result, "Should be an instance of TransitionOptions type.");
-
-            result.Dispose();
-            transitionOption.Dispose();
-            testingTarget.Dispose();
-            tlog.Debug(tag, $"NUIApplicationTransitionOptions END (OK)");
+            tlog.Debug(tag, $"NUIApplicationOnTerminate END (OK)");
         }
     }
 }

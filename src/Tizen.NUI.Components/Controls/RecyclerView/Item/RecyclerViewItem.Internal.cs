@@ -106,7 +106,7 @@ namespace Tizen.NUI.Components
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override bool HandleControlStateOnTouch(Touch touch)
         {
-            if (!IsEnabled || null == touch)
+            if (!IsEnabled || null == touch || null == BindingContext)
             {
                 return false;
             }
@@ -220,12 +220,13 @@ namespace Tizen.NUI.Components
         public override void OnInitialize()
         {
             base.OnInitialize();
-            //FIXME!
-            IsCreateByXaml = true;
             Layout = new AbsoluteLayout();
             UpdateState();
 
             AccessibilityManager.Instance.SetAccessibilityAttribute(this, AccessibilityManager.AccessibilityAttribute.Trait, "ViewItem");
+
+            SetAccessibilityConstructor(Role.ListItem);
+            AccessibilityHighlightable = true;
         }
 
         /// <summary>

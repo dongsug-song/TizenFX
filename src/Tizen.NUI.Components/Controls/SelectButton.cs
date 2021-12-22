@@ -126,6 +126,7 @@ namespace Tizen.NUI.Components
 
             if (type == DisposeTypes.Explicit)
             {
+                RemoveFromGroup();
             }
 
             base.Dispose(type);
@@ -213,7 +214,7 @@ namespace Tizen.NUI.Components
         {
             if (info.PreviousState.Contains(ControlState.Selected) != info.CurrentState.Contains(ControlState.Selected))
             {
-                if (IsHighlighted)
+                if (Accessibility.Accessibility.Enabled && IsHighlighted)
                 {
                     EmitAccessibilityStatesChangedEvent(AccessibilityStates.Checked, info.CurrentState.Contains(ControlState.Selected));
                 }
@@ -234,5 +235,9 @@ namespace Tizen.NUI.Components
                 }
             }
         }
+
+        internal void RemoveFromGroup() => itemGroup?.RemoveSelection(this);
+
+        internal void ResetItemGroup() => itemGroup = null;
     }
 }

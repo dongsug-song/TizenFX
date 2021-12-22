@@ -20,15 +20,11 @@ using System.ComponentModel;
 
 namespace Tizen.NUI.BaseComponents
 {
-#if (NUI_DEBUG_ON)
-    using tlog = Tizen.Log;
-#endif
-
     /// <summary>
     /// AnimatedVectorImageView is a class for displaying a vector resource.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class AnimatedVectorImageView : LottieAnimationView
+    public partial class AnimatedVectorImageView : LottieAnimationView
     {
         #region Constructor, Destructor, Dispose
         /// <summary>
@@ -37,7 +33,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public AnimatedVectorImageView() : base()
         {
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ constructor objId={GetId()} ] END]");
+            NUILog.Debug($"[AnimatedVectorImageView START[ constructor objId={GetId()} ] END]");
         }
 
         /// <summary>
@@ -47,7 +43,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public AnimatedVectorImageView(float scale) : base(scale)
         {
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ constructor scale={scale}) objId={GetId()} ] END]");
+            NUILog.Debug($"[AnimatedVectorImageView START[ constructor scale={scale}) objId={GetId()} ] END]");
         }
 
         /// <summary>
@@ -61,7 +57,7 @@ namespace Tizen.NUI.BaseComponents
             {
                 return;
             }
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] type={type})");
+            NUILog.Debug($"AnimatedVectorImageView START");
 
             //Release your own unmanaged resources here.
             //You should not access any managed member here except static instance.
@@ -69,7 +65,7 @@ namespace Tizen.NUI.BaseComponents
 
             base.Dispose(type);
 
-            tlog.Fatal(tag, $"]AnimatedVectorImageView END]");
+            NUILog.Debug($"AnimatedVectorImageView END");
         }
         #endregion Constructor, Destructor, Dispose
 
@@ -82,20 +78,33 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string ResourceURL
         {
+            get
+            {
+                return GetValue(ResourceURLProperty) as string;
+            }
             set
             {
-                tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] ResourceURL SET");
+                SetValue(ResourceURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string InternalResourceURL
+        {
+            set
+            {
+                NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] ResourceURL SET");
 
                 if (value == resourceUrl)
                 {
-                    tlog.Fatal(tag, $"set same URL! ");
+                    NUILog.Debug($"set same URL! ");
                     return;
                 }
                 resourceUrl = (value == null) ? "" : value;
                 URL = resourceUrl;
                 isMinMaxFrameSet = minMaxSetTypes.NotSetByUser;
                 totalFrameNum = base.TotalFrame;
-                tlog.Fatal(tag, $" [{GetId()}] resourceUrl={resourceUrl}) ]AnimatedVectorImageView END]");
+                NUILog.Debug($" [{GetId()}] resourceUrl={resourceUrl}) ]AnimatedVectorImageView END]");
             }
             get => resourceUrl;
         }
@@ -107,15 +116,28 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new string ResourceUrl
         {
+            get
+            {
+                return GetValue(ResourceUrlProperty) as string;
+            }
             set
             {
-                tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] ResourceUrl SET");
+                SetValue(ResourceUrlProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string InternalResourceUrl
+        {
+            set
+            {
+                NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] ResourceUrl SET");
                 this.ResourceURL = value;
-                tlog.Fatal(tag, $" [{GetId()}] value={value}) ]AnimatedVectorImageView END]");
+                NUILog.Debug($" [{GetId()}] value={value}) ]AnimatedVectorImageView END]");
             }
             get
             {
-                tlog.Fatal(tag, $"[AnimatedVectorImageView [ [{GetId()}] ResourceUrl GET");
+                NUILog.Debug($"[AnimatedVectorImageView [ [{GetId()}] ResourceUrl GET");
                 return this.ResourceURL;
             }
         }
@@ -131,14 +153,27 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public int RepeatCount
         {
+            get
+            {
+                return (int)GetValue(RepeatCountProperty);
+            }
             set
             {
-                tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] RepeatCount SET");
+                SetValue(RepeatCountProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int InternalRepeatCount
+        {
+            set
+            {
+                NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] RepeatCount SET");
 
                 repeatCnt = (value < -1) ? -1 : value;
                 LoopCount = (repeatCnt < 0) ? repeatCnt : repeatCnt + 1;
 
-                tlog.Fatal(tag, $"[{GetId()}] repeatCnt={repeatCnt} ]AnimatedVectorImageView END]");
+                NUILog.Debug($"[{GetId()}] repeatCnt={repeatCnt} ]AnimatedVectorImageView END]");
             }
             get => repeatCnt;
         }
@@ -159,9 +194,22 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new int CurrentFrame
         {
+            get
+            {
+                return (int)GetValue(CurrentFrameProperty);
+            }
             set
             {
-                tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] CurrentFrame SET");
+                SetValue(CurrentFrameProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int InternalCurrentFrame
+        {
+            set
+            {
+                NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] CurrentFrame SET");
 
                 if (string.IsNullOrEmpty(resourceUrl))
                 {
@@ -183,7 +231,7 @@ namespace Tizen.NUI.BaseComponents
                 base.SetMinMaxFrame(0, totalFrameNum - 1);
                 base.CurrentFrame = innerCurrentFrame;
 
-                tlog.Fatal(tag, $" [{GetId()}] innerCurrentFrame={innerCurrentFrame}) ]AnimatedVectorImageView END]");
+                NUILog.Debug($" [{GetId()}] innerCurrentFrame={innerCurrentFrame}) ]AnimatedVectorImageView END]");
             }
             get => innerCurrentFrame;
         }
@@ -194,9 +242,22 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public RepeatModes RepeatMode
         {
+            get
+            {
+                return (RepeatModes)GetValue(RepeatModeProperty);
+            }
             set
             {
-                tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] RepeatMode SET");
+                SetValue(RepeatModeProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private RepeatModes InternalRepeatMode
+        {
+            set
+            {
+                NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] RepeatMode SET");
                 repeatMode = value;
 
                 switch (repeatMode)
@@ -212,7 +273,7 @@ namespace Tizen.NUI.BaseComponents
                         break;
                 }
 
-                tlog.Fatal(tag, $" [{GetId()}] repeatMode={repeatMode}) ]AnimatedVectorImageView END]");
+                NUILog.Debug($" [{GetId()}] repeatMode={repeatMode}) ]AnimatedVectorImageView END]");
             }
             get => repeatMode;
         }
@@ -251,7 +312,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetMinAndMaxFrame(int minFrame, int maxFrame)
         {
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] SetMinAndMaxFrame({minFrame}, {maxFrame})");
+            NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] SetMinAndMaxFrame({minFrame}, {maxFrame})");
 
             minimumFrame = (minFrame) > 0 ? minFrame : 0;
             maximumFrame = (maxFrame) > 0 ? maxFrame : 0;
@@ -272,7 +333,7 @@ namespace Tizen.NUI.BaseComponents
                 return;
             }
 
-            tlog.Fatal(tag, $" [{GetId()}] minimumFrame:{minimumFrame}, maximumFrame:{maximumFrame}) ]AnimatedVectorImageView END]");
+            NUILog.Debug($" [{GetId()}] minimumFrame:{minimumFrame}, maximumFrame:{maximumFrame}) ]AnimatedVectorImageView END]");
         }
 
         /// <summary>
@@ -283,7 +344,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new void SetMinMaxFrame(int minFrame, int maxFrame)
         {
-            tlog.Fatal(tag, $"SetMinMaxFrame({minFrame}, {maxFrame})!!!");
+            NUILog.Debug($"SetMinMaxFrame({minFrame}, {maxFrame})!!!");
 
             minimumFrame = (minFrame) > 0 ? minFrame : 0;
             maximumFrame = (maxFrame) > 0 ? maxFrame : 0;
@@ -312,7 +373,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new void SetMinMaxFrameByMarker(string marker1, string marker2 = null)
         {
-            tlog.Fatal(tag, $"SetMinMaxFrameByMarker({marker1}, {marker2})");
+            NUILog.Debug($"SetMinMaxFrameByMarker({marker1}, {marker2})");
             isMinMaxFrameSet = minMaxSetTypes.SetByMarker;
             base.SetMinMaxFrameByMarker(marker1, marker2);
         }
@@ -323,7 +384,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new void Play()
         {
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] AnimationState={AnimationState}, PlayState={PlayState}");
+            NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] AnimationState={AnimationState}, PlayState={PlayState}");
 
             if (string.IsNullOrEmpty(resourceUrl))
             {
@@ -356,7 +417,7 @@ namespace Tizen.NUI.BaseComponents
             base.Play();
             AnimationState = AnimationStates.Playing;
 
-            tlog.Fatal(tag, $" [{GetId()}] isMinMaxFrameSet={isMinMaxFrameSet}) ]AnimatedVectorImageView END]");
+            NUILog.Debug($" [{GetId()}] isMinMaxFrameSet={isMinMaxFrameSet}) ]AnimatedVectorImageView END]");
         }
 
         /// <summary>
@@ -365,7 +426,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new void Pause()
         {
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] AnimationState={AnimationState}, PlayState={PlayState}");
+            NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] AnimationState={AnimationState}, PlayState={PlayState}");
 
             if (string.IsNullOrEmpty(resourceUrl))
             {
@@ -375,7 +436,7 @@ namespace Tizen.NUI.BaseComponents
             base.Pause();
             AnimationState = AnimationStates.Paused;
 
-            tlog.Fatal(tag, $" [{GetId()}] ]AnimatedVectorImageView END]");
+            NUILog.Debug($" [{GetId()}] ]AnimatedVectorImageView END]");
         }
 
         /// <summary>
@@ -389,7 +450,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void Stop(EndActions endAction = EndActions.Cancel)
         {
-            tlog.Fatal(tag, $"[AnimatedVectorImageView START[ [{GetId()}] endAction:({endAction}), PlayState={PlayState}");
+            NUILog.Debug($"[AnimatedVectorImageView START[ [{GetId()}] endAction:({endAction}), PlayState={PlayState}");
 
             if (string.IsNullOrEmpty(resourceUrl))
             {
@@ -416,7 +477,7 @@ namespace Tizen.NUI.BaseComponents
                         StopBehavior = StopBehaviorType.MaximumFrame;
                         break;
                     default:
-                        tlog.Fatal(tag, $" [{GetId()}] no endAction : default set");
+                        NUILog.Debug($" [{GetId()}] no endAction : default set");
                         break;
                 }
             }
@@ -429,20 +490,17 @@ namespace Tizen.NUI.BaseComponents
                 switch (isMinMaxFrameSet)
                 {
                     case minMaxSetTypes.NotSetByUser:
-                        if (base.CurrentFrame != totalFrameNum - 1)
-                        {
-                            tlog.Fatal(tag, $"isMinMaxFrameSet:{isMinMaxFrameSet}, CurrentFrameNumber:{base.CurrentFrame}, totalFrameNum:{ totalFrameNum}");
-                            base.CurrentFrame = totalFrameNum - 1;
-                            tlog.Fatal(tag, $"set CurrentFrameNumber({base.CurrentFrame}) as totalFrameNum({maximumFrame}) - 1 !");
-                        }
+                        NUILog.Debug($"isMinMaxFrameSet:{isMinMaxFrameSet}, CurrentFrameNumber:{base.CurrentFrame}, totalFrameNum:{ totalFrameNum}");
+                        base.CurrentFrame = totalFrameNum - 1;
+                        NUILog.Debug($"set CurrentFrameNumber({base.CurrentFrame}) as totalFrameNum({maximumFrame}) - 1 !");
                         break;
 
                     case minMaxSetTypes.SetByMinAndMaxFrameMethod:
                         if (base.CurrentFrame != maximumFrame)
                         {
-                            tlog.Fatal(tag, $"isMinMaxFrameSet:{isMinMaxFrameSet}, CurrentFrameNumber:{base.CurrentFrame}, maximumFrame:{ maximumFrame}");
+                            NUILog.Debug($"isMinMaxFrameSet:{isMinMaxFrameSet}, CurrentFrameNumber:{base.CurrentFrame}, maximumFrame:{ maximumFrame}");
                             base.CurrentFrame = maximumFrame;
-                            tlog.Fatal(tag, $"set CurrentFrameNumber({base.CurrentFrame}) as maximumFrame({maximumFrame})!!!");
+                            NUILog.Debug($"set CurrentFrameNumber({base.CurrentFrame}) as maximumFrame({maximumFrame})!!!");
                         }
                         break;
                     case minMaxSetTypes.SetByBaseSetMinMaxFrameMethod:
@@ -452,7 +510,7 @@ namespace Tizen.NUI.BaseComponents
                         break;
                 }
             }
-            tlog.Fatal(tag, $" [{GetId()}] ]AnimatedVectorImageView END]");
+            NUILog.Debug($" [{GetId()}] ]AnimatedVectorImageView END]");
         }
         #endregion Method
 
@@ -539,7 +597,6 @@ namespace Tizen.NUI.BaseComponents
             SetByBaseSetMinMaxFrameMethod,
         }
 
-        private string tag = "NUITEST";
         private AnimationStates CurrentAnimationState = AnimationStates.Stopped;
         #endregion Private
     }

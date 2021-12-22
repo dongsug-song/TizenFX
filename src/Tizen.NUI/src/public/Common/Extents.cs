@@ -147,7 +147,7 @@ namespace Tizen.NUI
                 Interop.Extents.StartSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(Start, End, Top, Bottom);
+                callback?.Invoke(value, End, Top, Bottom);
             }
             get
             {
@@ -180,7 +180,7 @@ namespace Tizen.NUI
                 Interop.Extents.EndSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(Start, End, Top, Bottom);
+                callback?.Invoke(Start, value, Top, Bottom);
             }
             get
             {
@@ -213,7 +213,7 @@ namespace Tizen.NUI
                 Interop.Extents.TopSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(Start, End, Top, Bottom);
+                callback?.Invoke(Start, End, value, Bottom);
             }
             get
             {
@@ -246,7 +246,7 @@ namespace Tizen.NUI
                 Interop.Extents.BottomSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(Start, End, Top, Bottom);
+                callback?.Invoke(Start, End, Top, value);
             }
             get
             {
@@ -285,11 +285,6 @@ namespace Tizen.NUI
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public object Clone() => new Extents(this);
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(Extents obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
-        }
 
         internal Extents Assign(SWIGTYPE_p_uint16_t array)
         {

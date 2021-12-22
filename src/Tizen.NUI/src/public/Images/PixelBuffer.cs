@@ -272,9 +272,15 @@ namespace Tizen.NUI
             return ret;
         }
 
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(PixelBuffer obj)
+        /// <summary>
+        ///  Gets the brightness value of the pixel buffer.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public uint GetBrightness()
         {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
+            uint ret = Interop.PixelBuffer.GetBrightness(SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return ret;
         }
 
         internal PixelBuffer Assign(PixelBuffer rhs)

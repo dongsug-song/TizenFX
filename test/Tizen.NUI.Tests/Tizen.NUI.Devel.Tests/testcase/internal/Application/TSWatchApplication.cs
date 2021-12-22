@@ -16,6 +16,17 @@ namespace Tizen.NUI.Devel.Tests
         private const string tag = "NUITEST";
         private string resource = Tizen.Applications.Application.Current.DirectoryInfo.Resource;
 
+        internal class MyWatchApplication : WatchApplication
+        {
+            public MyWatchApplication(global::System.IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn)
+            { }
+
+            public void OnReleaseSwigCPtr(global::System.Runtime.InteropServices.HandleRef swigCPtr)
+            {
+                base.ReleaseSwigCPtr(swigCPtr);
+            }
+        }
+
         private bool IsWearable()
         {
             string value;
@@ -41,389 +52,179 @@ namespace Tizen.NUI.Devel.Tests
         }
 
         [Test]
-        [Description("WatchApplication new")]
+        [Category("P1")]
+        [Description("WatchApplication constructor.")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.WatchApplication C")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "CONSTR")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationNew()
+        public void WatchApplicationConstructor()
         {
-            tlog.Debug(tag, $"WatchApplicationNew START");
+            tlog.Debug(tag, $"WatchApplicationConstructor START");
 
-            if (IsWearable())
+            using (ImageView imageView = new ImageView())
             {
-                var testingTarget = Tizen.NUI.WatchApplication.New();
+                var testingTarget = new WatchApplication(imageView.SwigCPtr.Handle, false);
                 Assert.IsNotNull(testingTarget, "should be not null");
                 Assert.IsInstanceOf<WatchApplication>(testingTarget, "should be an instance of testing target class!");
 
                 testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationNew END (OK)");
             }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationNew END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
+
+            tlog.Debug(tag, $"WatchApplicationConstructor END (OK)");
         }
 
         [Test]
-        [Description("WatchApplication new with strings")]
+        [Category("P1")]
+        [Description("WatchApplication.TimeTickEventArgs. Application.")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.TimeTickEventArgs.Application A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationNewWithStrings()
+        public void WatchApplicationTimeTickEventArgsApplication()
         {
-            tlog.Debug(tag, $"WatchApplicationNewWithStrings START");
+            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplication START");
 
-            if (IsWearable())
-            {
-                var dummy = new string[3];
-                var testingTarget = Tizen.NUI.WatchApplication.New(dummy);
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<WatchApplication>(testingTarget, "should be an instance of testing target class!");
+            var testingTarget = new TimeTickEventArgs();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<TimeTickEventArgs>(testingTarget, "should be an instance of testing target class!");
 
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationNewWithStrings END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationNewWithStrings END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
+            Widget widget = new Widget();
+            var application = new WidgetApplication(widget.GetIntPtr(), false);
+            testingTarget.Application = application;
+            Assert.IsNotNull(testingTarget.Application, "should be not null.");
+
+            widget.Dispose();
+            widget = null;
+            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplication END (OK)");
         }
 
         [Test]
-        [Description("WatchApplication new with strings and stylesheet")]
+        [Category("P1")]
+        [Description("WatchApplication.TimeTickEventArgs. WatchTime.")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.TimeTickEventArgs.WatchTime A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationNewWithStringsAndStylesheet()
+        public void WatchApplicationTimeTickEventArgsWatchTime()
         {
-            tlog.Debug(tag, $"WatchApplicationNewWithStringsAndStylesheet START");
+            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTime START");
 
-            if (IsWearable())
-            {
-                var args = new string[] { "Dali-demo" };
-                var stylesheet = resource + "/style/Test_Style_Manager.json";
-                var testingTarget = Tizen.NUI.WatchApplication.New(args, stylesheet);
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<WatchApplication>(testingTarget, "should be an instance of testing target class!");
+            var testingTarget = new TimeTickEventArgs();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<TimeTickEventArgs>(testingTarget, "should be an instance of testing target class!");
 
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationNewWithStringsAndStylesheet END (OK)");
-            }
-            else
+            Widget widget = new Widget();
+            using (WatchTime time = new WatchTime(widget.GetIntPtr(), false))
             {
-                tlog.Debug(tag, $"WatchApplicationNewWithStringsAndStylesheet END (OK)");
-                Assert.Pass("Not Supported profile");
+                testingTarget.WatchTime = time;
+                Assert.IsNotNull(testingTarget.WatchTime);
             }
+
+            widget.Dispose();
+            widget = null;
+            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTime END (OK)");
         }
 
         [Test]
-        [Description("WatchApplication TimeTickEventArgs:Application get")]
+        [Category("P1")]
+        [Description("WatchApplication.AmbientTickEventArgs. Application.")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.TimeTickEventArgs.Application A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationTimeTickEventArgsApplicationGet()
+        public void WatchApplicationAmbientTickEventArgsApplication()
         {
-            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplicationGet START");
+            tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplication START");
 
-            if (IsWearable())
-            {
-                TimeTickEventArgs dummy = new TimeTickEventArgs();
-                var testingTarget = dummy.Application;
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<Application>(testingTarget, "should be an instance of testing target class!");
+            var testingTarget = new AmbientTickEventArgs();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<AmbientTickEventArgs>(testingTarget, "should be an instance of AmbientTickEventArgs class!");
 
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplicationGet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplicationGet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
+            Widget widget = new Widget();
+            var application = new WidgetApplication(widget.GetIntPtr(), false);
+            testingTarget.Application = application;
+            Assert.IsNotNull(testingTarget.Application, "should be not null.");
+
+            widget.Dispose();
+            widget = null;
+            tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplication END (OK)");
         }
 
         [Test]
-        [Description("WatchApplication TimeTickEventArgs:Application set")]
+        [Category("P1")]
+        [Description("WatchApplication.AmbientTickEventArgs.WatchTime")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.AmbientTickEventArgs.WatchTime A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationTimeTickEventArgsApplicationSet()
+        public void WatchApplicationAmbientTickArgsWatchTime()
         {
-            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplicationSet START");
+            tlog.Debug(tag, $"WatchApplicationAmbientTickArgsWatchTime START");
 
-            if (IsWearable())
+            var testingTarget = new AmbientTickEventArgs();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<AmbientTickEventArgs>(testingTarget, "should be an instance of testing target class!");
+
+            Widget widget = new Widget();
+            using (WatchTime time = new WatchTime(widget.GetIntPtr(), false))
             {
-                var dummyApplication = new Application();
-                Assert.IsNotNull(dummyApplication, "should be not null");
-                Assert.IsInstanceOf<Application>(dummyApplication, "should be an instance of testing target class!");
-
-                TimeTickEventArgs testingTarget = new TimeTickEventArgs();
-                testingTarget.Application = dummyApplication;
-
-                var result = testingTarget.Application;
-                Assert.IsNotNull(result, "should be not null.");
-                Assert.AreEqual(dummyApplication, result, "Retrieved result should be equal to dummyApplication. ");
-
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplicationSet END (OK)");
+                testingTarget.WatchTime = time;
+                Assert.IsNotNull(testingTarget.WatchTime);
             }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsApplicationSet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
+
+            widget.Dispose();
+            widget = null;
+            tlog.Debug(tag, $"WatchApplicationAmbientTickArgsWatchTime END (OK)");
         }
 
         [Test]
-        [Description("WatchApplication TimeTickEventArgs:WatchTime get")]
+        [Category("P1")]
+        [Description("WatchApplication.AmbientChangedEventArgs. Application.")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.TimeTickEventArgs.WatchTime A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationTimeTickEventArgsWatchTimeGet()
+        public void WatchApplicationAmbientChangedEventArgsApplication()
         {
-            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTimeGet START");
+            tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplication START");
 
-            if (IsWearable())
-            {
-                TimeTickEventArgs dummy = new TimeTickEventArgs();
-                var testingTarget = dummy.WatchTime;
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<WatchTime>(testingTarget, "should be an instance of testing target class!");
+            var testingTarget = new AmbientChangedEventArgs();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<AmbientChangedEventArgs>(testingTarget, "should be an instance of AmbientChangedEventArgs class!");
 
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTimeGet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTimeGet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
+            Widget widget = new Widget();
+            var application = new WidgetApplication(widget.GetIntPtr(), false);
+            testingTarget.Application = application;
+            Assert.IsNotNull(testingTarget.Application, "should be not null.");
+
+            widget.Dispose();
+            widget = null;
+            tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplication END (OK)");
         }
 
         [Test]
-        [Description("WatchApplication TimeTickEventArgs:WatchTime set")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationTimeTickEventArgsWatchTimeSet()
-        {
-            tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTimeSet START");
-
-            if (IsWearable())
-            {
-                var dummyWatchTime = new WatchTime();
-                Assert.IsNotNull(dummyWatchTime, "should be not null");
-                Assert.IsInstanceOf<WatchTime>(dummyWatchTime, "should be an instance of testing target class!");
-
-                TimeTickEventArgs testingTarget = new TimeTickEventArgs();
-                testingTarget.WatchTime = dummyWatchTime;
-
-                var result = testingTarget.WatchTime;
-                Assert.IsNotNull(result, "should be not null.");
-                Assert.AreEqual(dummyWatchTime, result, "Retrieved result should be equal to dummyApplication. ");
-
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTimeSet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationTimeTickEventArgsWatchTimeSet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientTickEventArgs:Application get")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientTickEventArgsApplicationGet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplicationGet START");
-
-            if (IsWearable())
-            {
-                AmbientTickEventArgs dummy = new AmbientTickEventArgs();
-                var testingTarget = dummy.Application;
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<Application>(testingTarget, "should be an instance of testing target class!");
-
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplicationGet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplicationGet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientTickEventArgs:Application set")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientTickEventArgsApplicationSet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplicationSet START");
-
-            if (IsWearable())
-            {
-                var application = new Application();
-                Assert.IsNotNull(application, "should be not null");
-                Assert.IsInstanceOf<Application>(application, "should be an instance of testing target class!");
-
-                AmbientTickEventArgs testingTarget = new AmbientTickEventArgs();
-                testingTarget.Application = application;
-
-                var result = testingTarget.Application;
-                Assert.IsNotNull(result, "should be not null.");
-                Assert.AreEqual(application, result, "Retrieved result should be equal to dummyApplication. ");
-
-                application.Dispose();
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplicationSet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsApplicationSet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientTickEventArgs:WatchTime get")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientTickEventArgsWatchTimeGet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsWatchTimeGet START");
-
-            if (IsWearable())
-            {
-                AmbientTickEventArgs dummy = new AmbientTickEventArgs();
-                var testingTarget = dummy.WatchTime;
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<WatchTime>(testingTarget, "should be an instance of testing target class!");
-
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsWatchTimeGet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsWatchTimeGet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientTickEventArgs:WatchTime set")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientTickEventArgsWatchTimeSet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsWatchTimeSet START");
-
-            if (IsWearable())
-            {
-                var dummyWatchTime = new WatchTime();
-                Assert.IsNotNull(dummyWatchTime, "should be not null");
-                Assert.IsInstanceOf<WatchTime>(dummyWatchTime, "should be an instance of testing target class!");
-
-                AmbientTickEventArgs testingTarget = new AmbientTickEventArgs();
-                testingTarget.WatchTime = dummyWatchTime;
-
-                var result = testingTarget.WatchTime;
-                Assert.IsNotNull(result, "should be not null.");
-                Assert.AreEqual(dummyWatchTime, result, "Retrieved result should be equal to dummyApplication. ");
-
-                dummyWatchTime.Dispose();
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsWatchTimeSet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientTickEventArgsWatchTimeSet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientChangedEventArgs:Application get")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientChangedEventArgsApplicationGet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplicationGet START");
-
-            if (IsWearable())
-            {
-                AmbientChangedEventArgs dummy = new AmbientChangedEventArgs();
-                var testingTarget = dummy.Application;
-                Assert.IsNotNull(testingTarget, "should be not null");
-                Assert.IsInstanceOf<Application>(testingTarget, "should be an instance of testing target class!");
-
-                testingTarget.Dispose();
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplicationGet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplicationGet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientChangedEventArgs:Application set")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientChangedEventArgsApplicationSet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplicationSet START");
-
-            if (IsWearable())
-            {
-                var dummyApplication = new Application();
-                Assert.IsNotNull(dummyApplication, "should be not null");
-                Assert.IsInstanceOf<Application>(dummyApplication, "should be an instance of testing target class!");
-
-                AmbientChangedEventArgs testingTarget = new AmbientChangedEventArgs();
-                testingTarget.Application = dummyApplication;
-
-                var result = testingTarget.Application;
-                Assert.IsNotNull(result, "should be not null.");
-                Assert.AreEqual(dummyApplication, result, "Retrieved result should be equal to dummyApplication. ");
-
-                dummyApplication.Dispose();
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplicationSet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsApplicationSet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientChangedEventArgs:Changed get")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void WatchApplicationAmbientChangedEventArgsChangedGet()
-        {
-            tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedGet START");
-
-            if (IsWearable())
-            {
-                AmbientChangedEventArgs testingTarget = new AmbientChangedEventArgs();
-                var result = testingTarget.Changed;
-                Assert.IsNotNull(result, "should be not null");
-
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedGet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedGet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
-        }
-
-        [Test]
-        [Description("WatchApplication AmbientChangedEventArgs:Changed set")]
+        [Category("P1")]
+        [Description("WatchApplication.AmbientChangedEventArgs. Changed.")]
+        [Property("SPEC", "Tizen.NUI.WatchApplication.AmbientChangedEventArgs.Changed A")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "PRW")]
         [Property("AUTHOR", "guowei.wang@samsung.com")]
         public void WatchApplicationAmbientChangedEventArgsChangedSet()
         {
             tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedSet START");
 
-            if (IsWearable())
-            {
-                AmbientChangedEventArgs testingTarget = new AmbientChangedEventArgs();
-                testingTarget.Changed = true;
+            var testingTarget = new AmbientChangedEventArgs();
+            Assert.IsNotNull(testingTarget, "should be not null");
+            Assert.IsInstanceOf<AmbientChangedEventArgs>(testingTarget, "should be an instance of AmbientChangedEventArgs class!");
 
-                var result = testingTarget.Changed;
-                Assert.IsNotNull(result, "should be not null.");
-                Assert.AreEqual(true, result, "Retrieved result should be equal to true. ");
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedSet END (OK)");
-            }
-            else
-            {
-                tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedSet END (OK)");
-                Assert.Pass("Not Supported profile");
-            }
+            testingTarget.Changed = true;
+            Assert.AreEqual(true, testingTarget.Changed, "Retrieved result should be equal to true. ");
+
+            testingTarget.Changed = false;
+            Assert.AreEqual(false, testingTarget.Changed, "Retrieved result should be equal to true. ");
+
+            tlog.Debug(tag, $"WatchApplicationAmbientChangedEventArgsChangedSet END (OK)");
         }
     }
 }

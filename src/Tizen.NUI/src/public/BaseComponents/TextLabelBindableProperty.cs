@@ -136,6 +136,10 @@ namespace Tizen.NUI.BaseComponents
             var textLabel = (TextLabel)bindable;
             float temp = 0.0f;
             Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textLabel.SwigCPtr, TextLabel.Property.PointSize).Get(out temp);
+            if (GraphicsTypeManager.Instance.ScalingFactor != 0.0f)
+            {
+                temp = (float)temp / GraphicsTypeManager.Instance.ScalingFactor;
+            }
             return temp;
         }));
         /// This will be public opened in tizen_5.0 after ACR done. Before ACR, need to be hidden as inhouse API.
@@ -459,6 +463,23 @@ namespace Tizen.NUI.BaseComponents
             Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textLabel.SwigCPtr, TextLabel.Property.ELLIPSIS).Get(out temp);
             return temp;
         }));
+        /// This will be public opened in tizen_6.5 after ACR done. Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty EllipsisPositionProperty = BindableProperty.Create(nameof(EllipsisPosition), typeof(EllipsisPosition), typeof(TextLabel), EllipsisPosition.End, propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
+        {
+            var textLabel = (TextLabel)bindable;
+            if (newValue != null)
+            {
+                Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)textLabel.SwigCPtr, TextLabel.Property.EllipsisPosition, new Tizen.NUI.PropertyValue((int)newValue));
+            }
+        }),
+        defaultValueCreator: (BindableProperty.CreateDefaultValueDelegate)((bindable) =>
+        {
+            var textLabel = (TextLabel)bindable;
+            int temp = 0;
+            Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textLabel.SwigCPtr, TextLabel.Property.EllipsisPosition).Get(out temp);
+            return (EllipsisPosition)temp;
+        }));
         /// This will be public opened in tizen_5.0 after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static readonly BindableProperty AutoScrollLoopDelayProperty = BindableProperty.Create(nameof(AutoScrollLoopDelay), typeof(float), typeof(TextLabel), default(float), propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
@@ -609,6 +630,96 @@ namespace Tizen.NUI.BaseComponents
             return temp;
         }));
 
+        /// <summary>
+        /// ShadowOffsetProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty ShadowOffsetProperty = BindableProperty.Create(nameof(ShadowOffset), typeof(Tizen.NUI.Vector2), typeof(TextLabel), null, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            if (newValue != null)
+            {
+                instance.InternalShadowOffset = (Tizen.NUI.Vector2)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            return instance.InternalShadowOffset;
+        });
+
+        /// <summary>
+        /// ShadowColorProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty ShadowColorProperty = BindableProperty.Create(nameof(ShadowColor), typeof(Tizen.NUI.Vector4), typeof(TextLabel), null, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            if (newValue != null)
+            {
+                instance.InternalShadowColor = (Tizen.NUI.Vector4)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            return instance.InternalShadowColor;
+        });
+
+        /// <summary>
+        /// UnderlineEnabledProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty UnderlineEnabledProperty = BindableProperty.Create(nameof(UnderlineEnabled), typeof(bool), typeof(TextLabel), false, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            if (newValue != null)
+            {
+                instance.InternalUnderlineEnabled = (bool)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            return instance.InternalUnderlineEnabled;
+        });
+
+        /// <summary>
+        /// UnderlineColorProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty UnderlineColorProperty = BindableProperty.Create(nameof(UnderlineColor), typeof(Tizen.NUI.Vector4), typeof(TextLabel), null, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            if (newValue != null)
+            {
+                instance.InternalUnderlineColor = (Tizen.NUI.Vector4)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            return instance.InternalUnderlineColor;
+        });
+
+        /// <summary>
+        /// UnderlineHeightProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty UnderlineHeightProperty = BindableProperty.Create(nameof(UnderlineHeight), typeof(float), typeof(TextLabel), 0.0f, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            if (newValue != null)
+            {
+                instance.InternalUnderlineHeight = (float)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextLabel)bindable;
+            return instance.InternalUnderlineHeight;
+        });
+
         internal Selector<string> TranslatableTextSelector
         {
             get => GetSelector<string>(selectorData?.TranslatableText, TextLabel.TranslatableTextProperty);
@@ -752,6 +863,10 @@ namespace Tizen.NUI.BaseComponents
         {
             if (value != null)
             {
+                if (GraphicsTypeManager.Instance.ScalingFactor != 0.0f)
+                {
+                    value = value * GraphicsTypeManager.Instance.ScalingFactor;
+                }
                 Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, TextLabel.Property.PointSize, new Tizen.NUI.PropertyValue((float)value));
                 RequestLayout();
             }

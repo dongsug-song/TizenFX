@@ -308,35 +308,12 @@ namespace Tizen.NUI
 
         public delegate void resChangeCb(object sender, ResourcesChangedEventArgs e);
 
-        static private Dictionary<object, Dictionary<resChangeCb, int>> resourceChangeCallbackDict = new Dictionary<object, Dictionary<resChangeCb, int>>();
-        static public void AddResourceChangedCallback(object handle, resChangeCb cb)
-        {
-            Dictionary<resChangeCb, int> cbDict;
-            resourceChangeCallbackDict.TryGetValue(handle, out cbDict);
-
-            if (null == cbDict)
-            {
-                cbDict = new Dictionary<resChangeCb, int>();
-                resourceChangeCallbackDict.Add(handle, cbDict);
-            }
-
-            if (false == cbDict.ContainsKey(cb))
-            {
-                cbDict.Add(cb, 0);
-            }
-        }
+        internal event EventHandler<ResourcesChangedEventArgs> XamlResourceChanged;
 
         internal override void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
         {
             base.OnResourcesChanged(sender, e);
-
-            foreach (KeyValuePair<object, Dictionary<resChangeCb, int>> resourcePair in resourceChangeCallbackDict)
-            {
-                foreach (KeyValuePair<resChangeCb, int> cbPair in resourcePair.Value)
-                {
-                    cbPair.Key(sender, e);
-                }
-            }
+            XamlResourceChanged?.Invoke(sender, e);
         }
 
         public ResourceDictionary XamlResources
@@ -403,11 +380,6 @@ namespace Tizen.NUI
         {
             SetCurrentApplication(this);
             s_current = this;
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(Application obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         protected override void Dispose(DisposeTypes type)
@@ -1058,7 +1030,7 @@ namespace Tizen.NUI
         {
             // register all Views with the type registry, so that can be created / styled via JSON
             //ViewRegistryHelper.Initialize(); //moved to Application side.
-            if (instance)
+            if (instance != null)
             {
                 return instance;
             }
@@ -1073,7 +1045,7 @@ namespace Tizen.NUI
 
         public static Application NewApplication(string stylesheet, NUIApplication.WindowMode windowMode, Rectangle positionSize)
         {
-            if (instance)
+            if (instance != null)
             {
                 return instance;
             }
@@ -1087,7 +1059,7 @@ namespace Tizen.NUI
 
         public static Application NewApplication(string[] args, string stylesheet, NUIApplication.WindowMode windowMode)
         {
-            if (instance)
+            if (instance != null)
             {
                 return instance;
             }
@@ -1101,7 +1073,7 @@ namespace Tizen.NUI
 
         public static Application NewApplication(string[] args, string stylesheet, NUIApplication.WindowMode windowMode, Rectangle positionSize)
         {
-            if (instance)
+            if (instance != null)
             {
                 return instance;
             }
@@ -1113,11 +1085,29 @@ namespace Tizen.NUI
             return instance;
         }
 
+        public static Application NewApplication(string stylesheet, NUIApplication.WindowMode windowMode, WindowType type)
+        {
+            if (instance != null)
+            {
+                return instance;
+            }
+            Application ret = New(1, stylesheet, windowMode, type);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+
+            instance = ret;
+            return instance;
+        }
+
         /// <summary>
         /// Ensures that the function passed in is called from the main loop when it is idle.
         /// </summary>
         /// <param name="func">The function to call</param>
         /// <returns>true if added successfully, false otherwise</returns>
+        /// <remarks>
+        /// It will return false when one of the following conditions is met.
+        /// 1) the <see cref="Window"/> is hidden.
+        /// 2) the <see cref="Window"/> is iconified.
+        /// </remarks>
         public bool AddIdle(System.Delegate func)
         {
             System.IntPtr ip = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate<System.Delegate>(func);
@@ -1216,6 +1206,16 @@ namespace Tizen.NUI
             return ret;
         }
 
+        public static Application New(int argc, string stylesheet, NUIApplication.WindowMode windowMode, WindowType type)
+        {
+            // It will be removed until dali APIs are prepared.
+            Rectangle initRectangle = new Rectangle(0, 0, 0, 0);
+
+            Application ret = new Application(Interop.Application.New(argc, stylesheet, (int)windowMode, Rectangle.getCPtr(initRectangle), (int)type), true);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return ret;
+        }
+
         public Application() : this(Interop.Application.NewApplication(), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
@@ -1303,7 +1303,7 @@ namespace Tizen.NUI
             {
                 Window currWin = Registry.GetManagedBaseHandleFromNativePtr(Interop.Application.GetWindowsFromList(i)) as Window;
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-                if (currWin)
+                if (currWin != null)
                 {
                     WindowList.Add(currWin);
                 }

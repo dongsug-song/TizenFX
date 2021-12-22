@@ -47,9 +47,26 @@ namespace Tizen.NUI
         /// <param name="pixelFormat">The pixel format.</param>
         /// <param name="releaseFunction">The function used to release the memory.</param>
         /// <since_tizen> 5 </since_tizen>
+        /// This will be deprecated after API level 9. ReleaseFunction is not useful in C#.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public PixelData(byte[] buffer, uint bufferSize, uint width, uint height, PixelFormat pixelFormat, PixelData.ReleaseFunction releaseFunction) : this(Interop.PixelData.New(buffer, bufferSize, width, height, (int)pixelFormat), true)
+        {
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+
+        }
+        
+        /// <summary>
+        /// Creates a PixelData object.
+        /// </summary>
+        /// <param name="buffer">The raw pixel data.</param>
+        /// <param name="bufferSize">The size of the buffer in bytes.</param>
+        /// <param name="width">Buffer width in pixels.</param>
+        /// <param name="height">Buffer height in pixels.</param>
+        /// <param name="pixelFormat">The pixel format.</param>
+        /// <since_tizen> 5 </since_tizen>
         /// This will be released at Tizen.NET API Level 5, so currently this would be used as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public PixelData(byte[] buffer, uint bufferSize, uint width, uint height, PixelFormat pixelFormat, PixelData.ReleaseFunction releaseFunction) : this(Interop.PixelData.New(buffer, bufferSize, width, height, (int)pixelFormat, (int)releaseFunction), true)
+        public PixelData(byte[] buffer, uint bufferSize, uint width, uint height, PixelFormat pixelFormat) : this(Interop.PixelData.New(buffer, bufferSize, width, height, (int)pixelFormat), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
@@ -63,7 +80,7 @@ namespace Tizen.NUI
         /// Enumeration for function to release the pixel buffer.
         /// </summary>
         /// <since_tizen> 5 </since_tizen>
-        /// This will be released at Tizen.NET API Level 5, so currently this would be used as inhouse API.
+        /// This will be deprecated after API level 9. ReleaseFunction is not useful in C#.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public enum ReleaseFunction
         {
@@ -79,18 +96,14 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Get URI from pixel data.
+        /// Generate Url from pixel data.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public string Url
+        public ImageUrl GenerateUrl()
         {
-            get
-            {
-                string Uri = "";
-                Uri = Interop.PixelData.GenerateUrl(this.SwigCPtr.Handle);
-                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
-                return Uri;
-            }
+            ImageUrl ret = new ImageUrl(Interop.PixelData.GenerateUrl(this.SwigCPtr.Handle), true);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+            return ret;
         }
 
         /// <summary>
@@ -133,11 +146,6 @@ namespace Tizen.NUI
             PixelFormat ret = (PixelFormat)Interop.PixelData.GetPixelFormat(SwigCPtr);
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(PixelData obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         /// This will not be public opened.

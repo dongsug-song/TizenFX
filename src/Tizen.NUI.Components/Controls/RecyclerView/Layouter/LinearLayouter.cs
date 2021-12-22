@@ -113,6 +113,7 @@ namespace Tizen.NUI.Components
             if (count == (hasHeader? (hasFooter? 2 : 1) : 0))
             {
                 isSourceEmpty = true;
+                base.Initialize(view);
                 return;
             }
             isSourceEmpty = false;
@@ -1419,7 +1420,9 @@ namespace Tizen.NUI.Components
                 else
                 {
                     float visibleAreaX = visibleArea.X - (hasHeader? headerSize : 0);
-                    found.start = (Convert.ToInt32(Math.Abs(visibleAreaX / StepCandidate)) - adds);
+                    // Prevent zero division.
+                    var itemSize = (StepCandidate != 0)? StepCandidate : 1f;
+                    found.start = (Convert.ToInt32(Math.Abs(visibleAreaX / itemSize)) - adds);
                 }
 
                 if (found.start < 0) found.start = 0;
@@ -1467,7 +1470,9 @@ namespace Tizen.NUI.Components
                 else
                 {
                     float visibleAreaY = visibleArea.Y - (hasHeader? headerSize : 0);
-                    found.end = (Convert.ToInt32(Math.Abs(visibleAreaY / StepCandidate)) + adds);
+                    // Prevent zero division.
+                    var itemSize = (StepCandidate != 0)? StepCandidate : 1f;
+                    found.end = (Convert.ToInt32(Math.Abs(visibleAreaY / itemSize)) + adds);
                     if (hasHeader) found.end += 1;
                 }
                 if (found.end > (MaxIndex)) found.end = MaxIndex;

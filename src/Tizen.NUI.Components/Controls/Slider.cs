@@ -67,10 +67,10 @@ namespace Tizen.NUI.Components
     public partial class Slider : Control
     {
         /// <summary>
-        /// IndicatorTypeProperty
+        /// SpaceBetweenTrackAndIndicatorProperty
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static readonly BindableProperty IndicatorTypeProperty = BindableProperty.Create("IndicatorType", typeof(IndicatorType), typeof(Slider), IndicatorType.None, propertyChanged: (bindable, oldValue, newValue) =>
+        public static readonly BindableProperty IndicatorProperty = BindableProperty.Create(nameof(Indicator), typeof(IndicatorType), typeof(Slider), IndicatorType.None, propertyChanged: (bindable, oldValue, newValue) =>
         {
             var instance = (Slider)bindable;
             if (newValue != null)
@@ -176,7 +176,7 @@ namespace Tizen.NUI.Components
                 if (newValue != null)
                 {
                     instance.curValue = (float)newValue;
-                    if (instance.IsHighlighted)
+                    if (Accessibility.Accessibility.Enabled && instance.IsHighlighted)
                     {
                         instance.EmitAccessibilityEvent(AccessibilityPropertyChangeEvent.Value);
                     }
@@ -189,6 +189,26 @@ namespace Tizen.NUI.Components
                 return instance.curValue;
             }
         );
+
+        /// <summary>
+        /// IsEnabledProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(Slider), true, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Slider)bindable;
+            if (newValue != null)
+            {
+                bool newEnabled = (bool)newValue;
+                if (instance.isEnabled != newEnabled)
+                {
+                    instance.isEnabled = newEnabled;
+                    instance.Sensitive = newEnabled;
+                    instance.UpdateValue();
+                }
+            }
+        },
+        defaultValueCreator: (bindable) => ((Slider)bindable).isEnabled);
 
         static Slider() { }
 
@@ -375,6 +395,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return (DirectionType)GetValue(DirectionProperty);
+            }
+            set
+            {
+                SetValue(DirectionProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private DirectionType InternalDirection
+        {
+            get
+            {
                 return direction;
             }
             set
@@ -400,11 +432,11 @@ namespace Tizen.NUI.Components
         {
             get
             {
-                return (IndicatorType)GetValue(IndicatorTypeProperty);
+                return (IndicatorType)GetValue(IndicatorProperty);
             }
             set
             {
-                SetValue(IndicatorTypeProperty, value);
+                SetValue(IndicatorProperty, value);
             }
         }
 
@@ -413,6 +445,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public float MinValue
+        {
+            get
+            {
+                return (float)GetValue(MinValueProperty);
+            }
+            set
+            {
+                SetValue(MinValueProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private float InternalMinValue
         {
             get
             {
@@ -430,6 +474,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public float MaxValue
+        {
+            get
+            {
+                return (float)GetValue(MaxValueProperty);
+            }
+            set
+            {
+                SetValue(MaxValueProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private float InternalMaxValue
         {
             get
             {
@@ -466,6 +522,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(ThumbSizeProperty) as Size;
+            }
+            set
+            {
+                SetValue(ThumbSizeProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Size InternalThumbSize
+        {
+            get
+            {
                 return thumbImage?.Size;
             }
             set
@@ -485,6 +553,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public string ThumbImageURL
+        {
+            get
+            {
+                return GetValue(ThumbImageURLProperty) as string;
+            }
+            set
+            {
+                SetValue(ThumbImageURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalThumbImageURL
         {
             get
             {
@@ -510,7 +590,19 @@ namespace Tizen.NUI.Components
         /// <since_tizen> 6 </since_tizen>
         public StringSelector ThumbImageURLSelector
         {
-            get => thumbImage == null ? null : new StringSelector(thumbImage.ResourceUrlSelector);
+            get
+            {
+                return GetValue(ThumbImageURLSelectorProperty) as StringSelector;
+            }
+            set
+            {
+                SetValue(ThumbImageURLSelectorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private StringSelector InternalThumbImageURLSelector
+        {
+            get => thumbImage?.ResourceUrlSelector == null ? null : new StringSelector(thumbImage.ResourceUrlSelector);
             set
             {
                 if (value == null || thumbImage == null)
@@ -530,6 +622,18 @@ namespace Tizen.NUI.Components
         /// <exception cref="NullReferenceException">Thrown when setting null value.</exception>
         /// <since_tizen> 9 </since_tizen>
         public Selector<string> ThumbImageUrl
+        {
+            get
+            {
+                return GetValue(ThumbImageUrlProperty) as Selector<string>;
+            }
+            set
+            {
+                SetValue(ThumbImageUrlProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Selector<string> InternalThumbImageUrl
         {
             get
             {
@@ -563,6 +667,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(ThumbColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(ThumbColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalThumbColor
+        {
+            get
+            {
                 return thumbImage?.Color;
             }
             set
@@ -583,6 +699,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(BgTrackColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(BgTrackColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalBgTrackColor
+        {
+            get
+            {
                 return bgTrackImage?.BackgroundColor;
             }
             set
@@ -599,6 +727,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public Color SlidedTrackColor
+        {
+            get
+            {
+                return GetValue(SlidedTrackColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(SlidedTrackColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalSlidedTrackColor
         {
             get
             {
@@ -638,6 +778,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return (float)GetValue(WarningStartValueProperty);
+            }
+            set
+            {
+                SetValue(WarningStartValueProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private float InternalWarningStartValue
+        {
+            get
+            {
                 return warningStartValue;
             }
             set
@@ -653,6 +805,18 @@ namespace Tizen.NUI.Components
         /// This will be public opened later after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Color WarningTrackColor
+        {
+            get
+            {
+                return GetValue(WarningTrackColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(WarningTrackColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalWarningTrackColor
         {
             get
             {
@@ -676,6 +840,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(WarningSlidedTrackColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(WarningSlidedTrackColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalWarningSlidedTrackColor
+        {
+            get
+            {
                 return warningSlidedTrackImage?.BackgroundColor;
             }
             set
@@ -694,6 +870,18 @@ namespace Tizen.NUI.Components
         /// This will be public opened later after ACR done. Before ACR, need to be hidden as inhouse API.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Selector<string> WarningThumbImageUrl
+        {
+            get
+            {
+                return GetValue(WarningThumbImageUrlProperty) as Selector<string>;
+            }
+            set
+            {
+                SetValue(WarningThumbImageUrlProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Selector<string> InternalWarningThumbImageUrl
         {
             get
             {
@@ -721,6 +909,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(WarningThumbColorProperty) as Color;
+            }
+            set
+            {
+                SetValue(WarningThumbColorProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Color InternalWarningThumbColor
+        {
+            get
+            {
                 return warningThumbColor;
             }
             set
@@ -734,6 +934,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public string LowIndicatorImageURL
+        {
+            get
+            {
+                return GetValue(LowIndicatorImageURLProperty) as string;
+            }
+            set
+            {
+                SetValue(LowIndicatorImageURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalLowIndicatorImageURL
         {
             get
             {
@@ -754,6 +966,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(HighIndicatorImageURLProperty) as string;
+            }
+            set
+            {
+                SetValue(HighIndicatorImageURLProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalHighIndicatorImageURL
+        {
+            get
+            {
                 return highIndicatorImage?.ResourceUrl;
             }
             set
@@ -768,6 +992,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public string LowIndicatorTextContent
+        {
+            get
+            {
+                return GetValue(LowIndicatorTextContentProperty) as string;
+            }
+            set
+            {
+                SetValue(LowIndicatorTextContentProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalLowIndicatorTextContent
         {
             get
             {
@@ -790,6 +1026,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(HighIndicatorTextContentProperty) as string;
+            }
+            set
+            {
+                SetValue(HighIndicatorTextContentProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalHighIndicatorTextContent
+        {
+            get
+            {
                 return highIndicatorText?.Text;
             }
             set
@@ -806,6 +1054,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public Size LowIndicatorSize
+        {
+            get
+            {
+                return GetValue(LowIndicatorSizeProperty) as Size;
+            }
+            set
+            {
+                SetValue(LowIndicatorSizeProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Size InternalLowIndicatorSize
         {
             get
             {
@@ -826,6 +1086,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 6 </since_tizen>
         public Size HighIndicatorSize
+        {
+            get
+            {
+                return GetValue(HighIndicatorSizeProperty) as Size;
+            }
+            set
+            {
+                SetValue(HighIndicatorSizeProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Size InternalHighIndicatorSize
         {
             get
             {
@@ -896,6 +1168,18 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return GetValue(ValueIndicatorSizeProperty) as Size;
+            }
+            set
+            {
+                SetValue(ValueIndicatorSizeProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private Size InternalValueIndicatorSize
+        {
+            get
+            {
                 return valueIndicatorImage?.Size;
             }
             set
@@ -912,6 +1196,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
         public string ValueIndicatorUrl
+        {
+            get
+            {
+                return GetValue(ValueIndicatorUrlProperty) as string;
+            }
+            set
+            {
+                SetValue(ValueIndicatorUrlProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalValueIndicatorUrl
         {
             get
             {
@@ -932,7 +1228,19 @@ namespace Tizen.NUI.Components
         /// The default value is false.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
-        public bool IsDiscrete { get; set; } = false;
+        public bool IsDiscrete
+        {
+            get
+            {
+                return (bool)GetValue(IsDiscreteProperty);
+            }
+            set
+            {
+                SetValue(IsDiscreteProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private bool InternalIsDiscrete { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the discrete value of slider.
@@ -948,12 +1256,40 @@ namespace Tizen.NUI.Components
         {
             get
             {
+                return (float)GetValue(DiscreteValueProperty);
+            }
+            set
+            {
+                SetValue(DiscreteValueProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private float InternalDiscreteValue
+        {
+            get
+            {
                 return discreteValue;
             }
             set
             {
                 discreteValue = value;
                 UpdateValue();
+            }
+        }
+
+        /// <summary>
+        /// Flag to decide enable or disable in Slider.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool IsEnabled
+        {
+            get
+            {
+                return (bool)GetValue(IsEnabledProperty);
+            }
+            set
+            {
+                SetValue(IsEnabledProperty, value);
             }
         }
 
@@ -1101,6 +1437,62 @@ namespace Tizen.NUI.Components
             base.OnFocusLost();
         }
 
+        /// <inheritdoc/>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool OnKey(Key key)
+        {
+            if (!IsEnabled || null == key)
+            {
+                return false;
+            }
+
+            if (key.State == Key.StateType.Down)
+            {
+                if ((direction == DirectionType.Horizontal && key.KeyPressedName == "Left") ||
+                    (direction == DirectionType.Vertical && key.KeyPressedName == "Down"))
+                {
+                    if (MinValue < CurrentValue)
+                    {
+                        isPressed = true;
+                        if (IsDiscrete)
+                        {
+                            float value = CurrentValue - discreteValue;
+                            CurrentValue = value < MinValue ? MinValue : value;
+                        }
+                        else
+                        {
+                            CurrentValue -= 1;
+                        }
+                        return true; // Consumed
+                    }
+                }
+                else if ((direction == DirectionType.Horizontal && key.KeyPressedName == "Right") ||
+                         (direction == DirectionType.Vertical && key.KeyPressedName == "Up"))
+                {
+                    if (MaxValue > CurrentValue)
+                    {
+                        isPressed = true;
+                        if (IsDiscrete)
+                        {
+                            float value = CurrentValue + discreteValue;
+                            CurrentValue = value > MaxValue ? MaxValue : value;
+                        }
+                        else
+                        {
+                            CurrentValue += 1;
+                        }
+                        return true; // Consumed
+                    }
+                }
+            }
+            else if (key.State == Key.StateType.Up)
+            {
+                isPressed = false;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Apply style to scrollbar.
         /// </summary>
@@ -1170,7 +1562,7 @@ namespace Tizen.NUI.Components
         }
 
         /// <summary>
-        /// Minimum value.
+        /// Gets minimum value for Accessibility.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override double AccessibilityGetMinimum()
@@ -1179,7 +1571,7 @@ namespace Tizen.NUI.Components
         }
 
         /// <summary>
-        /// Current value.
+        /// Gets the current value for Accessibility.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override double AccessibilityGetCurrent()
@@ -1188,7 +1580,7 @@ namespace Tizen.NUI.Components
         }
 
         /// <summary>
-        /// Maximum value.
+        /// Gets maximum value for Accessibility.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override double AccessibilityGetMaximum()
@@ -1197,19 +1589,19 @@ namespace Tizen.NUI.Components
         }
 
         /// <summary>
-        /// Current value.
+        /// Sets the current value using Accessibility.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override bool AccessibilitySetCurrent(double value)
         {
-            var f = (float)value;
+            var current = (float)value;
 
-            if (f >= MinValue && f <= MaxValue)
+            if (current >= MinValue && current <= MaxValue)
             {
-                CurrentValue = f;
+                CurrentValue = current;
                 if (sliderValueChangedHandler != null)
                 {
-                    sliderValueChangedHandler(this, new SliderValueChangedEventArgs { CurrentValue = f });
+                    sliderValueChangedHandler(this, new SliderValueChangedEventArgs { CurrentValue = current });
                 }
                 return true;
             }
@@ -1218,7 +1610,7 @@ namespace Tizen.NUI.Components
         }
 
         /// <summary>
-        /// Minimum increment.
+        /// Gets minimum increment for Accessibility.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override double AccessibilityGetMinimumIncrement()
@@ -1351,6 +1743,11 @@ namespace Tizen.NUI.Components
 
         private bool OnTouchEventForTrack(object source, TouchEventArgs e)
         {
+            if (!IsEnabled)
+            {
+                return false;
+            }
+
             PointStateType state = e.Touch.GetState(0);
             if (state == PointStateType.Down)
             {
@@ -1455,7 +1852,18 @@ namespace Tizen.NUI.Components
             isFocused = isFocusedNew;
             isPressed = isPressedNew;
 
-            if (!isFocused && !isPressed)
+            if(!IsEnabled) // Disabled
+            {
+                ControlState = ControlState.Disabled;
+
+                if (stateChangedHandler != null)
+                {
+                    StateChangedArgs args = new StateChangedArgs();
+                    args.CurrentState = (ControlStates)ControlStates.Disabled;
+                    stateChangedHandler(this, args);
+                }
+            }
+            else if (!isFocused && !isPressed)
             {
                 ControlState = ControlState.Normal;
 

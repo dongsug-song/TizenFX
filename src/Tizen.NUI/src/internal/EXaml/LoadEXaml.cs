@@ -22,138 +22,49 @@ namespace Tizen.NUI.EXaml
 {
     internal static class LoadEXaml
     {
-        internal static void Load(object view, string xaml)
+        internal static GlobalDataList GatherDataList(string xaml)
         {
             var globalDataList = new GlobalDataList();
 
-            CreateInstanceAction.Root = view;
-
-            int index = 0;
-
-            var createInstance = new CreateInstanceAction(globalDataList, null);
-            var getObjectByProperty = new GetObjectByPropertyAction(globalDataList, null);
-            var addExistInstance = new AddExistInstanceAction(globalDataList, null);
-            var registerXName = new RegisterXNameAction(globalDataList, null);
-            var setProperty = new SetPropertyAction(globalDataList, null);
-            var addToCollectionProperty = new AddToCollectionPropertyAction(globalDataList, null);
-            var addEvent = new AddEventAction(globalDataList, null);
-            var setBindalbeProperty = new SetBindalbePropertyAction(globalDataList, null);
-            var addObject = new CallAddMethodAction(globalDataList, null);
-            var setDynamicResourceAction = new SetDynamicResourceAction(globalDataList, null);
-            var addToResourceDictionaryAction = new AddToResourceDictionaryAction(globalDataList, null);
-            var setBindingAction = new SetBindingAction(globalDataList, null);
+            Action currentAction = new RootAction(globalDataList);
 
             foreach (char c in xaml)
             {
-                if (null == currentOp)
-                {
-                    switch (c)
-                    {
-                        case '<':
-                            if (0 == index)
-                            {
-                                currentOp = new GatherAssembliesBlock(globalDataList, null);
-                                currentOp.Init();
-                                index++;
-                            }
-                            else if (1 == index)
-                            {
-                                currentOp = new GatherTypesBlock(globalDataList, null);
-                                currentOp.Init();
-                                index++;
-                            }
-                            else if (2 == index)
-                            {
-                                currentOp = new GatherPropertiesBlock(globalDataList, null);
-                                currentOp.Init();
-                                index++;
-                            }
-                            else if (3 == index)
-                            {
-                                currentOp = new GatherEventsBlock(globalDataList, null);
-                                currentOp.Init();
-                                index++;
-                            }
-                            else if (4 == index)
-                            {
-                                currentOp = new GatherMethodsBlock(globalDataList, null);
-                                currentOp.Init();
-                                index++;
-                            }
-                            else if (5 == index)
-                            {
-                                currentOp = new GatherBindablePropertiesBlock(globalDataList, null);
-                                currentOp.Init();
-                                index++;
-                            }
-                            break;
-
-                        case '{':
-                            currentOp = createInstance;
-                            currentOp.Init();
-                            break;
-
-                        case '`':
-                            currentOp = getObjectByProperty;
-                            currentOp.Init();
-                            break;
-
-                        case '@':
-                            currentOp = addExistInstance;
-                            currentOp.Init();
-                            break;
-
-                        case '&':
-                            currentOp = registerXName;
-                            currentOp.Init();
-                            break;
-
-                        case '[':
-                            currentOp = setProperty;
-                            currentOp.Init();
-                            break;
-
-                        case '~':
-                            currentOp = addToCollectionProperty;
-                            currentOp.Init();
-                            break;
-
-                        case '#':
-                            currentOp = addEvent;
-                            currentOp.Init();
-                            break;
-
-                        case '!':
-                            currentOp = setBindalbeProperty;
-                            currentOp.Init();
-                            break;
-
-                        case '$':
-                            currentOp = setDynamicResourceAction;
-                            currentOp.Init();
-                            break;
-
-                        case '^':
-                            currentOp = addObject;
-                            currentOp.Init();
-                            break;
-
-                        case '*':
-                            currentOp = addToResourceDictionaryAction;
-                            currentOp.Init();
-                            break;
-
-                        case '%':
-                            currentOp = setBindingAction;
-                            currentOp.Init();
-                            break;
-                    }
-                }
-                else
-                {
-                    currentOp = currentOp.DealChar(c);
-                }
+                currentAction = currentAction.DealChar(c);
             }
+
+            foreach (var op in globalDataList.PreLoadOperations)
+            {
+                op.Do();
+            }
+
+            return globalDataList;
+        }
+
+        internal static void Load(object view, string xaml, out GlobalDataList xamlData)
+        {
+            var globalDataList = GatherDataList(xaml);
+
+            globalDataList.Root = view;
+
+            foreach (var op in globalDataList.Operations)
+            {
+                op.Do();
+            }
+
+            xamlData = globalDataList;
+        }
+
+        internal static void Load(object view, object preloadData)
+        {
+            var globalDataList = preloadData as GlobalDataList;
+
+            if (null == globalDataList)
+            {
+                return;
+            }
+
+            globalDataList.Root = view;
 
             foreach (var op in globalDataList.Operations)
             {
@@ -161,6 +72,15 @@ namespace Tizen.NUI.EXaml
             }
         }
 
-        private static Action currentOp = null;
+        internal static void RemoveEventsInXaml(object eXamlData)
+        {
+            if (eXamlData is GlobalDataList globalDataList)
+            {
+                foreach (var op in globalDataList.RemoveEventOperations)
+                {
+                    op.Do();
+                }
+            }
+        }
     }
 }

@@ -15,20 +15,25 @@
  *
  */
 
+using System;
+using System.ComponentModel;
+using Tizen.NUI.BaseComponents;
+
 namespace Tizen.NUI
 {
-    using System;
-    using System.ComponentModel;
-    using Tizen.NUI.BaseComponents;
-
     internal class TransitionItemBase : BaseHandle
     {
+        private bool appearingTransition = true;
+
         /// <summary>
         /// Creates an initialized TransitionItemBase.<br />
         /// </summary>
-        public TransitionItemBase(View target, bool isEntering, TimePeriod timePeriod, AlphaFunction alphaFunction) : this(Interop.TransitionItemBase.New(/*target.SwigCPtr, isEntering, timePeriod.SwigCPtr*/), true)
+        public TransitionItemBase(View target, bool appearingTransition, TimePeriod timePeriod, AlphaFunction alphaFunction) : this(Interop.TransitionItemBase.New(), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            
+            AppearingTransition = appearingTransition;
+            TimePeriod = timePeriod;
             AlphaFunction = alphaFunction;
         }
 
@@ -75,12 +80,29 @@ namespace Tizen.NUI
         /// <summary>
         /// Gets or sets whether the View moves with child or not.
         /// </summary>
-        public bool TransitionWithChild
+        public virtual bool TransitionWithChild
         {
             set
             {
                 Interop.TransitionItemBase.TransitionWithChild(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether this transition is appearing transition or not.
+        /// </summary>
+        public bool AppearingTransition
+        {
+            set
+            {
+                appearingTransition = value;
+                Interop.TransitionItemBase.SetAppearingTransition(SwigCPtr, value);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            }
+            get
+            {
+                return appearingTransition;
             }
         }
 
@@ -101,11 +123,6 @@ namespace Tizen.NUI
             TransitionItemBase ret = Registry.GetManagedBaseHandleFromNativePtr(handle) as TransitionItemBase;
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(TransitionItemBase obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         internal TransitionItemBase(TransitionItemBase handle) : this(Interop.TransitionItemBase.NewTransitionItemBase(TransitionItemBase.getCPtr(handle)), true)

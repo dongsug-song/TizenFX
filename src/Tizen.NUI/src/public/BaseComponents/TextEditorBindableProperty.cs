@@ -101,6 +101,10 @@ namespace Tizen.NUI.BaseComponents
             var textEditor = (TextEditor)bindable;
             if (newValue != null)
             {
+                if (GraphicsTypeManager.Instance.ScalingFactor != 0.0f)
+                {
+                    newValue = (float)newValue * GraphicsTypeManager.Instance.ScalingFactor;
+                }
                 Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.PointSize, new Tizen.NUI.PropertyValue((float)newValue));
             }
         }),
@@ -109,6 +113,10 @@ namespace Tizen.NUI.BaseComponents
             var textEditor = (TextEditor)bindable;
             float temp = 0.0f;
             Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.PointSize).Get(out temp);
+            if (GraphicsTypeManager.Instance.ScalingFactor != 0.0f)
+            {
+                temp = (float)temp / GraphicsTypeManager.Instance.ScalingFactor;
+            }
             return temp;
         }));
         /// This will be public opened in tizen_5.0 after ACR done. Before ACR, need to be hidden as inhouse API.
@@ -513,6 +521,10 @@ namespace Tizen.NUI.BaseComponents
             var textEditor = (TextEditor)bindable;
             if (newValue != null)
             {
+                if (GraphicsTypeManager.Instance.ScalingFactor != 0.0f)
+                {
+                    newValue = (float)newValue * GraphicsTypeManager.Instance.ScalingFactor;
+                }
                 Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.InputPointSize, new Tizen.NUI.PropertyValue((float)newValue));
             }
         }),
@@ -521,6 +533,10 @@ namespace Tizen.NUI.BaseComponents
             var textEditor = (TextEditor)bindable;
             float temp = 0.0f;
             Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.InputPointSize).Get(out temp);
+            if (GraphicsTypeManager.Instance.ScalingFactor != 0.0f)
+            {
+                temp = (float)temp / GraphicsTypeManager.Instance.ScalingFactor;
+            }
             return temp;
         }));
         /// This will be public opened in tizen_5.0 after ACR done. Before ACR, need to be hidden as inhouse API.
@@ -1024,5 +1040,165 @@ namespace Tizen.NUI.BaseComponents
             Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.InputMethodSettings).Get(temp);
             return temp;
         }));
+        /// This will be public opened in tizen_6.5 after ACR done. Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty EllipsisProperty = BindableProperty.Create(nameof(TextEditor.Ellipsis), typeof(bool), typeof(TextEditor), false, propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
+        {
+            var textEditor = (TextEditor)bindable;
+            if (newValue != null)
+            {
+                Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.ELLIPSIS, new Tizen.NUI.PropertyValue((bool)newValue));
+            }
+        }),
+        defaultValueCreator: (BindableProperty.CreateDefaultValueDelegate)((bindable) =>
+        {
+            var textEditor = (TextEditor)bindable;
+            bool temp = false;
+            Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.ELLIPSIS).Get(out temp);
+            return temp;
+        }));
+        /// This will be public opened in tizen_6.5 after ACR done. Before ACR, need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty EllipsisPositionProperty = BindableProperty.Create(nameof(EllipsisPosition), typeof(EllipsisPosition), typeof(TextEditor), EllipsisPosition.End, propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
+        {
+            var textEditor = (TextEditor)bindable;
+            if (newValue != null)
+            {
+                Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.EllipsisPosition, new Tizen.NUI.PropertyValue((int)newValue));
+            }
+        }),
+        defaultValueCreator: (BindableProperty.CreateDefaultValueDelegate)((bindable) =>
+        {
+            var textEditor = (TextEditor)bindable;
+            int temp = 0;
+            Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.EllipsisPosition).Get(out temp);
+            return (EllipsisPosition)temp;
+        }));
+
+        /// currently need to be hidden as inhouse API.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty MinLineSizeProperty = BindableProperty.Create(nameof(MinLineSize), typeof(float), typeof(TextEditor), default(float), propertyChanged: (BindableProperty.BindingPropertyChangedDelegate)((bindable, oldValue, newValue) =>
+        {
+            var textEditor = (TextEditor)bindable;
+            if (newValue != null)
+            {
+                Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.MinLineSize, new Tizen.NUI.PropertyValue((float)newValue));
+            }
+        }),
+        defaultValueCreator: (BindableProperty.CreateDefaultValueDelegate)((bindable) =>
+        {
+            var textEditor = (TextEditor)bindable;
+            float temp = 0.0f;
+            Tizen.NUI.Object.GetProperty((System.Runtime.InteropServices.HandleRef)textEditor.SwigCPtr, TextEditor.Property.MinLineSize).Get(out temp);
+            return temp;
+        }));
+
+        /// <summary>
+        /// TranslatableTextProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty TranslatableTextProperty = BindableProperty.Create(nameof(TranslatableText), typeof(string), typeof(Tizen.NUI.BaseComponents.TextEditor), string.Empty, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            if (newValue != null)
+            {
+                instance.InternalTranslatableText = (string)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            return instance.InternalTranslatableText;
+        });
+
+        /// <summary>
+        /// TranslatablePlaceholderTextProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty TranslatablePlaceholderTextProperty = BindableProperty.Create(nameof(TranslatablePlaceholderText), typeof(string), typeof(Tizen.NUI.BaseComponents.TextEditor), string.Empty, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            if (newValue != null)
+            {
+                instance.InternalTranslatablePlaceholderText = (string)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            return instance.InternalTranslatablePlaceholderText;
+        });
+
+        /// <summary>
+        /// EnableEditingProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty EnableEditingProperty = BindableProperty.Create(nameof(EnableEditing), typeof(bool), typeof(Tizen.NUI.BaseComponents.TextEditor), false, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            if (newValue != null)
+            {
+                instance.InternalEnableEditing = (bool)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            return instance.InternalEnableEditing;
+        });
+
+        /// <summary>
+        /// HorizontalScrollPositionProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty HorizontalScrollPositionProperty = BindableProperty.Create(nameof(HorizontalScrollPosition), typeof(int), typeof(Tizen.NUI.BaseComponents.TextEditor), 0, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            if (newValue != null)
+            {
+                instance.InternalHorizontalScrollPosition = (int)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            return instance.InternalHorizontalScrollPosition;
+        });
+
+        /// <summary>
+        /// VerticalScrollPositionProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty VerticalScrollPositionProperty = BindableProperty.Create(nameof(VerticalScrollPosition), typeof(int), typeof(Tizen.NUI.BaseComponents.TextEditor), 0, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            if (newValue != null)
+            {
+                instance.InternalVerticalScrollPosition = (int)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            return instance.InternalVerticalScrollPosition;
+        });
+
+        /// <summary>
+        /// PrimaryCursorPositionProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty PrimaryCursorPositionProperty = BindableProperty.Create(nameof(PrimaryCursorPosition), typeof(int), typeof(Tizen.NUI.BaseComponents.TextEditor), 0, propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            if (newValue != null)
+            {
+                instance.InternalPrimaryCursorPosition = (int)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (Tizen.NUI.BaseComponents.TextEditor)bindable;
+            return instance.InternalPrimaryCursorPosition;
+        });
     }
 }

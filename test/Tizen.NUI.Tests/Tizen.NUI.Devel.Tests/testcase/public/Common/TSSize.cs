@@ -531,33 +531,6 @@ namespace Tizen.NUI.Devel.Tests
 
         [Test]
         [Category("P1")]
-        [Description("Size Dispose.")]
-        [Property("SPEC", "Tizen.NUI.Size.Dispose M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR MCST")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void SizeDispose()
-        {
-            tlog.Debug(tag, $"SizeDispose START");
-
-            var testingTarget = new Size();
-            Assert.IsNotNull(testingTarget, "Can't create success object Size");
-            Assert.IsInstanceOf<Size>(testingTarget, "Should be an instance of Size type.");
-
-            try
-            {
-                testingTarget.Dispose();
-            }
-            catch (Exception e)
-            {
-                Assert.Fail("Caught Exception" + e.ToString());
-            }
-
-            tlog.Debug(tag, $"SizeDispose END (OK)");
-        }
-
-        [Test]
-        [Category("P1")]
         [Description("Size GetHashCode.")]
         [Property("SPEC", "Tizen.NUI.Size.GetHashCode M")]
         [Property("SPEC_URL", "-")]
@@ -600,6 +573,29 @@ namespace Tizen.NUI.Devel.Tests
 
             testingTarget.Dispose();
             tlog.Debug(tag, $"SizeConstructorWithFloat END (OK)");
+        }
+
+        [Test]
+        [Category("P1")]
+        [Description("Size GetSizeFromPtr.")]
+        [Property("SPEC", "Tizen.NUI.Size.GetSizeFromPtr M")]
+        [Property("SPEC_URL", "-")]
+        [Property("CRITERIA", "MR")]
+        [Property("AUTHOR", "guowei.wang@samsung.com")]
+        public void SizeGetSizeFromPtr()
+        {
+            tlog.Debug(tag, $"SizeGetSizeFromPtr START");
+
+            using (Size size = new Size(100, 50))
+            {
+                var testingTarget = Size.GetSizeFromPtr(size.SwigCPtr.Handle);
+                Assert.AreEqual(100, testingTarget.Width, "Should be equal!");
+                Assert.AreEqual(50, testingTarget.Height, "Should be equal!");
+
+                testingTarget.Dispose();
+            }
+
+            tlog.Debug(tag, $"SizeGetSizeFromPtr END (OK)");
         }
     }
 }

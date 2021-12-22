@@ -37,6 +37,13 @@ namespace Tizen.NUI
         /// The instance of ResourceManager.
         /// </summary>
         private static System.Resources.ResourceManager resourceManager = null;
+        private static string currentLoadedXaml = null;
+
+        /// <summary>
+        /// Xaml loaded delegate.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public delegate void XamlLoadedHandler(string xamlName);
 
         static NUIApplication()
         {
@@ -158,6 +165,19 @@ namespace Tizen.NUI
         }
 
         /// <summary>
+        /// The constructor with a stylesheet, window mode and default window type.
+        /// It is the only way to create an IME window.
+        /// </summary>
+        /// <param name="styleSheet">The styleSheet URL.</param>
+        /// <param name="windowMode">The windowMode.</param>
+        /// <param name="type">The default window type.</param>
+        /// <since_tizen> 9 </since_tizen>
+        public NUIApplication(string styleSheet, WindowMode windowMode, WindowType type) : base(new NUICoreBackend(styleSheet, windowMode, type))
+        {
+            ExternalThemeManager.Initialize();
+        }
+
+        /// <summary>
         /// Occurs whenever the application is resumed.
         /// </summary>
         /// <since_tizen> 4 </since_tizen>
@@ -168,6 +188,12 @@ namespace Tizen.NUI
         /// </summary>
         /// <since_tizen> 4 </since_tizen>
         public event EventHandler Paused;
+
+        /// <summary>
+        /// Xaml loaded event.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static event XamlLoadedHandler XamlLoaded;
 
         /// <summary>
         /// Enumeration for deciding whether a NUI application window is opaque or transparent.
@@ -214,6 +240,26 @@ namespace Tizen.NUI
             [EditorBrowsable(EditorBrowsableState.Never)]
             ThemeChangeSensitive = 1 << 1,
         };
+
+        /// <summary>
+        /// Current loaded xaml's full name.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static string CurrentLoadedXaml
+        {
+            get
+            {
+                return currentLoadedXaml;
+            }
+            set
+            {
+                if (currentLoadedXaml != value)
+                {
+                    currentLoadedXaml = value;
+                    XamlLoaded?.Invoke(value);
+                }
+            }
+        }
 
         /// <summary>
         /// ResourceManager to handle multilingual.
@@ -443,21 +489,6 @@ namespace Tizen.NUI
             ThemeManager.Preload();
             IsPreload = true;
         }
-
-        /// <summary>
-        /// This is used to improve application launch performance.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendLaunchRequest(AppControl appControl)
-        {
-            TransitionOptions?.SendLaunchRequest(appControl);
-        }
-
-        /// <summary>
-        /// This is used to improve application launch performance.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public TransitionOptions TransitionOptions { get; set; }
 
         /// <summary>
         /// Check if it is loaded as dotnet-loader-nui.

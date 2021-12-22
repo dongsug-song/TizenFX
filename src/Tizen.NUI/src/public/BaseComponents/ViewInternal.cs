@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Tizen.NUI.Binding;
 
 namespace Tizen.NUI.BaseComponents
 {
@@ -34,7 +35,25 @@ namespace Tizen.NUI.BaseComponents
     /// <since_tizen> 3 </since_tizen>
     public partial class View
     {
+        private MergedStyle mergedStyle = null;
         internal string styleName;
+
+        internal MergedStyle MergedStyle
+        {
+            get
+            {
+                if (null == mergedStyle)
+                {
+                    mergedStyle = new MergedStyle(GetType(), this);
+                }
+
+                return mergedStyle;
+            }
+        }
+        internal virtual LayoutItem CreateDefaultLayout()
+        {
+            return new AbsoluteLayout();
+        }
 
         internal class ThemeData
         {
@@ -390,126 +409,6 @@ namespace Tizen.NUI.BaseComponents
                 SetProperty(View.Property.DownFocusableViewId, setValue);
                 setValue.Dispose();
             }
-        }
-
-        internal void Raise()
-        {
-            var parentChildren = GetParent()?.Children;
-
-            if (parentChildren != null)
-            {
-                int currentIndex = parentChildren.IndexOf(this);
-
-                // If the view is not already the last item in the list.
-                if (currentIndex >= 0 && currentIndex < parentChildren.Count - 1)
-                {
-                    View temp = parentChildren[currentIndex + 1];
-                    parentChildren[currentIndex + 1] = this;
-                    parentChildren[currentIndex] = temp;
-
-                    Interop.NDalic.Raise(SwigCPtr);
-                    if (NDalicPINVOKE.SWIGPendingException.Pending)
-                        throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-                }
-            }
-        }
-
-        internal void Lower()
-        {
-            var parentChildren = GetParent()?.Children;
-
-            if (parentChildren != null)
-            {
-                int currentIndex = parentChildren.IndexOf(this);
-
-                // If the view is not already the first item in the list.
-                if (currentIndex > 0 && currentIndex < parentChildren.Count)
-                {
-                    View temp = parentChildren[currentIndex - 1];
-                    parentChildren[currentIndex - 1] = this;
-                    parentChildren[currentIndex] = temp;
-
-                    Interop.NDalic.Lower(SwigCPtr);
-                    if (NDalicPINVOKE.SWIGPendingException.Pending)
-                        throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Raises the view to above the target view.
-        /// </summary>
-        /// <remarks>The sibling order of views within the parent will be updated automatically.
-        /// Views on the level above the target view will still be shown above this view.
-        /// Raising this view above views with the same sibling order as each other will raise this view above them.
-        /// Once a raise or lower API is used that view will then have an exclusive sibling order independent of insertion.
-        /// </remarks>
-        /// <param name="target">Will be raised above this view.</param>
-        internal void RaiseAbove(View target)
-        {
-            var parentChildren = GetParent()?.Children;
-
-            if (parentChildren != null)
-            {
-                int currentIndex = parentChildren.IndexOf(this);
-                int targetIndex = parentChildren.IndexOf(target);
-
-                if (currentIndex < 0 || targetIndex < 0 ||
-                    currentIndex >= parentChildren.Count || targetIndex >= parentChildren.Count)
-                {
-                    NUILog.Error("index should be bigger than 0 and less than children of layer count");
-                    return;
-                }
-                // If the currentIndex is less than the target index and the target has the same parent.
-                if (currentIndex < targetIndex)
-                {
-                    parentChildren.Remove(this);
-                    parentChildren.Insert(targetIndex, this);
-
-                    Interop.NDalic.RaiseAbove(SwigCPtr, View.getCPtr(target));
-                    if (NDalicPINVOKE.SWIGPendingException.Pending)
-                        throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Lowers the view to below the target view.
-        /// </summary>
-        /// <remarks>The sibling order of views within the parent will be updated automatically.
-        /// Lowering this view below views with the same sibling order as each other will lower this view above them.
-        /// Once a raise or lower API is used that view will then have an exclusive sibling order independent of insertion.
-        /// </remarks>
-        /// <param name="target">Will be lowered below this view.</param>
-        internal void LowerBelow(View target)
-        {
-            var parentChildren = GetParent()?.Children;
-
-            if (parentChildren != null)
-            {
-                int currentIndex = parentChildren.IndexOf(this);
-                int targetIndex = parentChildren.IndexOf(target);
-                if (currentIndex < 0 || targetIndex < 0 ||
-                   currentIndex >= parentChildren.Count || targetIndex >= parentChildren.Count)
-                {
-                    NUILog.Error("index should be bigger than 0 and less than children of layer count");
-                    return;
-                }
-
-                // If the currentIndex is not already the 0th index and the target has the same parent.
-                if ((currentIndex != 0) && (targetIndex != -1) &&
-                    (currentIndex > targetIndex))
-                {
-                    parentChildren.Remove(this);
-                    parentChildren.Insert(targetIndex, this);
-
-                    Interop.NDalic.LowerBelow(SwigCPtr, View.getCPtr(target));
-                    if (NDalicPINVOKE.SWIGPendingException.Pending)
-                        throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-                }
-            }
-
         }
 
         internal string GetName()
@@ -931,6 +830,21 @@ namespace Tizen.NUI.BaseComponents
             return ret;
         }
 
+        internal void SetKeyboardFocusableChildren(bool focusable)
+        {
+            Interop.ActorInternal.SetKeyboardFocusableChildren(SwigCPtr, focusable);
+            if (NDalicPINVOKE.SWIGPendingException.Pending)
+                throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        internal bool AreChildrenKeyBoardFocusable()
+        {
+            bool ret = Interop.ActorInternal.AreChildrenKeyBoardFocusable(SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending)
+                throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return ret;
+        }
+
         internal void SetFocusableInTouch(bool enabled)
         {
             Interop.ActorInternal.SetFocusableInTouch(SwigCPtr, enabled);
@@ -1210,7 +1124,50 @@ namespace Tizen.NUI.BaseComponents
                 return;
             }
 
+#if NUI_DEBUG_ON
+            NUILog.Debug($"[Dispose] View.Dispose({type}) START");
+            NUILog.Debug($"[Dispose] type:{GetType()} copyNativeHandle:{GetBaseHandleCPtrHandleRef.Handle.ToString("X8")}");
+            if(HasBody())
+            {
+                NUILog.Debug($"[Dispose] ID:{Interop.Actor.GetId(GetBaseHandleCPtrHandleRef)} Name:{Interop.Actor.GetName(GetBaseHandleCPtrHandleRef)}");
+            }
+            else
+            {
+                NUILog.Debug($"has no native body!");
+            }
+#endif
+
+
             //_mergedStyle = null;
+
+            internalMaximumSize?.Dispose();
+            internalMaximumSize = null;
+            internalMinimumSize?.Dispose();
+            internalMinimumSize = null;
+            internalMargin?.Dispose();
+            internalMargin = null;
+            internalPadding?.Dispose();
+            internalPadding = null;
+            internalSizeModeFactor?.Dispose();
+            internalSizeModeFactor = null;
+            internalCellIndex?.Dispose();
+            internalCellIndex = null;
+            internalBackgroundColor?.Dispose();
+            internalBackgroundColor = null;
+            internalColor?.Dispose();
+            internalColor = null;
+            internalPivotPoint?.Dispose();
+            internalPivotPoint = null;
+            internalPosition?.Dispose();
+            internalPosition = null;
+            internalPosition2D?.Dispose();
+            internalPosition2D = null;
+            internalScale?.Dispose();
+            internalScale = null;
+            internalSize?.Dispose();
+            internalSize = null;
+            internalSize2D?.Dispose();
+            internalSize2D = null;
 
             if (type == DisposeTypes.Explicit)
             {
@@ -1225,23 +1182,31 @@ namespace Tizen.NUI.BaseComponents
                         ThemeManager.ThemeChangedInternal.Remove(OnThemeChanged);
                     }
                 }
+                if (widthConstraint != null)
+                {
+                    widthConstraint.Remove();
+                    widthConstraint.Dispose();
+                }
+                if (heightConstraint != null)
+                {
+                    heightConstraint.Remove();
+                    heightConstraint.Dispose();
+                }
             }
 
             //Release your own unmanaged resources here.
             //You should not access any managed member here except static instance.
             //because the execution order of Finalizes is non-deterministic.
 
-            // equivalent to "if (this != null)". more clear to understand.
-            if (this.HasBody())
+            DisConnectFromSignals();
+
+            foreach (View view in Children)
             {
-                DisConnectFromSignals();
-
-                foreach (View view in Children)
-                {
-                    view.InternalParent = null;
-                }
-
+                view.InternalParent = null;
             }
+
+            NUILog.Debug($"[Dispose] View.Dispose({type}) END");
+            NUILog.Debug($"=============================");
 
             base.Dispose(type);
         }
@@ -1286,117 +1251,142 @@ namespace Tizen.NUI.BaseComponents
 
         private void DisConnectFromSignals()
         {
-            // Save current CPtr.
-            global::System.Runtime.InteropServices.HandleRef currentCPtr = SwigCPtr;
-
-            // Use BaseHandle CPtr as current might have been deleted already in derived classes.
-            SwigCPtr = GetBaseHandleCPtrHandleRef;
+            if (HasBody() == false)
+            {
+                NUILog.Debug($"[Dispose] DisConnectFromSignals() No native body! No need to Disconnect Signals!");
+                return;
+            }
+            NUILog.Debug($"[Dispose] DisConnectFromSignals START");
+            NUILog.Debug($"[Dispose] View.DisConnectFromSignals() type:{GetType()} copyNativeHandle:{GetBaseHandleCPtrHandleRef.Handle.ToString("X8")}");
+            NUILog.Debug($"[Dispose] ID:{Interop.Actor.GetId(GetBaseHandleCPtrHandleRef)} Name:{Interop.Actor.GetName(GetBaseHandleCPtrHandleRef)}");
 
             if (onRelayoutEventCallback != null)
             {
-                ViewSignal signal = this.OnRelayoutSignal();
+                NUILog.Debug($"[Dispose] onRelayoutEventCallback");
+
+                using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnRelayoutSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(onRelayoutEventCallback);
-                signal?.Dispose();
                 onRelayoutEventCallback = null;
             }
 
             if (offWindowEventCallback != null)
             {
-                ViewSignal signal = this.OffWindowSignal();
+                NUILog.Debug($"[Dispose] offWindowEventCallback");
+
+                using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOffSceneSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(offWindowEventCallback);
-                signal?.Dispose();
                 offWindowEventCallback = null;
             }
 
             if (onWindowEventCallback != null)
             {
-                ViewSignal signal = this.OnWindowSignal();
+                NUILog.Debug($"[Dispose] onWindowEventCallback");
+
+                using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnSceneSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(onWindowEventCallback);
-                signal?.Dispose();
                 onWindowEventCallback = null;
             }
 
             if (wheelEventCallback != null)
             {
-                WheelSignal signal = this.WheelEventSignal();
+                NUILog.Debug($"[Dispose] wheelEventCallback");
+
+                using WheelSignal signal = new WheelSignal(Interop.ActorSignal.ActorWheelEventSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(wheelEventCallback);
-                signal?.Dispose();
+                wheelEventCallback = null;
             }
 
             if (WindowWheelEventHandler != null)
             {
+                NUILog.Debug($"[Dispose] WindowWheelEventHandler");
+
                 NUIApplication.GetDefaultWindow().WheelEvent -= OnWindowWheelEvent;
+                WindowWheelEventHandler = null;
             }
 
             if (hoverEventCallback != null)
             {
-                HoverSignal signal = this.HoveredSignal();
+                NUILog.Debug($"[Dispose] hoverEventCallback");
+
+                using HoverSignal signal = new HoverSignal(Interop.ActorSignal.ActorHoveredSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(hoverEventCallback);
-                signal?.Dispose();
+                hoverEventCallback = null;
             }
 
             if (interceptTouchDataCallback != null)
             {
-                TouchDataSignal signal = this.InterceptTouchSignal();
+                NUILog.Debug($"[Dispose] interceptTouchDataCallback");
+
+                using TouchDataSignal signal = new TouchDataSignal(Interop.ActorSignal.ActorInterceptTouchSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(interceptTouchDataCallback);
-                signal?.Dispose();
+                interceptTouchDataCallback = null;
             }
 
             if (touchDataCallback != null)
             {
-                TouchDataSignal signal = this.TouchSignal();
+                NUILog.Debug($"[Dispose] touchDataCallback");
+
+                using TouchDataSignal signal = new TouchDataSignal(Interop.ActorSignal.ActorTouchSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(touchDataCallback);
-                signal?.Dispose();
+                touchDataCallback = null;
             }
 
             if (ResourcesLoadedCallback != null)
             {
-                ViewSignal signal = this.ResourcesLoadedSignal();
+                NUILog.Debug($"[Dispose] ResourcesLoadedCallback");
+
+                using ViewSignal signal = new ViewSignal(Interop.View.ResourceReadySignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(ResourcesLoadedCallback);
-                signal?.Dispose();
                 ResourcesLoadedCallback = null;
             }
 
             if (keyCallback != null)
             {
-                ControlKeySignal signal = this.KeyEventSignal();
+                NUILog.Debug($"[Dispose] keyCallback");
+
+                using ControlKeySignal signal = new ControlKeySignal(Interop.ViewSignal.KeyEventSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(keyCallback);
-                signal?.Dispose();
+                keyCallback = null;
             }
 
             if (keyInputFocusLostCallback != null)
             {
-                KeyInputFocusSignal signal = this.KeyInputFocusLostSignal();
+                NUILog.Debug($"[Dispose] keyInputFocusLostCallback");
+
+                using KeyInputFocusSignal signal = new KeyInputFocusSignal(Interop.ViewSignal.KeyInputFocusLostSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(keyInputFocusLostCallback);
-                signal?.Dispose();
+                keyInputFocusLostCallback = null;
+                keyInputFocusLostEventHandler = null;
             }
 
             if (keyInputFocusGainedCallback != null)
             {
-                KeyInputFocusSignal signal = this.KeyInputFocusGainedSignal();
+                NUILog.Debug($"[Dispose] keyInputFocusGainedCallback");
+
+                using KeyInputFocusSignal signal = new KeyInputFocusSignal(Interop.ViewSignal.KeyInputFocusGainedSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(keyInputFocusGainedCallback);
-                signal?.Dispose();
+                keyInputFocusGainedCallback = null;
+                keyInputFocusGainedEventHandler = null;
             }
 
             if (backgroundResourceLoadedCallback != null)
             {
-                ViewSignal signal = this.ResourcesLoadedSignal();
+                NUILog.Debug($"[Dispose] backgroundResourceLoadedCallback");
+
+                using ViewSignal signal = new ViewSignal(Interop.View.ResourceReadySignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(backgroundResourceLoadedCallback);
-                signal?.Dispose();
                 backgroundResourceLoadedCallback = null;
             }
 
             if (onWindowSendEventCallback != null)
             {
-                ViewSignal signal = this.OnWindowSignal();
+                NUILog.Debug($"[Dispose] onWindowSendEventCallback");
+
+                using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnSceneSignal(GetBaseHandleCPtrHandleRef), false);
                 signal?.Disconnect(onWindowSendEventCallback);
-                signal?.Dispose();
                 onWindowSendEventCallback = null;
             }
-
-            // BaseHandle CPtr is used in Registry and there is danger of deletion if we keep using it here.
-            // Restore current CPtr.
-            SwigCPtr = currentCPtr;
+            NUILog.Debug($"[Dispose] DisConnectFromSignals END");
         }
 
         /// <summary>
@@ -1417,7 +1407,7 @@ namespace Tizen.NUI.BaseComponents
                 {
                     refinedStyle = initialStyle?.Merge(style);
                 }
-                ApplyStyle(style);
+                ApplyStyle(refinedStyle);
             }
 
             // Listen theme change event if needs.
@@ -1467,11 +1457,6 @@ namespace Tizen.NUI.BaseComponents
         private void OnMarginChanged(ushort start, ushort end, ushort top, ushort bottom)
         {
             Margin = new Extents(start, end, top, bottom);
-        }
-
-        private void OnColorChanged(float r, float g, float b, float a)
-        {
-            Color = new Color(r, g, b, a);
         }
 
         private void OnAnchorPointChanged(float x, float y, float z)

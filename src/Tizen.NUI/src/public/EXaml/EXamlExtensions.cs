@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Tizen.NUI.BaseComponents;
 
 namespace Tizen.NUI.EXaml
 {
@@ -36,6 +37,33 @@ namespace Tizen.NUI.EXaml
             string xamlScript = GetXamlFromPath(path);
             LoadEXaml.Load(view, xamlScript);
             return view;
+        }
+
+        /// Internal used, will never be opened.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void RemoveEventsInXaml(object eXamlData)
+        {
+            LoadEXaml.RemoveEventsInXaml(eXamlData);
+        }
+
+        /// Internal used, will never be opened.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void DisposeXamlElements(object view)
+        {
+            if (view is Container container)
+            {
+                for (int i = (int)container.ChildCount - 1; i >= 0; i--)
+                {
+                    var child = container.Children[i];
+
+                    if (child.IsCreateByXaml)
+                    {
+                        child.Unparent();
+                        DisposeXamlElements(child);
+                        child.Dispose();
+                    }
+                }
+            }
         }
 
         /// Internal used, will never be opened.
@@ -78,6 +106,51 @@ namespace Tizen.NUI.EXaml
             return view;
         }
 
+        /// Internal used, will never be opened.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object LoadFromEXamlByRelativePath<T>(this T view, string eXamlPath)
+        {
+            GlobalDataList eXamlData = null;
+
+            if (null == eXamlPath)
+            {
+                return eXamlData;
+            }
+
+            MainAssembly = view.GetType().Assembly;
+
+            string resource = Tizen.Applications.Application.Current.DirectoryInfo.Resource;
+
+            Tizen.Log.Fatal("NUI", "the resource path: " + resource);
+            int windowWidth = NUIApplication.GetDefaultWindow().Size.Width;
+            int windowHeight = NUIApplication.GetDefaultWindow().Size.Height;
+
+            string likelyResourcePath = resource + eXamlPath;
+
+            //Find the xaml file in the layout folder
+            if (File.Exists(likelyResourcePath))
+            {
+                StreamReader reader = new StreamReader(likelyResourcePath);
+                var xaml = reader.ReadToEnd();
+                reader.Close();
+                reader.Dispose();
+
+                LoadEXaml.Load(view, xaml, out eXamlData);
+                var filePath = likelyResourcePath.Replace("\\", "/");
+                if (filePath.Contains("/"))
+                {
+                    var xamlName = filePath.Substring(filePath.LastIndexOf("/") + 1, filePath.LastIndexOf(".") - filePath.LastIndexOf("/") - 1);
+                    NUIApplication.CurrentLoadedXaml = xamlName;
+                }
+            }
+            else
+            {
+                throw new Exception($"Can't find examl file {likelyResourcePath}");
+            }
+
+            return eXamlData;
+        }
+
         /// Used for TCT and TC coverage, will never be opened.
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static T LoadFromEXaml<T>(this T view, string eXamlStr)
@@ -92,6 +165,22 @@ namespace Tizen.NUI.EXaml
             LoadEXaml.Load(view, eXamlStr);
 
             return view;
+        }
+
+        /// Internal used, will never be opened.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object CreateObjectFromEXaml(string eXamlStr)
+        {
+            if (null == eXamlStr)
+            {
+                return null;
+            }
+
+            //MainAssembly = view.GetType().Assembly;
+            object temp = null;
+            GlobalDataList eXamlData = null;
+            LoadEXaml.Load(temp, eXamlStr, out eXamlData);
+            return eXamlData.Root;
         }
 
         /// Internal used, will never be opened.

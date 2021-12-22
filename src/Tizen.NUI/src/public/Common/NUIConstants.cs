@@ -136,58 +136,57 @@ namespace Tizen.NUI
     /// Enumeration for size negotiation resize policies.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
-    [Obsolete("Deprecated. Please set Tizen.NUI.View.Layout and use Tizen.NUI.BaseComponents.LayoutParamPolicies instead.")]
     public enum ResizePolicyType
     {
         /// <summary>
         /// Size is fixed as set by SetSize.
         /// </summary>
         [Description("FIXED")]
-        [Obsolete("Deprecated. Instead, please set a positive integer value to Tizen.NUI.View.WidthSpecification or Tizen.NUI.View.HeightSpecification.")]
         Fixed,
         /// <summary>
         /// Size is to use the actor's natural size.
         /// </summary>
         /// <see cref="ViewImpl.GetNaturalSize"/>
         [Description("USE_NATURAL_SIZE")]
-        [Obsolete("Deprecated. Instead, please set a positive integer value to Tizen.NUI.View.WidthSpecification or Tizen.NUI.View.HeightSpecification.")]
         UseNaturalSize,
         /// <summary>
         /// Size is to fill up to the actor's parent's bounds. Aspect ratio is not maintained.
         /// </summary>
         [Description("FILL_TO_PARENT")]
-        [Obsolete("Deprecated. Instead, please set Tizen.NUI.View.Layout and also set Tizen.NUI.BaseComponents.LayoutParamPolicies.MatchParent to Tizen.NUI.View.WidthSpecification or Tizen.NUI.View.HeightSpecification.")]
         FillToParent,
         /// <summary>
         /// The actors size will be ( ParentSize * SizeRelativeToParentFactor ).
         /// </summary>
         [Description("SIZE_RELATIVE_TO_PARENT")]
-        [Obsolete("Deprecated. Instead, please use parent view having Tizen.NUI.RelativeLayout as its Layout.")]
         SizeRelativeToParent,
         /// <summary>
         /// The actors size will be ( ParentSize + SizeRelativeToParentFactor ).
         /// </summary>
         [Description("SIZE_FIXED_OFFSET_FROM_PARENT")]
-        [Obsolete("Deprecated. Instead, please use parent view having Tizen.NUI.RelativeLayout as its Layout.")]
         SizeFixedOffsetFromParent,
         /// <summary>
         /// The size will adjust to wrap around all children.
         /// </summary>
         [Description("FIT_TO_CHILDREN")]
-        [Obsolete("Deprecated. Instead, please set Tizen.NUI.View.Layout and also set Tizen.NUI.BaseComponents.LayoutParamPolicies.WrapContent to Tizen.NUI.View.WidthSpecification or Tizen.NUI.View.HeightSpecification.")]
         FitToChildren,
         /// <summary>
         /// One dimension is dependent on the other.
         /// </summary>
         [Description("DIMENSION_DEPENDENCY")]
-        [Obsolete("Deprecated. Instead, please set positive integer values with aspect ratio to Tizen.NUI.View.WidthSpecification and Tizen.NUI.View.HeightSpecification.")]
         DimensionDependency,
         /// <summary>
         /// The size will be assigned to the actor.
         /// </summary>
         [Description("USE_ASSIGNED_SIZE")]
-        [Obsolete("Deprecated. Instead, please set a positive integer value to Tizen.NUI.View.WidthSpecification or Tizen.NUI.View.HeightSpecification.")]
-        UseAssignedSize
+        UseAssignedSize,
+
+        /// <summary>
+        /// The size always equal with parent even parent has size animation.
+        /// Note : This Property only working without layout. If layout is setup, Undefined Behavior
+        /// </summary>
+        /// <remarks>Hidden API: Only for inhouse or developing usage. The behavior and interface can be changed anytime.</remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        KeepSizeFollowingParent
     }
 
     /// <summary>
@@ -744,6 +743,10 @@ namespace Tizen.NUI
     /// <summary>
     /// An enum of window types.
     /// </summary>
+    /// <remarks>
+    /// Most of window type can be set, except for IME type.<br />
+    /// IME type can only be used in one of NUIApplication's constrcutors.<br />
+    /// </remarks>
     /// <since_tizen> 3 </since_tizen>
     public enum WindowType
     {
@@ -764,7 +767,16 @@ namespace Tizen.NUI
         /// <summary>
         /// Used for simple dialog windows.
         /// </summary>
-        Dialog
+        Dialog,
+        /// <summary>
+        /// Used for IME window that is used for keyboard window.
+        /// It should be set in NUIApplication constructor.
+        /// It does not work with Window.Type, because IME window type can not change in runtime.
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="NUIApplication" /> for this type. <br />
+        /// </remarks>
+        Ime
     }
 
     /// <since_tizen> 3 </since_tizen>
@@ -807,28 +819,28 @@ namespace Tizen.NUI
     public enum LineWrapMode
     {
         /// <summary>
-        /// The word mode will move a word to the next line.
+        /// The word mode moves a word to the next line.
         /// </summary>
         /// <since_tizen> 4 </since_tizen>
         Word,
 
         /// <summary>
-        /// character will move character by character to the next line.
+        /// character moves character by character to the next line.
         /// </summary>
         /// <since_tizen> 4 </since_tizen>
         Character,
 
         /// <summary>
-        /// Hyphenation mode will move part of the word (at possible hyphen locations)
+        /// Hyphenation mode moves part of the word (at possible hyphen locations)
         /// to the next line and draw a hyphen at the end of the line.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         Hyphenation,
 
         /// <summary>
-        /// Mixed mode will try word wrap, if failed, it will try hyphenation wrap.
+        /// Mixed mode tries word wrap, if failed, it tries hyphenation wrap.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         Mixed
     }
 
@@ -874,6 +886,31 @@ namespace Tizen.NUI
         /// </summary>
         /// <since_tizen> 5 </since_tizen>
         Bottom
+    }
+
+    /// <summary>
+    /// An enum of ellipsis position.
+    /// </summary>
+    /// <since_tizen> 9 </since_tizen>
+    public enum EllipsisPosition
+    {
+        /// <summary>
+        /// ellipsis position at end.
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        End,
+
+        /// <summary>
+        /// ellipsis position at start.
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        Start,
+
+        /// <summary>
+        /// ellipsis position in the middle.
+        /// </summary>
+        /// <since_tizen> 9 </since_tizen>
+        Middle
     }
 
     /// <summary>
@@ -1909,47 +1946,147 @@ namespace Tizen.NUI
     }
 
     /// <summary>
-    /// This Enumeration is used the GLES version for EGL configuration.<br />
-    /// If the device can not support GLES version 3.0 over, the version will be chosen with GLES version 2.0.<br />
-    /// It is for GLWindow and GLView.<br />
+    /// This Enumeration is used the GLES version for EGL configuration.
+    /// It is for GLWindow and GLView.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
+    /// <since_tizen> 10 </since_tizen>
     public enum GLESVersion
     {
       /// <summary>
       /// GLES version 2.0
       /// </summary>
-      [EditorBrowsable(EditorBrowsableState.Never)]
       Version20 = 0,
 
       /// <summary>
       /// GLES version 3.0
       /// </summary>
-      [EditorBrowsable(EditorBrowsableState.Never)]
       Version30
     }
 
     /// <summary>
     /// Enumeration for rendering mode
     /// This Enumeration is used to choose the rendering mode.
-    /// It has two options.
-    /// One of them is continuous mode. It is rendered continuously.
-    /// The other is on demand mode. It is rendered by application.
     /// It is for GLWindow and GLView.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
+    /// <since_tizen> 10 </since_tizen>
     public enum GLRenderingMode
     {
       /// <summary>
-      /// continuous mode
+      /// The render frame delegate is invoked continuously.
       /// </summary>
-      [EditorBrowsable(EditorBrowsableState.Never)]
       Continuous = 0,
 
       /// <summary>
-      /// on demand by application
+      /// The render frame delegate is invoked by user.
       /// </summary>
-      [EditorBrowsable(EditorBrowsableState.Never)]
       OnDemand = 1
+    }
+
+    /// <summary>
+    /// Enumeration for the type of InputFilter.
+    /// </summary>
+    /// <remarks>
+    /// The type of InputFilter that is stored in the <see cref="Tizen.NUI.BaseComponents.InputFilteredEventArgs"/> when the input is filtered.
+    /// </remarks>
+    /// <since_tizen> 9 </since_tizen>
+    public enum InputFilterType
+    {
+        /// <summary>
+        /// The type of InputFilter is Accept.
+        /// </summary>
+        Accept,
+
+        /// <summary>
+        /// The type of InputFilter is Reject.
+        /// </summary>
+        Reject
+    }
+
+    /// <summary>
+    /// Enumeration for the size type of font. <br />
+    /// </summary>
+    /// <remarks>
+    /// The size type of font used as a property of <see cref="Tizen.NUI.Text.TextFit"/>. <br />
+    /// </remarks>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public enum FontSizeType
+    {
+        /// <summary>
+        /// The PointSize.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        PointSize,
+
+        /// <summary>
+        /// The PixelSize.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        PixelSize
+    }
+
+    /// <summary>
+    /// Pre-defined SlideTransition Direction
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public struct SlideTransitionDirection
+    {
+        /// <summary>
+        /// Top
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Vector2 Top
+        {
+            get
+            {
+                global::System.IntPtr cPtr = Interop.SlideTransitionDirection.SlideTransitionDirectionTopGet();
+                Vector2 ret = (cPtr == global::System.IntPtr.Zero) ? null : new Vector2(cPtr, false);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+                return ret;
+            }
+        }
+        /// <summary>
+        /// Bottom
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Vector2 Bottom
+        {
+            get
+            {
+                global::System.IntPtr cPtr = Interop.SlideTransitionDirection.SlideTransitionDirectionBottomGet();
+                Vector2 ret = (cPtr == global::System.IntPtr.Zero) ? null : new Vector2(cPtr, false);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// Right
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Vector2 Right
+        {
+            get
+            {
+                global::System.IntPtr cPtr = Interop.SlideTransitionDirection.SlideTransitionDirectionRightGet();
+                Vector2 ret = (cPtr == global::System.IntPtr.Zero) ? null : new Vector2(cPtr, false);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// Left
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Vector2 Left
+        {
+            get
+            {
+                global::System.IntPtr cPtr = Interop.SlideTransitionDirection.SlideTransitionDirectionLeftGet();
+                Vector2 ret = (cPtr == global::System.IntPtr.Zero) ? null : new Vector2(cPtr, false);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+                return ret;
+            }
+        }
     }
 }

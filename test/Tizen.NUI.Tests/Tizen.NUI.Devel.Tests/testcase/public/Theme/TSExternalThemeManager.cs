@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿using global::System;
+using NUnit.Framework;
+using NUnit.Framework.TUnit;
+using Tizen.NUI.Components;
+using Tizen.NUI.BaseComponents;
 using System.Collections.Generic;
 
 namespace Tizen.NUI.Devel.Tests
@@ -10,6 +14,7 @@ namespace Tizen.NUI.Devel.Tests
     internal class PublicExternalThemeManagerTest
     {
         private const string tag = "NUITEST";
+        private string path = Tizen.Applications.Application.Current.DirectoryInfo.Resource + "Test_Theme.xaml";
 
         [SetUp]
         public void Init()
@@ -34,13 +39,10 @@ namespace Tizen.NUI.Devel.Tests
         {
             tlog.Debug(tag, $"ExternalThemeManagerSharedResourcePath START");
 
-            string b1 = ExternalThemeManager.SharedResourcePath;
-
-            ExternalThemeManager.Initialize();
-            b1 = ExternalThemeManager.SharedResourcePath;
+            ExternalThemeManager.SharedResourcePath = path;
+            Assert.AreEqual(path, ExternalThemeManager.SharedResourcePath, "Should be equal!");
 
             tlog.Debug(tag, $"ExternalThemeManagerSharedResourcePath END (OK)");
-            Assert.Pass("ExternalThemeManagerSharedResourcePath");
         }
 
         [Test]
@@ -62,65 +64,27 @@ namespace Tizen.NUI.Devel.Tests
 
         [Test]
         [Category("P1")]
-        [Description("test ExternalThemeManager GetCurrentTheme")]
-        [Property("SPEC", "Tizen.NUI.ExternalThemeManager.GetCurrentTheme M")]
+        [Description("test ExternalThemeManager SetTheme")]
+        [Property("SPEC", "Tizen.NUI.ExternalThemeManager.SetTheme M")]
         [Property("SPEC_URL", "-")]
         [Property("CRITERIA", "MR")]
         [Property("COVPARAM", "")]
-        public void ExternalThemeManagerGetCurrentTheme()
+        public void ExternalThemeManagerSetTheme()
         {
-            tlog.Debug(tag, $"ExternalThemeManagerGetCurrentTheme START");
+            tlog.Debug(tag, $"ExternalThemeManagerSetTheme START");
 
-            ExternalThemeManager.GetCurrentTheme();
-
-            tlog.Debug(tag, $"ExternalThemeManagerGetCurrentTheme END (OK)");
-            Assert.Pass("ExternalThemeManagerGetCurrentTheme");
-        }
-
-        [Test]
-        [Category("P1")]
-        [Description("test ExternalThemeManager GetTheme")]
-        [Property("SPEC", "Tizen.NUI.ExternalThemeManager.GetTheme M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("COVPARAM", "")]
-        public void ExternalThemeManagerGetTheme()
-        {
-            tlog.Debug(tag, $"ExternalThemeManagerGetTheme START");
-
-            ExternalThemeManager.GetTheme("aaa");
-
-            tlog.Debug(tag, $"ExternalThemeManagerGetTheme END (OK)");
-            Assert.Pass("ExternalThemeManagerGetTheme");
-        }
-
-        [Test]
-        [Category("P1")]
-        [Description("test ExternalThemeManager SetTestTheme")]
-        [Property("SPEC", "Tizen.NUI.ExternalThemeManager.SetTestTheme M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("COVPARAM", "")]
-        public void ExternalThemeManagerSetTestTheme()
-        {
-            tlog.Debug(tag, $"ExternalThemeManagerSetTestTheme START");
-
-            ExternalThemeManager.SetTestTheme(null);
-
-            string id = "id1"; string version = "version1";
-            Dictionary<string, string> theme = new Dictionary<string, string>
+            try
             {
-                { "aaa", "111" },
-                { "bbb", "222" }
-            };
+                ExternalThemeManager.SetTheme("Tizen.NUI.Theme.Common");
+                ExternalThemeManager.SetTheme(ThemeManager.CurrentTheme.Id);
+            }
+            catch (Exception e)
+            {
+                tlog.Debug(tag, "SetTheme : " + e.Message.ToString());
+                Assert.Fail("Caught Exception :  Failed!");
+            }
 
-            DictionaryExternalTheme a1 = new DictionaryExternalTheme(id, version, theme);
-
-            ExternalThemeManager.SetTestTheme(a1);
-            ExternalThemeManager.SetTestTheme(id, version, theme);
-
-            tlog.Debug(tag, $"ExternalThemeManagerSetTestTheme END (OK)");
-            Assert.Pass("ExternalThemeManagerSetTestTheme");
+            tlog.Debug(tag, $"ExternalThemeManagerSetTheme END (OK)");
         }
     }
 }

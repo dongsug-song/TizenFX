@@ -222,6 +222,12 @@ namespace Tizen.NUI.Binding
             }
         }
 
+        /// <summary>
+        /// Gets the x:Name dictionary of the element.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Dictionary<string, object> XNames => (GetNameScope() as NameScope)?.XNames ?? null;
+
         void IElement.RemoveResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
         {
             if (changeHandlers == null)
@@ -515,7 +521,10 @@ namespace Tizen.NUI.Binding
             if (this.TryGetResource(key, out value))
                 OnResourceChanged(property, value);
 
-            Tizen.NUI.Application.AddResourceChangedCallback(this, (this as Element).OnResourcesChanged);
+            if (null != Application.Current)
+            {
+                Application.Current.XamlResourceChanged += OnResourcesChanged;
+            }
         }
 
         internal event EventHandler ParentSet;

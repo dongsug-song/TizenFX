@@ -31,22 +31,12 @@ namespace Tizen.NUI
         {
         }
 
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(TimePeriod obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
-        }
-
-        protected override void ReleaseSwigCPtr(System.Runtime.InteropServices.HandleRef swigCPtr)
-        {
-            Interop.TimePeriod.DeleteTimePeriod(swigCPtr);
-        }
-
         /// <summary>
         /// The constructor.
         /// Creates an time period object with the user-defined alpha function.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
-        public TimePeriod(int durationMilliSeconds) : this(Interop.TimePeriod.NewTimePeriod((float)durationMilliSeconds / 1000.0f), true)
+        public TimePeriod(int durationMilliSeconds) : this(Interop.TimePeriod.NewTimePeriod(MilliSecondsToSeconds(durationMilliSeconds)), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
@@ -56,7 +46,7 @@ namespace Tizen.NUI
         /// Creates an time period object with the user-defined alpha function.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
-        public TimePeriod(float delayMilliSeconds, float durationMilliSeconds) : this(Interop.TimePeriod.NewTimePeriod((float)delayMilliSeconds / 1000.0f, (float)durationMilliSeconds / 1000.0f), true)
+        public TimePeriod(int delayMilliSeconds, int durationMilliSeconds) : this(Interop.TimePeriod.NewTimePeriod(MilliSecondsToSeconds(delayMilliSeconds), MilliSecondsToSeconds(durationMilliSeconds)), true)
         {
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
@@ -99,14 +89,21 @@ namespace Tizen.NUI
             }
         }
 
-        private float MilliSecondsToSeconds(int millisec)
+        internal static float MilliSecondsToSeconds(int millisec)
         {
             return (float)millisec / 1000.0f;
         }
 
-        private int SecondsToMilliSeconds(float sec)
+        internal static int SecondsToMilliSeconds(float sec)
         {
             return (int)(sec * 1000);
+        }
+
+        /// This will not be public opened.
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override void ReleaseSwigCPtr(System.Runtime.InteropServices.HandleRef swigCPtr)
+        {
+            Interop.TimePeriod.DeleteTimePeriod(swigCPtr);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Tizen.NUI
         private int totalHorizontalExpand = 0;
         private int totalVerticalExpand = 0;
 
-        private List<GridChild> gridChildren;
+        private List<GridChild> gridChildren = new List<GridChild>();
 
         /// <summary>
         /// The nested class to represent a node of DAG.
@@ -126,7 +126,7 @@ namespace Tizen.NUI
                     Node node = edgeList[i];
                     // update expanded size.
                     if (node.Stretch.HasFlag(StretchFlags.Expand))
-                        node.ExpandedSize = curExpandedSize / totalExpand;
+                        node.ExpandedSize = curExpandedSize * (node.End - node.Start) / totalExpand;
                 }
 
                 // re-init locations based on updated expanded size.
@@ -153,15 +153,20 @@ namespace Tizen.NUI
 
             vLocations = hLocations = null;
             vEdgeList = hEdgeList = null;
-            gridChildren = new List<GridChild>();
+            gridChildren.Clear();
             maxColumnConut = Columns;
             maxRowCount = Rows;
 
             totalVerticalExpand = 0;
             totalHorizontalExpand = 0;
 
-            foreach (LayoutItem item in IterateLayoutChildren())
+            foreach (var item in LayoutChildren)
             {
+                if (!item.SetPositionByLayout)
+                {
+                    continue;
+                }
+
                 int column, columnSpan, row, rowSpan;
                 StretchFlags verticalStretch, horizontalStretch;
                 View view = item.Owner;
@@ -293,9 +298,20 @@ namespace Tizen.NUI
 
             for (int i = 0; i < edgeList.Length; i++)
             {
-                float newLocation = locations[edgeList[i].Start] + edgeList[i].Edge + edgeList[i].ExpandedSize;
-                if (edgeList[i].Edge + edgeList[i].ExpandedSize > 0)
-                    newLocation += space;
+                float newLocation = locations[edgeList[i].Start];
+                // view's size is set to be the bigger one between its measured size and its expanded size.
+                if (edgeList[i].Edge > edgeList[i].ExpandedSize)
+                {
+                    newLocation += edgeList[i].Edge;
+                    if (edgeList[i].Edge > 0)
+                        newLocation += space;
+                }
+                else
+                {
+                    newLocation += edgeList[i].ExpandedSize;
+                    if (edgeList[i].ExpandedSize > 0)
+                        newLocation += space;
+                }
 
                 if (locations[edgeList[i].End] < newLocation)
                 {

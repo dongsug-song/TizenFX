@@ -33,11 +33,6 @@ namespace Tizen.NUI.BaseComponents
         {
         }
 
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(RendererParameters obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
-        }
-
         /// <summary>
         /// Dispose
         /// </summary>
@@ -674,11 +669,6 @@ namespace Tizen.NUI.BaseComponents
         {
         }
 
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(EmbeddedItemInfo obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
-        }
-
         /// <summary>
         /// Dispose
         /// </summary>
@@ -848,11 +838,6 @@ namespace Tizen.NUI.BaseComponents
 
         internal ShadowParameters(global::System.IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn)
         {
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(ShadowParameters obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         /// <summary>
@@ -1152,5 +1137,90 @@ namespace Tizen.NUI.BaseComponents
 
             return ret;
         }
+
+        /// <summary>
+        /// Copy the previously selected text from the text control into the clipboard.
+        /// </summary>
+        /// <param name="textEditor">The textEditor control from which the text is copied.</param>
+        /// <returns>The copied text.</returns>
+        /// <since_tizen> 9 </since_tizen>
+        public static string CopyToClipboard(TextEditor textEditor)
+        {
+            string copiedText = Interop.TextEditor.CopyText(textEditor.SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return copiedText;
+        }
+
+        /// <summary>
+        /// Copy the previously selected text from the text control into the clipboard.
+        /// </summary>
+        /// <param name="textField">The textField control from which the text is copied.</param>
+        /// <returns>The copied text.</returns>
+        /// <since_tizen> 9 </since_tizen>
+        public static string CopyToClipboard(TextField textField)
+        {
+            string copiedText = Interop.TextField.CopyText(textField.SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return copiedText;
+        }
+
+        /// <summary>
+        /// Cut the previously selected text from the text control into the clipboard.
+        /// </summary>
+        /// <param name="textEditor">The textEditor control from which the text is cut.</param>
+        /// <returns>The cut text.</returns>
+        /// <since_tizen> 9 </since_tizen>
+        public static string CutToClipboard(TextEditor textEditor)
+        {
+            string cutText = Interop.TextEditor.CutText(textEditor.SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return cutText;
+        }
+
+        /// <summary>
+        /// Cut the previously selected text from the text control into the clipboard.
+        /// </summary>
+        /// <param name="textField">The textField control from which the text is cut.</param>
+        /// <returns>The cut text.</returns>
+        /// <since_tizen> 9 </since_tizen>
+        public static string CutToClipboard(TextField textField)
+        {
+            string cutText = Interop.TextField.CutText(textField.SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return cutText;
+        }
+
+        /// <summary>
+        /// Paste the most recently copied/cut text item from the clipboard into the text control.
+        /// </summary>
+        /// <remarks>
+        /// The pasted text will be inserted in the current cursor position and if the text control has no focus,
+        /// the text will be appended to the last cursor position and the text control will gain focus.
+        /// If some text inside the text control is selected, it will be replaced by the pasted text.
+        /// </remarks>
+        /// <param name="textEditor">The textEditor control into which the text is pasted.</param>
+        /// <since_tizen> 9 </since_tizen>
+        public static void PasteTo(TextEditor textEditor)
+        {
+            Interop.TextEditor.PasteText(textEditor.SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
+        /// Paste the most recently copied/cut text item from the clipboard into the text control.
+        /// </summary>
+        /// <remarks>
+        /// The pasted text will be inserted in the current cursor position and if the text control has no focus,
+        /// the text will be appended to the last cursor position and the text control will gain focus.
+        /// If some text inside the text control is selected, it will be replaced by the pasted text.
+        /// </remarks>
+        /// <param name="textField">The textField control into which the text is pasted.</param>
+        /// <since_tizen> 9 </since_tizen>
+        public static void PasteTo(TextField textField)
+        {
+            Interop.TextField.PasteText(textField.SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
     }
 }

@@ -25,7 +25,7 @@ namespace Tizen.NUI.Components
     /// DefaultTitleItem may contain text or an icon.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public class DefaultTitleItem : RecyclerViewItem
+    public partial class DefaultTitleItem : RecyclerViewItem
     {
         private TextLabel itemLabel;
         private View itemIcon;
@@ -67,6 +67,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public View Icon
+        {
+            get
+            {
+                return GetValue(IconProperty) as View;
+            }
+            set
+            {
+                SetValue(IconProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private View InternalIcon
         {
             get
             {
@@ -151,6 +163,18 @@ namespace Tizen.NUI.Components
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string Text
+        {
+            get
+            {
+                return GetValue(TextProperty) as string;
+            }
+            set
+            {
+                SetValue(TextProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private string InternalText
         {
             get
             {
@@ -285,17 +309,8 @@ namespace Tizen.NUI.Components
 
             RelativeLayout.SetLeftTarget(itemLabel, this);
             RelativeLayout.SetLeftRelativeOffset(itemLabel, 0.0F);
-            if (itemIcon)
-            {
-                RelativeLayout.SetRightTarget(itemLabel, itemIcon);
-                RelativeLayout.SetRightRelativeOffset(itemLabel, 0.0F);
-            }
-            else
-            {
-                RelativeLayout.SetRightTarget(itemLabel, this);
-                RelativeLayout.SetRightRelativeOffset(itemLabel, 1.0F);
-            }
-
+            RelativeLayout.SetRightTarget(itemLabel, ((itemIcon != null)? itemIcon: this));
+            RelativeLayout.SetRightRelativeOffset(itemLabel, ((itemIcon != null)? 0.0F: 1.0F));
             RelativeLayout.SetTopTarget(itemLabel, this);
             RelativeLayout.SetTopRelativeOffset(itemLabel, 0.0F);
             RelativeLayout.SetBottomTarget(itemLabel, this);

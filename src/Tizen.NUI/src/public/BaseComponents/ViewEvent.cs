@@ -42,8 +42,10 @@ namespace Tizen.NUI.BaseComponents
         private EventHandler<VisibilityChangedEventArgs> visibilityChangedEventHandler;
         private VisibilityChangedEventCallbackType visibilityChangedEventCallback;
         private EventHandler keyInputFocusGainedEventHandler;
+
         private KeyInputFocusGainedCallbackType keyInputFocusGainedCallback;
         private EventHandler keyInputFocusLostEventHandler;
+
         private KeyInputFocusLostCallbackType keyInputFocusLostCallback;
         private EventHandler onRelayoutEventHandler;
         private OnRelayoutEventCallbackType onRelayoutEventCallback;
@@ -80,10 +82,12 @@ namespace Tizen.NUI.BaseComponents
         private delegate void ResourcesLoadedCallbackType(IntPtr control);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void _backgroundResourceLoadedCallbackType(IntPtr view);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void KeyInputFocusGainedCallbackType(IntPtr control);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void KeyInputFocusLostCallbackType(IntPtr control);
+
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void OnRelayoutEventCallbackType(IntPtr control);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -114,19 +118,27 @@ namespace Tizen.NUI.BaseComponents
                 if (keyInputFocusGainedEventHandler == null)
                 {
                     keyInputFocusGainedCallback = OnKeyInputFocusGained;
-                    this.KeyInputFocusGainedSignal().Connect(keyInputFocusGainedCallback);
+                    using KeyInputFocusSignal signal = new KeyInputFocusSignal(Interop.ViewSignal.KeyInputFocusGainedSignal(SwigCPtr), false);
+                    signal?.Connect(keyInputFocusGainedCallback);
                 }
-
                 keyInputFocusGainedEventHandler += value;
             }
 
             remove
             {
                 keyInputFocusGainedEventHandler -= value;
-
-                if (keyInputFocusGainedEventHandler == null && KeyInputFocusGainedSignal().Empty() == false)
+                if (keyInputFocusGainedEventHandler == null)
                 {
-                    this.KeyInputFocusGainedSignal().Disconnect(keyInputFocusGainedCallback);
+                    using KeyInputFocusSignal signal = new KeyInputFocusSignal(Interop.ViewSignal.KeyInputFocusGainedSignal(SwigCPtr), false);
+
+                    if (keyInputFocusGainedCallback != null)
+                    {
+                        signal?.Disconnect(keyInputFocusGainedCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            keyInputFocusGainedCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -143,19 +155,27 @@ namespace Tizen.NUI.BaseComponents
                 if (keyInputFocusLostEventHandler == null)
                 {
                     keyInputFocusLostCallback = OnKeyInputFocusLost;
-                    this.KeyInputFocusLostSignal().Connect(keyInputFocusLostCallback);
+                    using KeyInputFocusSignal signal = new KeyInputFocusSignal(Interop.ViewSignal.KeyInputFocusLostSignal(SwigCPtr), false);
+                    signal?.Connect(keyInputFocusLostCallback);
                 }
-
                 keyInputFocusLostEventHandler += value;
             }
 
             remove
             {
                 keyInputFocusLostEventHandler -= value;
-
-                if (keyInputFocusLostEventHandler == null && KeyInputFocusLostSignal().Empty() == false)
+                if (keyInputFocusLostEventHandler == null)
                 {
-                    this.KeyInputFocusLostSignal().Disconnect(keyInputFocusLostCallback);
+                    using KeyInputFocusSignal signal = new KeyInputFocusSignal(Interop.ViewSignal.KeyInputFocusLostSignal(SwigCPtr), false);
+
+                    if (keyInputFocusLostCallback != null)
+                    {
+                        signal?.Disconnect(keyInputFocusLostCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            keyInputFocusLostCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -172,19 +192,26 @@ namespace Tizen.NUI.BaseComponents
                 if (keyEventHandler == null)
                 {
                     keyCallback = OnKeyEvent;
-                    this.KeyEventSignal().Connect(keyCallback);
+                    using ControlKeySignal signal = new ControlKeySignal(Interop.ViewSignal.KeyEventSignal(SwigCPtr), false);
+                    signal?.Connect(keyCallback);
                 }
-
                 keyEventHandler += value;
             }
 
             remove
             {
                 keyEventHandler -= value;
-
-                if (keyEventHandler == null && KeyEventSignal().Empty() == false)
+                if (keyEventHandler == null)
                 {
-                    this.KeyEventSignal().Disconnect(keyCallback);
+                    using ControlKeySignal signal = new ControlKeySignal(Interop.ViewSignal.KeyEventSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(keyCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            keyCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -201,22 +228,27 @@ namespace Tizen.NUI.BaseComponents
                 if (onRelayoutEventHandler == null)
                 {
                     onRelayoutEventCallback = OnRelayout;
-                    this.OnRelayoutSignal().Connect(onRelayoutEventCallback);
+                    using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnRelayoutSignal(SwigCPtr), false);
+                    signal?.Connect(onRelayoutEventCallback);
                 }
-
                 onRelayoutEventHandler += value;
             }
 
             remove
             {
                 onRelayoutEventHandler -= value;
-
-                if (onRelayoutEventHandler == null && OnRelayoutSignal().Empty() == false)
+                if (onRelayoutEventHandler == null)
                 {
-                    this.OnRelayoutSignal().Disconnect(onRelayoutEventCallback);
-                    onRelayoutEventCallback = null;
+                    using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnRelayoutSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(onRelayoutEventCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            onRelayoutEventCallback = null;
+                        }
+                    }
                 }
-
             }
         }
 
@@ -234,19 +266,26 @@ namespace Tizen.NUI.BaseComponents
                 if (interceptTouchDataEventHandler == null)
                 {
                     interceptTouchDataCallback = OnInterceptTouch;
-                    this.InterceptTouchSignal().Connect(interceptTouchDataCallback);
+                    using TouchDataSignal signal = new TouchDataSignal(Interop.ActorSignal.ActorInterceptTouchSignal(SwigCPtr), false);
+                    signal?.Connect(interceptTouchDataCallback);
                 }
-
                 interceptTouchDataEventHandler += value;
             }
 
             remove
             {
                 interceptTouchDataEventHandler -= value;
-
-                if (interceptTouchDataEventHandler == null && InterceptTouchSignal().Empty() == false)
+                if (interceptTouchDataEventHandler == null)
                 {
-                    this.InterceptTouchSignal().Disconnect(interceptTouchDataCallback);
+                    using TouchDataSignal signal = new TouchDataSignal(Interop.ActorSignal.ActorInterceptTouchSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(interceptTouchDataCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            interceptTouchDataCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -276,19 +315,26 @@ namespace Tizen.NUI.BaseComponents
                 if (touchDataEventHandler == null)
                 {
                     touchDataCallback = OnTouch;
-                    this.TouchSignal().Connect(touchDataCallback);
+                    using TouchDataSignal signal = new TouchDataSignal(Interop.ActorSignal.ActorTouchSignal(SwigCPtr), false);
+                    signal.Connect(touchDataCallback);
                 }
-
                 touchDataEventHandler += value;
             }
 
             remove
             {
                 touchDataEventHandler -= value;
-
-                if (touchDataEventHandler == null && TouchSignal().Empty() == false)
+                if (touchDataEventHandler == null)
                 {
-                    this.TouchSignal().Disconnect(touchDataCallback);
+                    using TouchDataSignal signal = new TouchDataSignal(Interop.ActorSignal.ActorTouchSignal(SwigCPtr), false);
+                    if (signal.Empty() == false)
+                    {
+                        signal.Disconnect(touchDataCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            touchDataCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -305,21 +351,27 @@ namespace Tizen.NUI.BaseComponents
                 if (hoverEventHandler == null)
                 {
                     hoverEventCallback = OnHoverEvent;
-                    this.HoveredSignal().Connect(hoverEventCallback);
+                    using HoverSignal signal = new HoverSignal(Interop.ActorSignal.ActorHoveredSignal(SwigCPtr), false);
+                    signal?.Connect(hoverEventCallback);
                 }
-
                 hoverEventHandler += value;
             }
 
             remove
             {
                 hoverEventHandler -= value;
-
-                if (hoverEventHandler == null && HoveredSignal().Empty() == false)
+                if (hoverEventHandler == null)
                 {
-                    this.HoveredSignal().Disconnect(hoverEventCallback);
+                    using HoverSignal signal = new HoverSignal(Interop.ActorSignal.ActorHoveredSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(hoverEventCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            hoverEventCallback = null;
+                        }
+                    }
                 }
-
             }
         }
 
@@ -335,7 +387,8 @@ namespace Tizen.NUI.BaseComponents
                 if (wheelEventHandler == null)
                 {
                     wheelEventCallback = OnWheelEvent;
-                    this.WheelEventSignal().Connect(wheelEventCallback);
+                    using WheelSignal signal = new WheelSignal(Interop.ActorSignal.ActorWheelEventSignal(SwigCPtr), false);
+                    signal?.Connect(wheelEventCallback);
                 }
                 wheelEventHandler += value;
 
@@ -349,9 +402,17 @@ namespace Tizen.NUI.BaseComponents
             remove
             {
                 wheelEventHandler -= value;
-                if (wheelEventHandler == null && WheelEventSignal().Empty() == false)
+                if (wheelEventHandler == null)
                 {
-                    this.WheelEventSignal().Disconnect(wheelEventCallback);
+                    using WheelSignal signal = new WheelSignal(Interop.ActorSignal.ActorWheelEventSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(wheelEventCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            wheelEventCallback = null;
+                        }
+                    }
                 }
 
                 WindowWheelEventHandler -= value;
@@ -374,20 +435,26 @@ namespace Tizen.NUI.BaseComponents
                 if (onWindowEventHandler == null)
                 {
                     onWindowEventCallback = OnWindow;
-                    this.OnWindowSignal().Connect(onWindowEventCallback);
+                    using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnSceneSignal(SwigCPtr), false);
+                    signal?.Connect(onWindowEventCallback);
                 }
-
                 onWindowEventHandler += value;
             }
 
             remove
             {
                 onWindowEventHandler -= value;
-
-                if (onWindowEventHandler == null && OnWindowSignal().Empty() == false)
+                if (onWindowEventHandler == null)
                 {
-                    this.OnWindowSignal().Disconnect(onWindowEventCallback);
-                    onWindowEventCallback = null;
+                    using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOnSceneSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(onWindowEventCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            onWindowEventCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -404,20 +471,26 @@ namespace Tizen.NUI.BaseComponents
                 if (offWindowEventHandler == null)
                 {
                     offWindowEventCallback = OffWindow;
-                    this.OffWindowSignal().Connect(offWindowEventCallback);
+                    using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOffSceneSignal(SwigCPtr), false);
+                    signal?.Connect(offWindowEventCallback);
                 }
-
                 offWindowEventHandler += value;
             }
 
             remove
             {
                 offWindowEventHandler -= value;
-
-                if (offWindowEventHandler == null && OffWindowSignal().Empty() == false)
+                if (offWindowEventHandler == null)
                 {
-                    this.OffWindowSignal().Disconnect(offWindowEventCallback);
-                    offWindowEventCallback = null;
+                    using ViewSignal signal = new ViewSignal(Interop.ActorSignal.ActorOffSceneSignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(offWindowEventCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            offWindowEventCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -447,6 +520,10 @@ namespace Tizen.NUI.BaseComponents
                 if (visibilityChangedEventHandler == null && VisibilityChangedSignal(this).Empty() == false)
                 {
                     VisibilityChangedSignal(this).Disconnect(visibilityChangedEventCallback);
+                    if (VisibilityChangedSignal(this).Empty() == true)
+                    {
+                        visibilityChangedEventCallback = null;
+                    }
                 }
             }
         }
@@ -476,6 +553,10 @@ namespace Tizen.NUI.BaseComponents
                 if (layoutDirectionChangedEventHandler == null && LayoutDirectionChangedSignal(this).Empty() == false)
                 {
                     LayoutDirectionChangedSignal(this).Disconnect(layoutDirectionChangedEventCallback);
+                    if (LayoutDirectionChangedSignal(this).Empty() == true)
+                    {
+                        layoutDirectionChangedEventCallback = null;
+                    }
                 }
             }
         }
@@ -492,20 +573,26 @@ namespace Tizen.NUI.BaseComponents
                 if (resourcesLoadedEventHandler == null)
                 {
                     ResourcesLoadedCallback = OnResourcesLoaded;
-                    this.ResourcesLoadedSignal().Connect(ResourcesLoadedCallback);
+                    using ViewSignal signal = new ViewSignal(Interop.View.ResourceReadySignal(SwigCPtr), false);
+                    signal?.Connect(ResourcesLoadedCallback);
                 }
-
                 resourcesLoadedEventHandler += value;
             }
 
             remove
             {
                 resourcesLoadedEventHandler -= value;
-
-                if (resourcesLoadedEventHandler == null && ResourcesLoadedSignal().Empty() == false)
+                if (resourcesLoadedEventHandler == null)
                 {
-                    this.ResourcesLoadedSignal().Disconnect(ResourcesLoadedCallback);
-                    ResourcesLoadedCallback = null;
+                    using ViewSignal signal = new ViewSignal(Interop.View.ResourceReadySignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(ResourcesLoadedCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            ResourcesLoadedCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -549,19 +636,26 @@ namespace Tizen.NUI.BaseComponents
                 if (backgroundResourceLoadedEventHandler == null)
                 {
                     backgroundResourceLoadedCallback = OnBackgroundResourceLoaded;
-                    this.ResourcesLoadedSignal().Connect(backgroundResourceLoadedCallback);
+                    using ViewSignal signal = new ViewSignal(Interop.View.ResourceReadySignal(SwigCPtr), false);
+                    signal?.Connect(backgroundResourceLoadedCallback);
                 }
-
                 backgroundResourceLoadedEventHandler += value;
             }
+
             remove
             {
                 backgroundResourceLoadedEventHandler -= value;
-
-                if (backgroundResourceLoadedEventHandler == null && ResourcesLoadedSignal().Empty() == false)
+                if (backgroundResourceLoadedEventHandler == null)
                 {
-                    this.ResourcesLoadedSignal().Disconnect(backgroundResourceLoadedCallback);
-                    backgroundResourceLoadedCallback = null;
+                    using ViewSignal signal = new ViewSignal(Interop.View.ResourceReadySignal(SwigCPtr), false);
+                    if (signal?.Empty() == false)
+                    {
+                        signal?.Disconnect(backgroundResourceLoadedCallback);
+                        if (signal?.Empty() == true)
+                        {
+                            backgroundResourceLoadedCallback = null;
+                        }
+                    }
                 }
             }
         }
@@ -664,94 +758,39 @@ namespace Tizen.NUI.BaseComponents
             return ret;
         }
 
-        private void OnSize2DChanged(int? width, int? height)
+        private void OnColorChanged(float r, float g, float b, float a)
         {
-            PropertyValue temp;
-            if (width != null)
-            {
-                temp = new Tizen.NUI.PropertyValue((float)width);
-                Tizen.NUI.Object.SetProperty(this.SwigCPtr, View.Property.SizeWidth, temp);
-                temp.Dispose();
-            }
-            if (height != null)
-            {
-                temp = new Tizen.NUI.PropertyValue((float)height);
-                Tizen.NUI.Object.SetProperty(this.SwigCPtr, View.Property.SizeHeight, temp);
-                temp.Dispose();
-            }
+            Color = new Color(r, g, b, a);
         }
 
-        private void OnMinimumSizeChanged(int? width, int? height)
+        private void OnMinimumSizeChanged(int width, int height)
         {
-            if (width != null && height != null)
-            {
-                MinimumSize = new Size2D((int)width, (int)height);
-            }
-            else if (width != null && height == null)
-            {
-                MinimumSize = new Size2D((int)width, (int)this.GetMinimumSize().Height);
-            }
-            else if (width == null && height != null)
-            {
-                MinimumSize = new Size2D((int)this.GetMinimumSize().Width, (int)height);
-            }
-            else
-            {
-                //both are null, do nothing.
-            }
+            MinimumSize = new Size2D(width, height);
         }
 
-        private void OnMaximumSizeChanged(int? width, int? height)
+        private void OnMaximumSizeChanged(int width, int height)
         {
-            if (width != null && height != null)
-            {
-                MaximumSize = new Size2D((int)width, (int)height);
-            }
-            else if (width != null && height == null)
-            {
-                MaximumSize = new Size2D((int)width, (int)this.GetMaximumSize().Height);
-            }
-            else if (width == null && height != null)
-            {
-                MaximumSize = new Size2D((int)this.GetMaximumSize().Width, (int)height);
-            }
-            else
-            {
-                //both are null, do nothing.
-            }
+            MaximumSize = new Size2D(width, height);
         }
 
         private void OnPosition2DChanged(int x, int y)
         {
-            Position2D = new Position2D(x, y);
-        }
-
-        private void OnSizeChanged(float? width, float? height, float? depth)
-        {
-            PropertyValue temp;
-            if (width != null)
-            {
-                temp = new Tizen.NUI.PropertyValue((float)width);
-                Tizen.NUI.Object.SetProperty(this.SwigCPtr, View.Property.SizeWidth, temp);
-                temp.Dispose();
-            }
-            if (height != null)
-            {
-                temp = new Tizen.NUI.PropertyValue((float)height);
-                Tizen.NUI.Object.SetProperty(this.SwigCPtr, View.Property.SizeHeight, temp);
-                temp.Dispose();
-            }
-            if (depth != null)
-            {
-                temp = new Tizen.NUI.PropertyValue((float)depth);
-                Tizen.NUI.Object.SetProperty(this.SwigCPtr, View.Property.SizeDepth, temp);
-                temp.Dispose();
-            }
+            SetPosition((float)x, (float)y, 0);
         }
 
         private void OnPositionChanged(float x, float y, float z)
         {
-            Position = new Position(x, y, z);
+            SetPosition(x, y, z);
+        }
+
+        private void OnSize2DChanged(int width, int height)
+        {
+            SetSize((float)width, (float)height, 0);
+        }
+
+        private void OnSizeChanged(float width, float height, float depth)
+        {
+            SetSize(width, height, depth);
         }
 
         private void OnParentOriginChanged(float x, float y, float z)
@@ -781,18 +820,74 @@ namespace Tizen.NUI.BaseComponents
 
         private void OnKeyInputFocusGained(IntPtr view)
         {
-            if (keyInputFocusGainedEventHandler != null)
+            if (IsNativeHandleInvalid())
             {
-                keyInputFocusGainedEventHandler(this, null);
+                if (this.Disposed)
+                {
+                    if (keyInputFocusGainedEventHandler != null)
+                    {
+                        var process = global::System.Diagnostics.Process.GetCurrentProcess().Id;
+                        var thread = global::System.Threading.Thread.CurrentThread.ManagedThreadId;
+                        var me = this.GetType().FullName;
+
+                        throw new ObjectDisposedException(nameof(SwigCPtr), $"Error! NUI's native dali object is already disposed. " +
+                            $"OR the native dali object handle of NUI becomes null! \n" +
+                            $" process:{process} thread:{thread}, isDisposed:{this.Disposed}, isDisposeQueued:{this.IsDisposeQueued}, me:{me}\n");
+                    }
+                }
+                else
+                {
+                    if (this.IsDisposeQueued)
+                    {
+                        var process = global::System.Diagnostics.Process.GetCurrentProcess().Id;
+                        var thread = global::System.Threading.Thread.CurrentThread.ManagedThreadId;
+                        var me = this.GetType().FullName;
+
+                        //in this case, the View object is ready to be disposed waiting on DisposeQueue, so event callback should not be invoked!
+                        Tizen.Log.Error("NUI", "in this case, the View object is ready to be disposed waiting on DisposeQueue, so event callback should not be invoked! just return here! \n" +
+                            $"process:{process} thread:{thread}, isDisposed:{this.Disposed}, isDisposeQueued:{this.IsDisposeQueued}, me:{me}\n");
+                        return;
+                    }
+                }
             }
+
+            keyInputFocusGainedEventHandler?.Invoke(this, null);
         }
 
         private void OnKeyInputFocusLost(IntPtr view)
         {
-            if (keyInputFocusLostEventHandler != null)
+            if (IsNativeHandleInvalid())
             {
-                keyInputFocusLostEventHandler(this, null);
+                if (this.Disposed)
+                {
+                    if (keyInputFocusLostEventHandler != null)
+                    {
+                        var process = global::System.Diagnostics.Process.GetCurrentProcess().Id;
+                        var thread = global::System.Threading.Thread.CurrentThread.ManagedThreadId;
+                        var me = this.GetType().FullName;
+
+                        throw new ObjectDisposedException(nameof(SwigCPtr), $"Error! NUI's native dali object is already disposed. " +
+                            $"OR the native dali object handle of NUI becomes null! \n" +
+                            $" process:{process} thread:{thread}, isDisposed:{this.Disposed}, isDisposeQueued:{this.IsDisposeQueued}, me:{me}\n");
+                    }
+                }
+                else
+                {
+                    if (this.IsDisposeQueued)
+                    {
+                        var process = global::System.Diagnostics.Process.GetCurrentProcess().Id;
+                        var thread = global::System.Threading.Thread.CurrentThread.ManagedThreadId;
+                        var me = this.GetType().FullName;
+
+                        //in this case, the View object is ready to be disposed waiting on DisposeQueue, so event callback should not be invoked!
+                        Tizen.Log.Error("NUI", "in this case, the View object is ready to be disposed waiting on DisposeQueue, so event callback should not be invoked! just return here! \n" +
+                            $"process:{process} thread:{thread}, isDisposed:{this.Disposed}, isDisposeQueued:{this.IsDisposeQueued}, me:{me}\n");
+                        return;
+                    }
+                }
             }
+
+            keyInputFocusLostEventHandler?.Invoke(this, null);
         }
 
         private bool OnKeyEvent(IntPtr view, IntPtr keyEvent)
@@ -1324,6 +1419,19 @@ namespace Tizen.NUI.BaseComponents
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Offset TouchAreaOffset
+        {
+            get
+            {
+                return (Offset)GetValue(TouchAreaOffsetProperty);
+            }
+            set
+            {
+                SetValue(TouchAreaOffsetProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Offset InternalTouchAreaOffset
         {
             get
             {

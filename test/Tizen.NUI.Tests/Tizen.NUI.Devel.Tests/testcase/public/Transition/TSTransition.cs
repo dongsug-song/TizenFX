@@ -43,8 +43,6 @@ namespace Tizen.NUI.Devel.Tests
             Assert.IsNotNull(testingTarget, "Can't create success object Transition");
             Assert.IsInstanceOf<Transition>(testingTarget, "Should be an instance of Transition type.");
 
-            testingTarget.Dispose();
-
             tlog.Debug(tag, $"TransitionConstructor END (OK)");
         }
 
@@ -73,7 +71,7 @@ namespace Tizen.NUI.Devel.Tests
 
                     try
                     {
-                        var result = testingTarget.CreateTransition(source, dest);
+                        var result = testingTarget.CreateTransition(source, dest, true);
                         Assert.IsNotNull(result, "Can't create success object TransitionItem");
                         Assert.IsInstanceOf<TransitionItem>(result, "Should be an instance of TransitionItem type.");
                     }

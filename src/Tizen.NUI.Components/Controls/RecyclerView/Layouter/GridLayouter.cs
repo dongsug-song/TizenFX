@@ -118,6 +118,7 @@ namespace Tizen.NUI.Components
             if (pureCount == 0)
             {
                 isSourceEmpty = true;
+                base.Initialize(colView);
                 return;
             }
             isSourceEmpty = false;
@@ -254,6 +255,10 @@ namespace Tizen.NUI.Components
                 height = height + itemMargin.Top + itemMargin.Bottom;
                 StepCandidate = IsHorizontal? width : height;
                 CandidateMargin = new Extents(itemMargin);
+
+                // Prevent zero division.
+                if (width == 0) width = 1;
+                if (height == 0) height = 1;
                 spanSize = IsHorizontal?
                             Convert.ToInt32(Math.Truncate((double)((colView.Size.Height - Padding.Top - Padding.Bottom) / height))) :
                             Convert.ToInt32(Math.Truncate((double)((colView.Size.Width - Padding.Start - Padding.End) / width)));
@@ -1290,6 +1295,7 @@ namespace Tizen.NUI.Components
                             {
                                 found.start = gInfo.StartIndex - adds;
                                 failed = false;
+                                break;
                             }
                             //can be step in spanSize...
                             for (int i = 1; i < gInfo.Count; i++)
@@ -1310,6 +1316,7 @@ namespace Tizen.NUI.Components
                                     break;
                                 }
                             }
+                            if (!failed) break;
                         }
                     }
                     //footer only shows?
@@ -1321,7 +1328,9 @@ namespace Tizen.NUI.Components
                 else
                 {
                     float visibleAreaX = visibleArea.X - (hasHeader ? headerSize : 0);
-                    found.start = (Convert.ToInt32(Math.Abs(visibleAreaX / StepCandidate)) - 1) * spanSize;
+                    // Prevent zero division.
+                    var itemSize = (StepCandidate != 0)? StepCandidate: 1f;
+                    found.start = (Convert.ToInt32(Math.Abs(visibleAreaX / itemSize)) - 1) * spanSize;
                     if (hasHeader) found.start += 1;
                 }
                 if (found.start < 0) found.start = 0;
@@ -1348,6 +1357,7 @@ namespace Tizen.NUI.Components
                             {
                                 found.end = gInfo.StartIndex + adds;
                                 failed = false;
+                                break;
                             }
                             //can be step in spanSize...
                             for (int i = 1; i < gInfo.Count; i++)
@@ -1367,19 +1377,22 @@ namespace Tizen.NUI.Components
                                     break;
                                 }
                             }
+                            if (!failed) break;
                         }
                     }
                     //footer only shows?
                     if (failed)
                     {
-                        found.start = MaxIndex;
+                        found.end = MaxIndex;
                     }
                 }
                 else
                 {
                     float visibleAreaY = visibleArea.Y - (hasHeader ? headerSize : 0);
                     //Need to Consider GroupHeight!!!!
-                    found.end = (Convert.ToInt32(Math.Abs(visibleAreaY / StepCandidate)) + 1) * spanSize + adds;
+                    // Prevent zero division.
+                    var itemSize = (StepCandidate != 0)? StepCandidate: 1f;
+                    found.end = (Convert.ToInt32(Math.Abs(visibleAreaY / itemSize)) + 1) * spanSize + adds;
                     if (hasHeader) found.end += 1;
                 }
                 if (found.end > (MaxIndex)) found.end = MaxIndex;

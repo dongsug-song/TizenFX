@@ -15,12 +15,12 @@
  *
  */
 
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+
 namespace Tizen.NUI
 {
-    using System;
-    using System.ComponentModel;
-    using System.Runtime.InteropServices;
-
     /// <summary>
     /// TransitionSet is used to control lifetime of multiple Transitions.
     /// For the one page transition, may multiple transitions are played coincidently.
@@ -101,8 +101,19 @@ namespace Tizen.NUI
 
         public void AddTransition(TransitionItemBase transition)
         {
-            Interop.TransitionSet.AddTransition(SwigCPtr, transition.SwigCPtr);
-            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            if (transition is TransitionGroupItem)
+            {
+                TransitionGroupItem transitionGroup = transition as TransitionGroupItem;
+                for (int index = 0; index < transitionGroup.TransitionCount; ++index)
+                {
+                    this.AddTransition(transitionGroup.GetTransitionAt(index));
+                }
+            }
+            else
+            {
+                Interop.TransitionSet.AddTransition(SwigCPtr, transition.SwigCPtr);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            }
         }
 
         public TransitionItemBase GetTransitionAt(uint index)
@@ -140,11 +151,6 @@ namespace Tizen.NUI
         {
             Interop.TransitionSet.Play(SwigCPtr);
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-        }
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(TransitionSet obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
         }
 
         internal TransitionSet(TransitionSet handle) : this(Interop.TransitionSet.NewTransitionSet(TransitionSet.getCPtr(handle)), true)

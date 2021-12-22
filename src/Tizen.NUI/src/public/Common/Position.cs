@@ -540,7 +540,7 @@ namespace Tizen.NUI
                 Interop.Vector3.XSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(X, Y, Z);
+                callback?.Invoke(value, Y, Z);
             }
             get
             {
@@ -573,7 +573,7 @@ namespace Tizen.NUI
                 Interop.Vector3.YSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(X, Y, Z);
+                callback?.Invoke(X, value, Z);
             }
             get
             {
@@ -606,7 +606,7 @@ namespace Tizen.NUI
                 Interop.Vector3.ZSet(SwigCPtr, value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                callback?.Invoke(X, Y, Z);
+                callback?.Invoke(X, Y, value);
             }
             get
             {
@@ -877,11 +877,6 @@ namespace Tizen.NUI
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public object Clone() => new Position(X, Y, Z);
-
-        internal static global::System.Runtime.InteropServices.HandleRef getCPtr(Position obj)
-        {
-            return (obj == null) ? new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero) : obj.SwigCPtr;
-        }
 
         internal static Position GetPositionFromPtr(global::System.IntPtr cPtr)
         {

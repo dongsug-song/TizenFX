@@ -51,35 +51,9 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Gets the list of items.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public WebContextMenuItemList ItemList
-        {
-            get
-            {
-                IntPtr result = Interop.WebContextMenu.GetItemList(SwigCPtr);
-                return new WebContextMenuItemList(result, true);
-            }
-        }
-
-        /// <summary>
-        /// Gets position of the context menu.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Vector2 Position
-        {
-            get
-            {
-                IntPtr result = Interop.WebContextMenu.GetPosition(SwigCPtr);
-                return new Vector2(result, true);
-            }
-        }
-
-        /// <summary>
         /// Returns the nth item in a context menu.
-        /// <param name="index">The position of the item</param>
         /// </summary>
+        /// <param name="index">The position of the item</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public WebContextMenuItem GetItemAtIndex(uint index)
         {
@@ -90,8 +64,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Removes the item from the context menu.
-        /// <param name="item">The item to be removed</param>
         /// </summary>
+        /// <param name="item">The item to be removed</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool RemoveItem(WebContextMenuItem item)
         {
@@ -102,10 +76,10 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Adds the item with a title to the context menu.
+        /// </summary>
         /// <param name="tag">The tag of context menu item</param>
         /// <param name="title">The title of context menu item</param>
         /// <param name="enabled">Whether context menu item is enabled or not</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool AppendItem(WebContextMenuItem.ItemTag tag, string title, bool enabled)
         {
@@ -116,11 +90,11 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Adds the item with a title and an icon to the context menu.
+        /// </summary>
         /// <param name="tag">The tag of context menu item</param>
         /// <param name="title">The title of context menu item</param>
         /// <param name="iconFile">The path of icon to be set on context menu item</param>
         /// <param name="enabled">Whether context menu item is enabled or not</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool AppendItem(WebContextMenuItem.ItemTag tag, string title, string iconFile, bool enabled)
         {
@@ -131,8 +105,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Selects the item from the context menu.
-        /// <param name="item">The item to be selected</param>
         /// </summary>
+        /// <param name="item">The item to be selected</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool SelectItem(WebContextMenuItem item)
         {

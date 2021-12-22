@@ -14,20 +14,20 @@
  *
  */
 using System;
-using Tizen.NUI;
 using Tizen.NUI.BaseComponents;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using Tizen.NUI.Binding;
 
 namespace Tizen.NUI.Components
 {
     /// <summary>
     /// TimeChangedEventArgs is a class to notify changed TimePicker value argument which will sent to user.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
+    /// <since_tizen> 9 </since_tizen>
     public class TimeChangedEventArgs : EventArgs
     {
         /// <summary>
@@ -44,7 +44,7 @@ namespace Tizen.NUI.Components
         /// TimeChangedEventArgs default constructor.
         /// <returns>The current time value of TimePicker.</returns>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]   
+        /// <since_tizen> 9 </since_tizen>
         public DateTime Time { get; }
     }
 
@@ -53,9 +53,45 @@ namespace Tizen.NUI.Components
     /// a time through a scrolling motion by expressing the specified value as a list.
     /// TimePicker expresses the current time using the locale information of the system.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never)]
+    /// <since_tizen> 9 </since_tizen>
     public class TimePicker : Control
     {
+        /// <summary>
+        /// TimeProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty TimeProperty = BindableProperty.Create(nameof(Time), typeof(DateTime), typeof(TimePicker), default(DateTime), propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (TimePicker)bindable;
+            if (newValue != null)
+            {
+                instance.InternalTime = (DateTime)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (TimePicker)bindable;
+            return instance.InternalTime;
+        });
+
+        /// <summary>
+        /// Is24HourViewProperty
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly BindableProperty Is24HourViewProperty = BindableProperty.Create(nameof(Is24HourView), typeof(bool), typeof(TimePicker), default(bool), propertyChanged: (bindable, oldValue, newValue) =>
+        {
+            var instance = (TimePicker)bindable;
+            if (newValue != null)
+            {
+                instance.InternalIs24HourView = (bool)newValue;
+            }
+        },
+        defaultValueCreator: (bindable) =>
+        {
+            var instance = (TimePicker)bindable;
+            return instance.InternalIs24HourView;
+        });
+
         private bool isAm;
         private bool is24HourView;
         private DateTime currentTime;
@@ -63,35 +99,31 @@ namespace Tizen.NUI.Components
         private Picker hourPicker;
         private Picker minutePicker;
         private Picker ampmPicker;
-        private TimePickerStyle timePickerStyle => ViewStyle as TimePickerStyle;
 
         /// <summary>
         /// Creates a new instance of TimePicker.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public TimePicker()
         {
-            Initialize();
         }
 
         /// <summary>
         /// Creates a new instance of TimePicker.
         /// </summary>
         /// <param name="style">Creates TimePicker by special style defined in UX.</param>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public TimePicker(string style) : base(style)
         {
-            Initialize();
         }
 
         /// <summary>
         /// Creates a new instance of TimePicker.
         /// </summary>
         /// <param name="timePickerStyle">Creates TimePicker by style customized by user.</param>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public TimePicker(TimePickerStyle timePickerStyle) : base(timePickerStyle)
         {
-            Initialize();
         }
 
         /// <summary>
@@ -125,14 +157,26 @@ namespace Tizen.NUI.Components
         /// <summary>
         /// An event emitted when TimePicker value changed, user can subscribe or unsubscribe to this event handler.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public event EventHandler<TimeChangedEventArgs> TimeChanged;
 
         /// <summary>
         /// The hour value of TimePicker.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public DateTime Time
+        {
+            get
+            {
+                return (DateTime)GetValue(TimeProperty);
+            }
+            set
+            {
+                SetValue(TimeProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private DateTime InternalTime
         {
             get
             {
@@ -166,8 +210,20 @@ namespace Tizen.NUI.Components
         /// <summary>
         /// The is24hourview value of TimePicker.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        /// <since_tizen> 9 </since_tizen>
         public bool Is24HourView
+        {
+            get
+            {
+                return (bool)GetValue(Is24HourViewProperty);
+            }
+            set
+            {
+                SetValue(Is24HourViewProperty, value);
+                NotifyPropertyChanged();
+            }
+        }
+        private bool InternalIs24HourView
         {
             get
             {
@@ -242,6 +298,8 @@ namespace Tizen.NUI.Components
                 hourPicker.CurrentValue = currentTime.Hour;
 
             minutePicker.CurrentValue = currentTime.Minute;
+
+            Initialize();
         }
 
         /// <summary>
@@ -252,6 +310,10 @@ namespace Tizen.NUI.Components
         public override void ApplyStyle(ViewStyle viewStyle)
         {
             base.ApplyStyle(viewStyle);
+
+            var timePickerStyle = viewStyle as TimePickerStyle;
+
+            if (timePickerStyle == null) return;
 
             //Apply CellPadding.
             if (timePickerStyle?.CellPadding != null && Layout != null)
@@ -275,7 +337,6 @@ namespace Tizen.NUI.Components
 
             Layout = new LinearLayout() { 
                 LinearOrientation = LinearLayout.Orientation.Horizontal,
-                CellPadding = new Size(timePickerStyle.CellPadding.Width, timePickerStyle.CellPadding.Height),
             };
             Console.WriteLine("initialize");
 

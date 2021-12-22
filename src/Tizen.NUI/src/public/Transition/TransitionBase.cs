@@ -15,22 +15,24 @@
  *
  */
 
+using System;
+using System.ComponentModel;
+using Tizen.NUI.BaseComponents;
+
 namespace Tizen.NUI
 {
-    using System;
-    using System.ComponentModel;
-    using Tizen.NUI.BaseComponents;
-
     /// <summary>
     /// TransitionBase class is a base class for all Transition.
     /// Each Transition child classes inherits this base class.
     /// </summary>
+    /// <remarks>
+    /// Transition changes propreties of View like Position, Scale, Orientation, and Opacity during transition.
+    /// </remarks>
     /// <since_tizen> 9 </since_tizen>
     public class TransitionBase : Disposable
     {
-        private static readonly int DefaultDuration = 500;
-        private AlphaFunction alphaFunction = new AlphaFunction(AlphaFunction.BuiltinFunctions.Default);
-        private TimePeriod timePeriod = new TimePeriod(DefaultDuration);
+        private AlphaFunction alphaFunction = null;
+        private TimePeriod timePeriod = null;
 
         /// <summary>
         /// Create a TransitionBase
@@ -72,16 +74,31 @@ namespace Tizen.NUI
             }
         }
 
-        internal TransitionItemBase CreateTransition(View target, bool isEntering)
+        internal TimePeriod GetTimePeriod()
         {
-            return new TransitionItemBase(target, isEntering, timePeriod, alphaFunction);
+            return timePeriod ??= new TimePeriod(0);
+        }
+
+        internal AlphaFunction GetAlphaFunction()
+        {
+            return alphaFunction ??= new AlphaFunction(AlphaFunction.BuiltinFunctions.Default);
+        }
+
+        internal TransitionItemBase CreateTransition(View view, bool appearingTransition)
+        {
+            return CreateTransition(view, appearingTransition, GetTimePeriod(), GetAlphaFunction());
+        }
+
+        internal virtual TransitionItemBase CreateTransition(View view, bool appearingTransition, TimePeriod timePeriod, AlphaFunction alphaFunction)
+        {
+            return new TransitionItemBase(view, appearingTransition, timePeriod, alphaFunction);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override void Dispose(DisposeTypes type)
         {
-            alphaFunction.Dispose();
-            timePeriod.Dispose();
+            alphaFunction?.Dispose();
+            timePeriod?.Dispose();
             base.Dispose(type);
         }
     }

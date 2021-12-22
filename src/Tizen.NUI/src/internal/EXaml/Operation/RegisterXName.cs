@@ -26,10 +26,10 @@ namespace Tizen.NUI.EXaml
 {
     internal class RegisterXName : Operation
     {
-        public RegisterXName(GlobalDataList globalDataList, object instance, string name)
+        public RegisterXName(GlobalDataList globalDataList, List<object> operationInfo)
         {
-            this.instance = instance;
-            this.name = name;
+            instance = operationInfo[0];
+            name = operationInfo[1] as string;
             this.globalDataList = globalDataList;
         }
 
@@ -47,7 +47,7 @@ namespace Tizen.NUI.EXaml
                 realInstance = instance;
             }
 
-            var namescope = NameScope.GetNameScope(CreateInstance.Root as BindableObject);
+            var namescope = NameScope.GetNameScope(globalDataList.Root as BindableObject);
             namescope?.RegisterName(name, realInstance);
         }
 

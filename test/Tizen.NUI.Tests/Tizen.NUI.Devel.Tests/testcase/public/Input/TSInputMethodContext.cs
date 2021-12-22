@@ -652,23 +652,6 @@ namespace Tizen.NUI.Devel.Tests
 
         [Test]
         [Category("P1")]
-        [Description("InputMethodContext getCPtr")]
-        [Property("SPEC", "Tizen.NUI.InputMethodContext.getCPtr M")]
-        [Property("SPEC_URL", "-")]
-        [Property("CRITERIA", "MR")]
-        [Property("AUTHOR", "guowei.wang@samsung.com")]
-        public void InputMethodContextgetCPtr()
-        {
-            tlog.Debug(tag, $"InputMethodContextgetCPtr START");
-            InputMethodContext a1 = new InputMethodContext();
-
-            global::System.Runtime.InteropServices.HandleRef p1 = InputMethodContext.getCPtr(a1);
-            tlog.Debug(tag, $"InputMethodContextgetCPtr END (OK)");
-            Assert.Pass("InputMethodContextgetCPtr");
-        }
-
-        [Test]
-        [Category("P1")]
         [Description("InputMethodContext Assign")]
         [Property("SPEC", "Tizen.NUI.InputMethodContext.Assign M")]
         [Property("SPEC_URL", "-")]
@@ -694,11 +677,16 @@ namespace Tizen.NUI.Devel.Tests
         public void InputMethodContextDownCast()
         {
             tlog.Debug(tag, $"InputMethodContextDownCast START");
-            BaseHandle handle = new BaseHandle();
 
-            InputMethodContext a1 = InputMethodContext.DownCast(handle);
+            using (InputMethodContext context = new InputMethodContext())
+            {
+                var testingTarget = InputMethodContext.DownCast(context);
+                Assert.IsNotNull(testingTarget, "Can't create success object InputMethodContext");
+                Assert.IsInstanceOf<InputMethodContext>(testingTarget, "Should be an instance of InputMethodContext type.");
 
-            a1.Dispose();
+                testingTarget.Dispose();
+            }
+
             tlog.Debug(tag, $"InputMethodContextDownCast END (OK)");
             Assert.Pass("InputMethodContextDownCast");
         }

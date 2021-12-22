@@ -16,6 +16,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
@@ -31,15 +32,49 @@ namespace Tizen.NUI
         private string appVersion;
         private float timeOffset;
         private ApplicationType applicationType;
+        private WebSecurityOriginList securityOriginList;
         private SecurityOriginListAcquiredCallback securityOriginListAcquiredCallback;
         private readonly WebContextSecurityOriginListAcquiredProxyCallback securityOriginListAcquiredProxyCallback;
+        private WebPasswordDataList passwordDataList;
         private PasswordDataListAcquiredCallback passwordDataListAcquiredCallback;
         private readonly WebContextPasswordDataListAcquiredProxyCallback passwordDataListAcquiredProxyCallback;
+        private HttpRequestInterceptedCallback httpRequestInterceptedCallback;
+        private readonly WebContextHttpRequestInterceptedProxyCallback httpRequestInterceptedProxyCallback;
 
         internal WebContext(global::System.IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn)
         {
             securityOriginListAcquiredProxyCallback = OnSecurityOriginListAcquired;
             passwordDataListAcquiredProxyCallback = OnPasswordDataListAcquired;
+            httpRequestInterceptedProxyCallback = OnHttpRequestIntercepted;
+        }
+
+        /// <summary>
+        /// Dispose for IDisposable pattern
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        protected override void Dispose(DisposeTypes type)
+        {
+            if (Disposed)
+            {
+                return;
+            }
+
+            if (type == DisposeTypes.Explicit)
+            {
+                //Called by User
+                //Release your own managed resources here.
+                //You should release all of your own disposable objects here.
+                if (passwordDataList != null)
+                {
+                    passwordDataList.Dispose();
+                }
+                if (securityOriginList != null)
+                {
+                    securityOriginList.Dispose();
+                }
+            }
+
+            base.Dispose(type);
         }
 
         /// <summary>
@@ -47,7 +82,7 @@ namespace Tizen.NUI
         /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public delegate void SecurityOriginListAcquiredCallback(WebSecurityOriginList list);
+        public delegate void SecurityOriginListAcquiredCallback(IList<WebSecurityOrigin> list);
 
         /// <summary>
         /// The callback function that is invoked when storage usage is acquired.
@@ -57,11 +92,11 @@ namespace Tizen.NUI
         public delegate void StorageUsageAcquiredCallback(ulong usage);
 
         /// <summary>
-        /// The callback function that is invoked when security origin list is acquired.
+        /// The callback function that is invoked when password data list is acquired.
         /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public delegate void PasswordDataListAcquiredCallback(WebPasswordDataList list);
+        public delegate void PasswordDataListAcquiredCallback(IList<WebPasswordData> list);
 
         /// <summary>
         /// The callback function that is invoked when download is started.
@@ -75,13 +110,23 @@ namespace Tizen.NUI
         /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public delegate bool MimeOverriddenCallback(string url, string currentMime, string newMime);
+        public delegate bool MimeOverriddenCallback(string url, string currentMime, out string newMime);
+
+        /// <summary>
+        /// The callback function that is invoked when http request need be intercepted.
+        /// </summary>
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public delegate void HttpRequestInterceptedCallback(WebHttpRequestInterceptor interceptor);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void WebContextSecurityOriginListAcquiredProxyCallback(IntPtr list);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void WebContextPasswordDataListAcquiredProxyCallback(IntPtr list);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate void WebContextHttpRequestInterceptedProxyCallback(IntPtr interceptor);
 
         /// <summary>
         /// Cache model
@@ -157,7 +202,7 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Proxy url.
+        /// Proxy URL.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string ProxyUrl
@@ -211,7 +256,7 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// App id.
+        /// App ID.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string AppId
@@ -290,7 +335,7 @@ namespace Tizen.NUI
         {
             get
             {
-                return Interop.WebContext.GetContextDefaultZoomFactor(SwigCPtr);
+                return Interop.WebContext.GetDefaultZoomFactor(SwigCPtr);
             }
             set
             {
@@ -326,6 +371,8 @@ namespace Tizen.NUI
         /// <summary>
         /// Sets default proxy auth.
         /// </summary>
+        /// <param name="username">Default username for proxy</param>
+        /// <param name="password">Default password for proxy</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetDefaultProxyAuth(string username, string password)
         {
@@ -345,8 +392,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Gets security origins of web database asynchronously.
-        /// <param name="callback">callback for acquiring security origins</param>
         /// </summary>
+        /// <param name="callback">callback for acquiring security origins</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool GetWebDatabaseOrigins(SecurityOriginListAcquiredCallback callback)
         {
@@ -359,8 +406,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Deletes web databases by origin.
-        /// <param name="origin">security origin of web database</param>
         /// </summary>
+        /// <param name="origin">security origin of web database</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool DeleteWebDatabase(WebSecurityOrigin origin)
         {
@@ -371,8 +418,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Gets a list of security origins of web storage asynchronously.
-        /// <param name="callback">callback for acquiring security origins</param>
         /// </summary>
+        /// <param name="callback">callback for acquiring security origins</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool GetWebStorageOrigins(SecurityOriginListAcquiredCallback callback)
         {
@@ -385,9 +432,9 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Gets a list of security origins of web storage asynchronously.
+        /// </summary>
         /// <param name="origin">security origin of web storage</param>
         /// <param name="callback">callback for acquiring storage usage</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool GetWebStorageUsageForOrigin(WebSecurityOrigin origin, StorageUsageAcquiredCallback callback)
         {
@@ -409,8 +456,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Deletes web storage by origin.
-        /// <param name="origin">security origin of web storage</param>
         /// </summary>
+        /// <param name="origin">security origin of web storage</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool DeleteWebStorage(WebSecurityOrigin origin)
         {
@@ -420,7 +467,7 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Deletes local fileSystem.
+        /// Deletes directories and files in local file system.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void DeleteLocalFileSystem()
@@ -441,8 +488,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Deletes web application cache by origin.
-        /// <param name="origin">security origin of web application</param>
         /// </summary>
+        /// <param name="origin">security origin of web application</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool DeleteApplicationCache(WebSecurityOrigin origin)
         {
@@ -453,8 +500,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Gets a list of all password data asynchronously.
-        /// <param name="callback">callback for acquiring password data list</param>
         /// </summary>
+        /// <param name="callback">callback for acquiring password data list</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void GetFormPasswordList(PasswordDataListAcquiredCallback callback)
         {
@@ -466,8 +513,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Registers callback for download started.
-        /// <param name="callback">callback for download started</param>
         /// </summary>
+        /// <param name="callback">callback for download started</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void RegisterDownloadStartedCallback(DownloadStartedCallback callback)
         {
@@ -477,9 +524,9 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Registers callback for overriding mime type.
-        /// <param name="callback">callback for overriding mime type</param>
+        /// Registers callback for overriding MIME type.
         /// </summary>
+        /// <param name="callback">callback for overriding MIME type</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void RegisterMimeOverriddenCallback(MimeOverriddenCallback callback)
         {
@@ -489,10 +536,27 @@ namespace Tizen.NUI
         }
 
         /// <summary>
+        /// Registers callback for http request interceptor.
+        /// </summary>
+        /// <param name="callback">callback for intercepting http request</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void RegisterHttpRequestInterceptedCallback(HttpRequestInterceptedCallback callback)
+        {
+            httpRequestInterceptedCallback = callback;
+            IntPtr ip = IntPtr.Zero;
+            if (httpRequestInterceptedCallback != null)
+            {
+                ip = Marshal.GetFunctionPointerForDelegate(httpRequestInterceptedProxyCallback);
+            }
+            Interop.WebContext.RegisterRequestInterceptedCallback(SwigCPtr, new HandleRef(this, ip));
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        /// <summary>
         /// Sets context time zone offset.
+        /// </summary>
         /// <param name="offset">Time offset</param>
         /// <param name="time">Daylight saving time</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetTimeZoneOffset(float offset, float time)
         {
@@ -502,9 +566,9 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Deprecated. Sets context time zone offset.
+        /// </summary>
         /// <param name="offset">Time offset</param>
         /// <param name="time">Daylight saving time</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetContextTimeZoneOffset(float offset, float time)
         {
@@ -512,9 +576,9 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Registers url schemes enabled.
-        /// <param name="schemes">The string array of schemes</param>
+        /// Registers URL schemes enabled.
         /// </summary>
+        /// <param name="schemes">The string array of schemes</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void RegisterUrlSchemesAsCorsEnabled(string[] schemes)
         {
@@ -526,9 +590,9 @@ namespace Tizen.NUI
         }
 
         /// <summary>
-        /// Registers js plugin mime types.
-        /// <param name="mimes">The string array of types</param>
+        /// Registers JS plugin mime types.
         /// </summary>
+        /// <param name="mimes">The string array of types</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void RegisterJsPluginMimeTypes(string[] mimes)
         {
@@ -563,8 +627,8 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Deletes password dataList.
-        /// <param name="passwords">The string array of data list</param>
         /// </summary>
+        /// <param name="passwords">The string array of data list</param>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void DeleteFormPasswordDataList(string[] passwords)
         {
@@ -597,9 +661,9 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Sets proxy bypass rule.
+        /// </summary>
         /// <param name="proxy">The proxy string</param>
         /// <param name="rule">Bypass rule</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetProxyBypassRule(string proxy, string rule)
         {
@@ -609,9 +673,9 @@ namespace Tizen.NUI
 
         /// <summary>
         /// Deprecated. Sets proxy bypass rule.
+        /// </summary>
         /// <param name="proxy">The proxy string</param>
         /// <param name="rule">Bypass rule</param>
-        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void SetContextProxy(string proxy, string rule)
         {
@@ -629,18 +693,41 @@ namespace Tizen.NUI
             return ret;
         }
 
-        private void OnSecurityOriginListAcquired(IntPtr list)
+        private void OnSecurityOriginListAcquired(IntPtr alist)
         {
-            WebSecurityOriginList originList = new WebSecurityOriginList(list, true);
+            if (securityOriginList != null)
+            {
+                securityOriginList.Dispose();
+            }
+            securityOriginList = new WebSecurityOriginList(alist, true);
+            List<WebSecurityOrigin> originList = new List<WebSecurityOrigin>();
+            for (uint i = 0; i < securityOriginList.ItemCount; i++)
+            {
+                originList.Add(securityOriginList.GetItemAtIndex(i));
+            }
             securityOriginListAcquiredCallback?.Invoke(originList);
-            originList.Dispose();
         }
 
-        private void OnPasswordDataListAcquired(IntPtr list)
+        private void OnPasswordDataListAcquired(IntPtr alist)
         {
-            WebPasswordDataList passwordList = new WebPasswordDataList(list, true);
-            passwordDataListAcquiredCallback?.Invoke(passwordList);
-            passwordList.Dispose();
+            if (passwordDataList != null)
+            {
+                passwordDataList.Dispose();
+            }
+            passwordDataList = new WebPasswordDataList(alist, true);
+            List<WebPasswordData> pList = new List<WebPasswordData>();
+            for(uint i = 0; i < passwordDataList.ItemCount; i++)
+            {
+                pList.Add(passwordDataList.GetItemAtIndex(i));
+            }
+            passwordDataListAcquiredCallback?.Invoke(pList);
+        }
+
+        private void OnHttpRequestIntercepted(IntPtr interceptor)
+        {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            httpRequestInterceptedCallback?.Invoke(new WebHttpRequestInterceptor(interceptor, true));
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
     }
 }
