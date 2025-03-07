@@ -36,7 +36,7 @@ jobs:
 
     - name: Extract API
       run: |
-        dotnet run --project .apitool/ \
+        dotnet run -p .apitool/ \
             -- print --format=json --include-hidden \
             -o Artifacts/api.json Artifacts/bin/public/
 
