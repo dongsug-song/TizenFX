@@ -17,6 +17,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Tizen.Applications;
 
 namespace Tizen.Network.WiFi
 {
@@ -37,6 +38,8 @@ namespace Tizen.Network.WiFi
 
         private static TaskCompletionSource<WiFiAP> wpsWithoutSsidTask = null;
         private static Dictionary<IntPtr, TaskCompletionSource<bool>> _wpsTaskMap = new Dictionary<IntPtr, TaskCompletionSource<bool>>();
+        private TizenSynchronizationContext context = new TizenSynchronizationContext();
+        private static TizenSynchronizationContext s_context = new TizenSynchronizationContext();
 
         /// <summary>
         /// The network information of the access point (AP).
@@ -252,29 +255,32 @@ namespace Tizen.Network.WiFi
                 };
             }
 
-            Log.Info(Globals.LogTag, "Interop.WiFi.Connect");
-            try
+            context.Post((x) =>
             {
-                int ret = (int)WiFiError.None;
-                lock (_callback_map)
+                Log.Info(Globals.LogTag, "Interop.WiFi.Connect");
+                try
                 {
-                    ret = Interop.WiFi.Connect(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
-                }
-                if (ret != (int)WiFiError.None)
-                {
-                    Log.Error(Globals.LogTag, "Failed to connect wifi, Error - " + (WiFiError)ret);
-                    if (ret == (int)WiFiError.InvalidParameterError)
+                    int ret = (int)WiFiError.None;
+                    lock (_callback_map)
                     {
-                        throw new InvalidOperationException("Invalid handle");
+                        ret = Interop.WiFi.Connect(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
                     }
-                    WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
+                    if (ret != (int)WiFiError.None)
+                    {
+                        Log.Error(Globals.LogTag, "Failed to connect wifi, Error - " + (WiFiError)ret);
+                        if (ret == (int)WiFiError.InvalidParameterError)
+                        {
+                            throw new InvalidOperationException("Invalid handle");
+                        }
+                        WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(Globals.LogTag, "Exception on ConnectAsync\n" + e);
-                task.SetException(e);
-            }
+                catch (Exception e)
+                {
+                    Log.Error(Globals.LogTag, "Exception on ConnectAsync\n" + e);
+                    task.SetException(e);
+                }
+            }, null);
 
             return task.Task;
         }
@@ -339,44 +345,47 @@ namespace Tizen.Network.WiFi
                 };
             }
 
-            try
+            context.Post((x) =>
             {
-                int ret = -1;
-                if (info.GetType() == typeof(WpsPbcInfo))
+                try
                 {
-                    Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPb");
-                    ret = Interop.WiFi.ConnectByWpsPbc(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
-                }
-                else if (info.GetType() == typeof(WpsPinInfo))
-                {
-                    WpsPinInfo pinInfo = (WpsPinInfo)info;
-                    if (pinInfo.GetWpsPin() == null)
+                    int ret = -1;
+                    if (info.GetType() == typeof(WpsPbcInfo))
                     {
-                        throw new ArgumentNullException("Wps pin should not be null");
+                        Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPb");
+                        ret = Interop.WiFi.ConnectByWpsPbc(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
+                    }
+                    else if (info.GetType() == typeof(WpsPinInfo))
+                    {
+                        WpsPinInfo pinInfo = (WpsPinInfo)info;
+                        if (pinInfo.GetWpsPin() == null)
+                        {
+                            throw new ArgumentNullException("Wps pin should not be null");
+                        }
+
+                        if (pinInfo.GetWpsPin().Length == 0 || pinInfo.GetWpsPin().Length > 8)
+                        {
+                            throw new ArgumentOutOfRangeException("Wps pin should not be empty or more than 7 characters");
+                        }
+
+                        Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPin");
+                        ret = Interop.WiFi.ConnectByWpsPin(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, pinInfo.GetWpsPin(), _callback_map[id], id);
                     }
 
-                    if (pinInfo.GetWpsPin().Length == 0 || pinInfo.GetWpsPin().Length > 8)
+                    if (ret != (int)WiFiError.None)
                     {
-                        throw new ArgumentOutOfRangeException("Wps pin should not be empty or more than 7 characters");
+                        Log.Error(Globals.LogTag, "Failed to connect wifi, Error - " + (WiFiError)ret);
+                        WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
                     }
-
-                    Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPin");
-                    ret = Interop.WiFi.ConnectByWpsPin(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, pinInfo.GetWpsPin(), _callback_map[id], id);
                 }
-
-                if (ret != (int)WiFiError.None)
+                catch (Exception e)
                 {
-                    Log.Error(Globals.LogTag, "Failed to connect wifi, Error - " + (WiFiError)ret);
-                    WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
+                    Log.Error(Globals.LogTag, "Exception on ConnectWpsAsync\n" + e);
+                    wpsTask.SetException(e);
+                    Log.Info(Globals.LogTag, "Remove task for ConnectWpsAsync");
+                    _wpsTaskMap.Remove(_apHandle);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(Globals.LogTag, "Exception on ConnectWpsAsync\n" + e);
-                wpsTask.SetException(e);
-                Log.Info(Globals.LogTag, "Remove task for ConnectWpsAsync");
-                _wpsTaskMap.Remove(_apHandle);
-            }
+            }, null);
 
             return wpsTask.Task;
         }
@@ -436,44 +445,47 @@ namespace Tizen.Network.WiFi
                 };
             }
 
-            try
+            s_context.Post((x) =>
             {
-                int ret = -1;
-                if (info.GetType() == typeof(WpsPbcInfo))
+                try
                 {
-                    Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPbcWithoutSsid");
-                    ret = Interop.WiFi.ConnectByWpsPbcWithoutSsid(WiFiManagerImpl.Instance.GetSafeHandle(), s_callbackMap[id], id);
-                }
-                else if (info.GetType() == typeof(WpsPinInfo))
-                {
-                    WpsPinInfo pinInfo = (WpsPinInfo)info;
-                    if (pinInfo.GetWpsPin() == null)
+                    int ret = -1;
+                    if (info.GetType() == typeof(WpsPbcInfo))
                     {
-                        throw new ArgumentNullException("Wps pin should not be null");
+                        Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPbcWithoutSsid");
+                        ret = Interop.WiFi.ConnectByWpsPbcWithoutSsid(WiFiManagerImpl.Instance.GetSafeHandle(), s_callbackMap[id], id);
+                    }
+                    else if (info.GetType() == typeof(WpsPinInfo))
+                    {
+                        WpsPinInfo pinInfo = (WpsPinInfo)info;
+                        if (pinInfo.GetWpsPin() == null)
+                        {
+                            throw new ArgumentNullException("Wps pin should not be null");
+                        }
+
+                        if (pinInfo.GetWpsPin().Length != 4 && pinInfo.GetWpsPin().Length != 8)
+                        {
+                            throw new ArgumentOutOfRangeException("Wps pin should be of 4 or 8 characters long");
+                        }
+
+                        Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPinWithoutSsid");
+                        ret = Interop.WiFi.ConnectByWpsPinWithoutSsid(WiFiManagerImpl.Instance.GetSafeHandle(), pinInfo.GetWpsPin(), s_callbackMap[id], id);
                     }
 
-                    if (pinInfo.GetWpsPin().Length != 4 && pinInfo.GetWpsPin().Length != 8)
+                    if (ret != (int)WiFiError.None)
                     {
-                        throw new ArgumentOutOfRangeException("Wps pin should be of 4 or 8 characters long");
+                        Log.Error(Globals.LogTag, "Failed to connect wifi, Error - " + (WiFiError)ret);
+                        WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle());
                     }
-
-                    Log.Info(Globals.LogTag, "Interop.WiFi.ConnectByWpsPinWithoutSsid");
-                    ret = Interop.WiFi.ConnectByWpsPinWithoutSsid(WiFiManagerImpl.Instance.GetSafeHandle(), pinInfo.GetWpsPin(), s_callbackMap[id], id);
                 }
-
-                if (ret != (int)WiFiError.None)
+                catch (Exception e)
                 {
-                    Log.Error(Globals.LogTag, "Failed to connect wifi, Error - " + (WiFiError)ret);
-                    WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle());
+                    Log.Error(Globals.LogTag, "Exception on ConnectWpsWithoutSsidAsync\n" + e);
+                    wpsWithoutSsidTask.SetException(e);
+                    wpsWithoutSsidTask = null;
+                    Log.Info(Globals.LogTag, "task is null");
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(Globals.LogTag, "Exception on ConnectWpsWithoutSsidAsync\n" + e);
-                wpsWithoutSsidTask.SetException(e);
-                wpsWithoutSsidTask = null;
-                Log.Info(Globals.LogTag, "task is null");
-            }
+            }, null);
 
             return wpsWithoutSsidTask.Task;
         }
@@ -562,25 +574,28 @@ namespace Tizen.Network.WiFi
                 };
             }
 
-            Log.Info(Globals.LogTag, "Interop.WiFi.Disconnect");
-            try
+            context.Post((x) =>
             {
-                int ret = Interop.WiFi.Disconnect(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
-                if (ret != (int)WiFiError.None)
+                Log.Info(Globals.LogTag, "Interop.WiFi.Disconnect");
+                try
                 {
-                    Log.Error(Globals.LogTag, "Failed to disconnect wifi, Error - " + (WiFiError)ret);
-                    if (ret == (int)WiFiError.InvalidParameterError)
+                    int ret = Interop.WiFi.Disconnect(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
+                    if (ret != (int)WiFiError.None)
                     {
-                        throw new InvalidOperationException("Invalid handle");
+                        Log.Error(Globals.LogTag, "Failed to disconnect wifi, Error - " + (WiFiError)ret);
+                        if (ret == (int)WiFiError.InvalidParameterError)
+                        {
+                            throw new InvalidOperationException("Invalid handle");
+                        }
+                        WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
                     }
-                    WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(Globals.LogTag, "Exception on Disconnect\n" + e);
-                task.SetException(e);
-            }
+                catch (Exception e)
+                {
+                    Log.Error(Globals.LogTag, "Exception on Disconnect\n" + e);
+                    task.SetException(e);
+                }
+            }, null);
 
             return task.Task;
         }
@@ -664,25 +679,28 @@ namespace Tizen.Network.WiFi
                 };
             }
 
-            Log.Info(Globals.LogTag, "Interop.WiFi.ForgetAP");
-            try
+            context.Post((x) =>
             {
-                int ret = Interop.WiFi.ForgetAP(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
-                if (ret != (int)WiFiError.None)
+                Log.Info(Globals.LogTag, "Interop.WiFi.ForgetAP");
+                try
                 {
-                    Log.Error(Globals.LogTag, "Failed to forget wifi, Error - " + (WiFiError)ret);
-                    if (ret == (int)WiFiError.InvalidParameterError)
+                    int ret = Interop.WiFi.ForgetAP(WiFiManagerImpl.Instance.GetSafeHandle(), _apHandle, _callback_map[id], id);
+                    if (ret != (int)WiFiError.None)
                     {
-                        throw new InvalidOperationException("Invalid handle");
+                        Log.Error(Globals.LogTag, "Failed to forget wifi, Error - " + (WiFiError)ret);
+                        if (ret == (int)WiFiError.InvalidParameterError)
+                        {
+                            throw new InvalidOperationException("Invalid handle");
+                        }
+                        WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
                     }
-                    WiFiErrorFactory.ThrowWiFiException(ret, WiFiManagerImpl.Instance.GetSafeHandle().DangerousGetHandle(), _apHandle);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Error(Globals.LogTag, "Exception on ForgetAPAsync\n" + e);
-                task.SetException(e);
-            }
+                catch (Exception e)
+                {
+                    Log.Error(Globals.LogTag, "Exception on ForgetAPAsync\n" + e);
+                    task.SetException(e);
+                }
+            }, null);
 
             return task.Task;
         }
