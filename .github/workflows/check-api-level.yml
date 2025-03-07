@@ -3,7 +3,7 @@ name: "Check API Level"
 on:
   pull_request_target:
     branches:
-    - main
+    - master
     - DevelNUI
     - API*
 
