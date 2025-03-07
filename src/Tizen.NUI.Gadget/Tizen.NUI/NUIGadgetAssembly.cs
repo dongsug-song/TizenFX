@@ -104,7 +104,6 @@ namespace Tizen.NUI
                     (_assemblyRef.Target as NUIGadgetAssemblyLoadContext).Unload();
                 }
 
-                _assembly = null;
                 _loaded = false;
                 Log.Warn("Unload(): " + _assemblyPath + " --");
             }
