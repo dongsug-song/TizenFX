@@ -731,13 +731,13 @@ namespace Tizen.NUI
         // Callback for Application InitSignal
         private void OnApplicationInit(IntPtr data)
         {
-            Log.Info("NUI", "[NUI] OnApplicationInit: DisposeQueue Initialize");
+            Log.Fatal("NT", "@@@ 0308 [NUI] OnApplicationInit: DisposeQueue Initialize");
             Tizen.Tracer.Begin("[NUI] OnApplicationInit: DisposeQueue Initialize");
             // Initialize DisposeQueue Singleton class. This is also required to create DisposeQueue on main thread.
             DisposeQueue.Instance.Initialize();
             Tizen.Tracer.End();
 
-            Log.Info("NUI", "[NUI] OnApplicationInit: GetWindow");
+            Log.Fatal("NT", "@@@ 0308 [NUI] OnApplicationInit: GetWindow");
             Tizen.Tracer.Begin("[NUI] OnApplicationInit: GetWindow");
             Window.Instance = Window.Default = GetWindow();
 
