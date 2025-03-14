@@ -5,12 +5,6 @@ on:
     inputs:
       target:
         description: 'run manually'
-  push:
-    paths:
-      - 'src/Tizen.NUI/**'  # src 폴더 내 파일 변경 시 실행
-      - 'src/Tizen.NUI.Components/**'  # src 폴더 내 파일 변경 시 실행
-    branches:
-      - DevelNUI  # 브랜치로 push 될 때 실행
   pull_request:
     paths:
       - 'src/Tizen.NUI/**'  # src 폴더 내 파일 변경 시 실행
@@ -19,7 +13,8 @@ on:
       - DevelNUI
 
 jobs:
-  review:
+  codeReviewTest:
+    needs: [build]
     runs-on: ubuntu-20.04
     steps:
       - name: 저장소 체크아웃
