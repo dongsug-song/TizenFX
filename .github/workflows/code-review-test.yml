@@ -1,0 +1,57 @@
+name: C# Code Review Bot
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'run manually'
+  push:
+    paths:
+      - 'src/Tizen.NUI/**'  # src 폴더 내 파일 변경 시 실행
+      - 'src/Tizen.NUI.Components/**'  # src 폴더 내 파일 변경 시 실행
+    branches:
+      - DevelNUI  # 브랜치로 push 될 때 실행
+  pull_request:
+    paths:
+      - 'src/Tizen.NUI/**'  # src 폴더 내 파일 변경 시 실행
+      - 'src/Tizen.NUI.Components/**'  # src 폴더 내 파일 변경 시 실행
+    branches:
+      - DevelNUI
+
+jobs:
+  review:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v3
+
+      - name: .NET SDK 설치
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'  # 최신 LTS 버전 사용
+
+      - name: Code Analysis 실행 (Roslyn Analyzers)
+        run: |
+          echo "### START ###"
+          pwd
+          echo "=========================="
+          dotnet build ./src/Tizen.NUI/Tizen.NUI.csproj /p:NuiRoslynAnalysis=true > result.txt 2>&1
+          echo "=========================="
+          ls -al
+          echo "=========================="
+          cat result.txt
+          echo "### END ###"
+
+      - name: PR에 리뷰 코멘트 남기기
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 코드 리뷰 결과: 스타일 문제를 확인하세요!'
+            })
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

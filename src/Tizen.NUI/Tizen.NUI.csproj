@@ -2,11 +2,26 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <NoWarn>$(NoWarn);CS0618;CS0809;CS1591;CA1054;CA1056</NoWarn>
-        <LangVersion>8.0</LangVersion>
+        <LangVersion>9.0</LangVersion>
     </PropertyGroup>
     <PropertyGroup>
         <DefineConstants>$(DefineConstants);NUI_DEBUG_OFF;</DefineConstants>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(NuiRoslynAnalysis)' == 'true'">
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    </PropertyGroup>
+
+    <Choose>
+        <When Condition="'$(NuiRoslynAnalysis)' == 'true'">
+            <ItemGroup>
+                <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="*">
+                    <PrivateAssets>all</PrivateAssets>
+                    <IncludeAssets>runtime;build;native;contentfiles;analyzers;buildtransitive</IncludeAssets>
+                </PackageReference>
+            </ItemGroup>
+        </When>
+    </Choose>
 
     <ItemGroup>
         <TizenPreloadFile Include="Tizen.NUI.preload" Sequence="30" />
