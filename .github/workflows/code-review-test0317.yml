@@ -1,4 +1,4 @@
-name: C# Code Review Bot Test0317-7
+name: C# Code Review Bot Test0317-8
 
 on:
   pull_request:
@@ -41,9 +41,6 @@ jobs:
           KEYWORD="Error(s)"  # 검색할 단어
           FILE_PATH="result.txt"  # 검색할 파일
           MATCHED_LINES=$(grep -C 1 "$KEYWORD" "$FILE_PATH" || echo "No matches found")
-          echo "MATCHED_LINES<<EOF" >> $GITHUB_ENV
-          echo "$MATCHED_LINES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
 
       - name: 업로드 file as artifact
         uses: actions/upload-artifact@v4
@@ -58,7 +55,7 @@ jobs:
           script: |
             const matchedLines = process.env.MATCHED_LINES;
             const commentBody = matchedLines !== "No matches found"
-              ? ${matchedLines}\n
+              ? "${matchedLines}\n"
               : "NONE\n";
             github.rest.issues.createComment({
               issue_number: context.issue.number,
