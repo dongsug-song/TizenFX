@@ -1,4 +1,4 @@
-name: C# Code Review Bot
+name: C# Code Review Test#1
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   codeReviewTest:
-    needs: [build]
+    needs: [build-pull-request]
     runs-on: ubuntu-20.04
     steps:
       - name: 저장소 체크아웃
