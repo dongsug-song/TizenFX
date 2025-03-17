@@ -7,7 +7,7 @@ on:
         description: 'run manually'
  
   workflow_run:
-    workflows: ["Build Pull Request"]
+    workflows: ["Build Pull Request TEST"]
     types:
       - completed
     paths:
