@@ -36,6 +36,15 @@ jobs:
           ls -al
           echo "### END ###"
 
+      - name: 워닝 에러 표시를 위해 파일에서 찾기
+        run: |
+          KEYWORD="Error(s)"  # 검색할 단어
+          FILE_PATH="result.txt"  # 검색할 파일
+          MATCHED_LINES=$(grep -C 1 "$KEYWORD" "$FILE_PATH" || echo "No matches found")
+          echo "MATCHED_LINES<<EOF" >> $GITHUB_ENV
+          echo "$MATCHED_LINES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: 업로드 file as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -47,11 +56,15 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            const matchedLines = process.env.MATCHED_LINES;
+            const commentBody = matchedLines !== "No matches found"
+              ? `\`\`\`\n${matchedLines}\n\`\`\``
+              : "NONE";
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "NUI 스타일 체크 결과, [여기서 다운로드](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")하세요."
+              body: "NUI 스타일 체크 결과: " + commentBody + "[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"
             })
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
