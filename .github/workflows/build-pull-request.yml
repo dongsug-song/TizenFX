@@ -1,4 +1,4 @@
-name: "Build Pull Request TEST"
+name: "Build Pull Request TEST1"
 
 on:
   pull_request:
