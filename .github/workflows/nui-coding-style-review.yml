@@ -40,19 +40,30 @@ jobs:
           name: result-file
           path: result.txt
 
-      - name: comment on PR (PR에 리뷰 코멘트 남기기)
-        if: github.event_name == 'pull_request'
+      - name: test
         uses: actions/github-script@v6
         with:
           script: |
-            var matchedLines = process.env.MATCHED_LINES;
-            var commentBody = `${matchedLines}`;
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: ["NUI Style check result(결과): " + commentBody + "\n[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"]
+              labels: ["test!!! 이건 되어야 하지 않나?"]
             })
+
+      # - name: comment on PR (PR에 리뷰 코멘트 남기기)
+      #   if: github.event_name == 'pull_request'
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       var matchedLines = process.env.MATCHED_LINES;
+      #       var commentBody = `${matchedLines}`;
+      #       github.rest.issues.addLabels({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         labels: ["NUI Style check result(결과): " + commentBody + "\n[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"]
+      #       })
             # const matchedLines = process.env.MATCHED_LINES;
             # const commentBody = `${matchedLines}`;
             # github.rest.issues.createComment({
