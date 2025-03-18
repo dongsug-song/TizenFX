@@ -3,10 +3,9 @@ name: NUI Code Style Review (Roslyn)
 on:
   pull_request:
     branches:
-    - DevelNUI
+      - DevelNUI
     paths:
       - 'src/Tizen.NUI/**'  # src 폴더 내 파일 변경 시 실행
-      - 'src/Tizen.NUI.Components/**'  # src 폴더 내 파일 변경 시 실행
 
   workflow_dispatch:
 
