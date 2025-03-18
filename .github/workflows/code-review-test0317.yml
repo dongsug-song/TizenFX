@@ -1,4 +1,4 @@
-name: C# Code Review Bot Test0317-16
+name: C# Code Review Bot Test0317-17
 
 on:
   pull_request:
@@ -58,7 +58,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "NUI 스타일 체크 결과: " + commentBody + "[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"
+              body: "NUI 스타일 체크 결과: " + commentBody + "\n[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"
             })
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
