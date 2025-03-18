@@ -70,7 +70,8 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "NUI Style check result(결과): " + commentBody + "\n[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"
+              # body: "NUI Style check result(결과): " + commentBody + "\n[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"
+              body: "NUI Style check result(결과): " + commentBody
             })
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
