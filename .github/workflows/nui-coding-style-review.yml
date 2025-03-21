@@ -42,11 +42,12 @@ jobs:
 
       - name: comment on PR (PR에 리뷰 코멘트 남기기)
         if: github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v3
+        uses: actions/github-script@v6
         with:
-          comment-id: ${{ github.event.pull_request.id }}
-          body: |
-            NUI Style check result(결과): 테스트중
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["NUI Style check result(결과) 확인중! 지금은 Action 결과에서 직접 확인하세요"]
+            })
