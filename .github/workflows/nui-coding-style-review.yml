@@ -48,5 +48,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: ["NUI Style check result(결과) 확인중! 지금은 Action 결과에서 직접 확인하세요"]
+              labels: ["NUI Style check result under testing"]
             })
