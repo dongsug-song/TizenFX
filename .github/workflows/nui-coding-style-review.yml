@@ -41,7 +41,6 @@ jobs:
           path: result.txt
 
       - name: comment on PR (PR에 리뷰 코멘트 남기기)
-        if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           script: |
