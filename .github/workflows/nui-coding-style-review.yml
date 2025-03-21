@@ -41,28 +41,12 @@ jobs:
           path: result.txt
 
       - name: comment on PR (PR에 리뷰 코멘트 남기기)
-      if: github.event_name == 'pull_request'
-      uses: peter-evans/create-or-update-comment@v3
-      with:
-        issue-id: ${{ github.event.pull_request.id }}
-        body: |
-          NUI Style check result(결과): 테스트중
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-id: ${{ github.event.pull_request.id }}
+          body: |
+            NUI Style check result(결과): 테스트중
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-      # - name: comment on PR (PR에 리뷰 코멘트 남기기)
-      #   if: github.event_name == 'pull_request'
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       const matchedLines = process.env.MATCHED_LINES;
-      #       const commentBody = `${matchedLines}`;
-      #       github.rest.issues.createComment({
-      #         issue_number: context.issue.number,
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: "NUI Style check result(결과): " + commentBody + "\n[whole log download](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/actions/runs/" + process.env.GITHUB_RUN_ID + ")"
-      #       })
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
