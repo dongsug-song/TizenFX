@@ -23,7 +23,7 @@ using Tizen.NUI.Binding;
 namespace Tizen.NUI.BaseComponents
 {
 
-//test 0321-1
+//test 0321-2
 
     /// <summary>
     /// View is the base class for all views.
