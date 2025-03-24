@@ -129256,84 +129256,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "obj/API13/api/Tizen.Nlp.LanguageDetectedResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "API13/api/Tizen.Nlp.LanguageDetectedResult.html",
-          "hash": "e6HA88wfZrQuqcEuUrzESFyCn0uCvGqdj09G/ARHrDw="
-        }
-      },
-      "is_incremental": false,
-      "version": "API13",
-      "group": "API13"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "obj/API13/api/Tizen.Nlp.NamedEntityRecognitionResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "API13/api/Tizen.Nlp.NamedEntityRecognitionResult.html",
-          "hash": "D/rR1ltAQUjpOyuYM6j/7U70G/xruQS9k7Gzigdzbfw="
-        }
-      },
-      "is_incremental": false,
-      "version": "API13",
-      "group": "API13"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "obj/API13/api/Tizen.Nlp.NaturalLanguageProcess.yml",
-      "output": {
-        ".html": {
-          "relative_path": "API13/api/Tizen.Nlp.NaturalLanguageProcess.html",
-          "hash": "Z0zxueO6nIycklbjPx5mCrx/e1Be2UrGunC9qosD4gQ="
-        }
-      },
-      "is_incremental": false,
-      "version": "API13",
-      "group": "API13"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "obj/API13/api/Tizen.Nlp.PosTagResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "API13/api/Tizen.Nlp.PosTagResult.html",
-          "hash": "Oqoltcbm6QZxu2JnaRO76cpVaZhBGLUx1yXWmbxjgF0="
-        }
-      },
-      "is_incremental": false,
-      "version": "API13",
-      "group": "API13"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "obj/API13/api/Tizen.Nlp.WordTokenizeResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "API13/api/Tizen.Nlp.WordTokenizeResult.html",
-          "hash": "uTtBm6rIsTJQ0wx/dx1Bs2jN28eCsYl7SY83+WDiasA="
-        }
-      },
-      "is_incremental": false,
-      "version": "API13",
-      "group": "API13"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "obj/API13/api/Tizen.Nlp.yml",
-      "output": {
-        ".html": {
-          "relative_path": "API13/api/Tizen.Nlp.html",
-          "hash": "/bDUoSD+mcX1Tg1Y66q9MBQOM+8Ulgb44p8Ld62XYaU="
-        }
-      },
-      "is_incremental": false,
-      "version": "API13",
-      "group": "API13"
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "obj/API13/api/Tizen.PhonenumberUtils.Language.yml",
       "output": {
         ".html": {
@@ -137060,7 +136982,7 @@
       "output": {
         ".html": {
           "relative_path": "API13/api/toc.html",
-          "hash": "g1uLoZp4mSh0/bE3a/LzV4jnDuGqfzGcYutJkqWH6hM="
+          "hash": "b8VLq8AAmFqygemTcxuVqv0gRW8paJ6qiqzqSQk86j0="
         }
       },
       "is_incremental": false,
@@ -315319,12 +315241,15 @@
       "group": "API12"
     },
     {
+      "log_codes": [
+        "UidNotFound"
+      ],
       "type": "Conceptual",
       "source_relative_path": "specs/API13/api/index.md",
       "output": {
         ".html": {
           "relative_path": "API13/api/index.html",
-          "hash": "lE0sT2Fl0yd4K/CtW40X88E85YDtUPsY3QzrOYLqVZs="
+          "hash": "Wh340WhfcbiOvFPwiji3GLuFzvxnWQB8ETKWPzoTrak="
         }
       },
       "is_incremental": false,
@@ -315332,12 +315257,15 @@
       "group": "API13"
     },
     {
+      "log_codes": [
+        "UidNotFound"
+      ],
       "type": "Conceptual",
       "source_relative_path": "specs/API13/index.md",
       "output": {
         ".html": {
           "relative_path": "API13/index.html",
-          "hash": "KXRQ8+8ZN54Ej72Uq74sCe83lWIFbcpwHeE7nvJ9jWY="
+          "hash": "G+7xPVc+5y3fVRhHDME9zTrKFTaIYvLnJaNepeIqqJk="
         }
       },
       "is_incremental": false,
@@ -315565,7 +315493,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 2672,
+          "total_file_count": 2666,
           "skipped_file_count": 0
         },
         "TocDocumentProcessor": {
