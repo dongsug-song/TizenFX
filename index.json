@@ -47329,36 +47329,6 @@
     "title": "Enum WiFiDirectWpsType",
     "keywords": ""
   },
-  "API13/api/Tizen.Nlp.html": {
-    "href": "API13/api/Tizen.Nlp.html",
-    "title": "Namespace Tizen.Nlp",
-    "keywords": ""
-  },
-  "API13/api/Tizen.Nlp.LanguageDetectedResult.html": {
-    "href": "API13/api/Tizen.Nlp.LanguageDetectedResult.html",
-    "title": "Class LanguageDetectedResult",
-    "keywords": ""
-  },
-  "API13/api/Tizen.Nlp.NamedEntityRecognitionResult.html": {
-    "href": "API13/api/Tizen.Nlp.NamedEntityRecognitionResult.html",
-    "title": "Class NamedEntityRecognitionResult",
-    "keywords": ""
-  },
-  "API13/api/Tizen.Nlp.NaturalLanguageProcess.html": {
-    "href": "API13/api/Tizen.Nlp.NaturalLanguageProcess.html",
-    "title": "Class NaturalLanguageProcess",
-    "keywords": ""
-  },
-  "API13/api/Tizen.Nlp.PosTagResult.html": {
-    "href": "API13/api/Tizen.Nlp.PosTagResult.html",
-    "title": "Class PosTagResult",
-    "keywords": ""
-  },
-  "API13/api/Tizen.Nlp.WordTokenizeResult.html": {
-    "href": "API13/api/Tizen.Nlp.WordTokenizeResult.html",
-    "title": "Class WordTokenizeResult",
-    "keywords": ""
-  },
   "API13/api/Tizen.NUI.AbsoluteLayout.html": {
     "href": "API13/api/Tizen.NUI.AbsoluteLayout.html",
     "title": "Class AbsoluteLayout",
