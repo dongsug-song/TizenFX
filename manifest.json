@@ -129130,7 +129130,7 @@
       "output": {
         ".html": {
           "relative_path": "API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html",
-          "hash": "0wQQcheS4mf7wbPsAzf6DS5qqkwBAWnDhsbEAwWaFFU="
+          "hash": "s6F1bGkYAjh7re29b5eRD9Ma+yH7bmE4U4soXNIsOv8="
         }
       },
       "is_incremental": false,
@@ -129143,7 +129143,7 @@
       "output": {
         ".html": {
           "relative_path": "API13/api/Tizen.Network.WiFiDirect.WiFiDirectPeer.html",
-          "hash": "cD97cB1+wsEXLhxlr/0NjWhIZojl0SML2FlHG+0Eaz8="
+          "hash": "RVoSC6PVBUb/ME7BpV4wN0k2EkU88hYIir5yW0634sQ="
         }
       },
       "is_incremental": false,
@@ -129230,6 +129230,19 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "obj/API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html",
+          "hash": "G8WPOfb+SxA9aKeKYUPnjSv1IO1j0e3x2UkQnzFTYAk="
+        }
+      },
+      "is_incremental": false,
+      "version": "API13",
+      "group": "API13"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "obj/API13/api/Tizen.Network.WiFiDirect.WiFiDirectWpsType.yml",
       "output": {
         ".html": {
@@ -129247,7 +129260,7 @@
       "output": {
         ".html": {
           "relative_path": "API13/api/Tizen.Network.WiFiDirect.html",
-          "hash": "CBULVKuqegW2M30wKhRPmz0pVYV2uEsSI/7RSlEjAls="
+          "hash": "yH2JORE175KGW0H2jB4BqG50lbHLEPGdu3RpTQGFRDU="
         }
       },
       "is_incremental": false,
@@ -136982,7 +136995,7 @@
       "output": {
         ".html": {
           "relative_path": "API13/api/toc.html",
-          "hash": "b8VLq8AAmFqygemTcxuVqv0gRW8paJ6qiqzqSQk86j0="
+          "hash": "5m0H9wjhBqWD6QFdN299nZZ7ybS1ua/BMxTTZd6vPUQ="
         }
       },
       "is_incremental": false,
@@ -315493,7 +315506,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 2666,
+          "total_file_count": 2667,
           "skipped_file_count": 0
         },
         "TocDocumentProcessor": {
