@@ -112888,6 +112888,22 @@ references:
   isSpec: "True"
   fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.ActivatePushButton
   nameWithType: WiFiDirectManager.ActivatePushButton
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType,System.String)
+  name: AddVsie(WiFiDirectVsieFrameType, string)
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_AddVsie_Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_System_String_
+  commentId: M:Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType,System.String)
+  name.vb: AddVsie(WiFiDirectVsieFrameType, String)
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType, string)
+  fullName.vb: Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType, String)
+  nameWithType: WiFiDirectManager.AddVsie(WiFiDirectVsieFrameType, string)
+  nameWithType.vb: WiFiDirectManager.AddVsie(WiFiDirectVsieFrameType, String)
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie*
+  name: AddVsie
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_AddVsie_
+  commentId: Overload:Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie
+  isSpec: "True"
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.AddVsie
+  nameWithType: WiFiDirectManager.AddVsie
 - uid: Tizen.Network.WiFiDirect.WiFiDirectManager.AutoConnect
   name: AutoConnect
   href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_AutoConnect
@@ -113039,6 +113055,19 @@ references:
   isSpec: "True"
   fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectedPeers
   nameWithType: WiFiDirectManager.GetConnectedPeers
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectingPeer
+  name: GetConnectingPeer()
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_GetConnectingPeer
+  commentId: M:Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectingPeer
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectingPeer()
+  nameWithType: WiFiDirectManager.GetConnectingPeer()
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectingPeer*
+  name: GetConnectingPeer
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_GetConnectingPeer_
+  commentId: Overload:Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectingPeer
+  isSpec: "True"
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.GetConnectingPeer
+  nameWithType: WiFiDirectManager.GetConnectingPeer
 - uid: Tizen.Network.WiFiDirect.WiFiDirectManager.GetDiscoveredPeers
   name: GetDiscoveredPeers()
   href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_GetDiscoveredPeers
@@ -113078,6 +113107,19 @@ references:
   isSpec: "True"
   fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.GetSupportedWpsTypes
   nameWithType: WiFiDirectManager.GetSupportedWpsTypes
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.GetVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType)
+  name: GetVsie(WiFiDirectVsieFrameType)
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_GetVsie_Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_
+  commentId: M:Tizen.Network.WiFiDirect.WiFiDirectManager.GetVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType)
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.GetVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType)
+  nameWithType: WiFiDirectManager.GetVsie(WiFiDirectVsieFrameType)
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.GetVsie*
+  name: GetVsie
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_GetVsie_
+  commentId: Overload:Tizen.Network.WiFiDirect.WiFiDirectManager.GetVsie
+  isSpec: "True"
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.GetVsie
+  nameWithType: WiFiDirectManager.GetVsie
 - uid: Tizen.Network.WiFiDirect.WiFiDirectManager.GroupOwnerIntent
   name: GroupOwnerIntent
   href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_GroupOwnerIntent
@@ -113324,6 +113366,22 @@ references:
   isSpec: "True"
   fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.RemovePersistentGroup
   nameWithType: WiFiDirectManager.RemovePersistentGroup
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType,System.String)
+  name: RemoveVsie(WiFiDirectVsieFrameType, string)
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_RemoveVsie_Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_System_String_
+  commentId: M:Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType,System.String)
+  name.vb: RemoveVsie(WiFiDirectVsieFrameType, String)
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType, string)
+  fullName.vb: Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie(Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType, String)
+  nameWithType: WiFiDirectManager.RemoveVsie(WiFiDirectVsieFrameType, string)
+  nameWithType.vb: WiFiDirectManager.RemoveVsie(WiFiDirectVsieFrameType, String)
+- uid: Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie*
+  name: RemoveVsie
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_RemoveVsie_
+  commentId: Overload:Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie
+  isSpec: "True"
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectManager.RemoveVsie
+  nameWithType: WiFiDirectManager.RemoveVsie
 - uid: Tizen.Network.WiFiDirect.WiFiDirectManager.RequestedWps
   name: RequestedWps
   href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectManager.html#Tizen_Network_WiFiDirect_WiFiDirectManager_RequestedWps
@@ -113873,6 +113931,19 @@ references:
   isSpec: "True"
   fullName: Tizen.Network.WiFiDirect.WiFiDirectPeer.Throughput
   nameWithType: WiFiDirectPeer.Throughput
+- uid: Tizen.Network.WiFiDirect.WiFiDirectPeer.Vsie
+  name: Vsie
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectPeer.html#Tizen_Network_WiFiDirect_WiFiDirectPeer_Vsie
+  commentId: P:Tizen.Network.WiFiDirect.WiFiDirectPeer.Vsie
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectPeer.Vsie
+  nameWithType: WiFiDirectPeer.Vsie
+- uid: Tizen.Network.WiFiDirect.WiFiDirectPeer.Vsie*
+  name: Vsie
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectPeer.html#Tizen_Network_WiFiDirect_WiFiDirectPeer_Vsie_
+  commentId: Overload:Tizen.Network.WiFiDirect.WiFiDirectPeer.Vsie
+  isSpec: "True"
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectPeer.Vsie
+  nameWithType: WiFiDirectPeer.Vsie
 - uid: Tizen.Network.WiFiDirect.WiFiDirectPeer.WpsTypes
   name: WpsTypes
   href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectPeer.html#Tizen_Network_WiFiDirect_WiFiDirectPeer_WpsTypes
@@ -114482,6 +114553,96 @@ references:
   commentId: F:Tizen.Network.WiFiDirect.WiFiDirectState.GroupOwner
   fullName: Tizen.Network.WiFiDirect.WiFiDirectState.GroupOwner
   nameWithType: WiFiDirectState.GroupOwner
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType
+  name: WiFiDirectVsieFrameType
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html
+  commentId: T:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType
+  nameWithType: WiFiDirectVsieFrameType
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.AssociationRequest
+  name: AssociationRequest
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_AssociationRequest
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.AssociationRequest
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.AssociationRequest
+  nameWithType: WiFiDirectVsieFrameType.AssociationRequest
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PAssociationRequest
+  name: P2PAssociationRequest
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PAssociationRequest
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PAssociationRequest
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PAssociationRequest
+  nameWithType: WiFiDirectVsieFrameType.P2PAssociationRequest
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PAssociationResponse
+  name: P2PAssociationResponse
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PAssociationResponse
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PAssociationResponse
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PAssociationResponse
+  nameWithType: WiFiDirectVsieFrameType.P2PAssociationResponse
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGOBeacon
+  name: P2PGOBeacon
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PGOBeacon
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGOBeacon
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGOBeacon
+  nameWithType: WiFiDirectVsieFrameType.P2PGOBeacon
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationConfirmation
+  name: P2PGONegotiationConfirmation
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PGONegotiationConfirmation
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationConfirmation
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationConfirmation
+  nameWithType: WiFiDirectVsieFrameType.P2PGONegotiationConfirmation
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationRequest
+  name: P2PGONegotiationRequest
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PGONegotiationRequest
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationRequest
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationRequest
+  nameWithType: WiFiDirectVsieFrameType.P2PGONegotiationRequest
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationResponse
+  name: P2PGONegotiationResponse
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PGONegotiationResponse
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationResponse
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGONegotiationResponse
+  nameWithType: WiFiDirectVsieFrameType.P2PGONegotiationResponse
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGOProbeResponse
+  name: P2PGOProbeResponse
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PGOProbeResponse
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGOProbeResponse
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PGOProbeResponse
+  nameWithType: WiFiDirectVsieFrameType.P2PGOProbeResponse
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PInvitationRequest
+  name: P2PInvitationRequest
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PInvitationRequest
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PInvitationRequest
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PInvitationRequest
+  nameWithType: WiFiDirectVsieFrameType.P2PInvitationRequest
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PInvitationResponse
+  name: P2PInvitationResponse
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PInvitationResponse
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PInvitationResponse
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PInvitationResponse
+  nameWithType: WiFiDirectVsieFrameType.P2PInvitationResponse
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProbeRequest
+  name: P2PProbeRequest
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PProbeRequest
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProbeRequest
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProbeRequest
+  nameWithType: WiFiDirectVsieFrameType.P2PProbeRequest
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProbeResponse
+  name: P2PProbeResponse
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PProbeResponse
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProbeResponse
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProbeResponse
+  nameWithType: WiFiDirectVsieFrameType.P2PProbeResponse
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProvisionDiscoveryRequest
+  name: P2PProvisionDiscoveryRequest
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PProvisionDiscoveryRequest
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProvisionDiscoveryRequest
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProvisionDiscoveryRequest
+  nameWithType: WiFiDirectVsieFrameType.P2PProvisionDiscoveryRequest
+- uid: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProvisionDiscoveryResponse
+  name: P2PProvisionDiscoveryResponse
+  href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html#Tizen_Network_WiFiDirect_WiFiDirectVsieFrameType_P2PProvisionDiscoveryResponse
+  commentId: F:Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProvisionDiscoveryResponse
+  fullName: Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.P2PProvisionDiscoveryResponse
+  nameWithType: WiFiDirectVsieFrameType.P2PProvisionDiscoveryResponse
 - uid: Tizen.Network.WiFiDirect.WiFiDirectWpsType
   name: WiFiDirectWpsType
   href: API13/api/Tizen.Network.WiFiDirect.WiFiDirectWpsType.html

@@ -47324,6 +47324,11 @@
     "title": "Enum WiFiDirectState",
     "keywords": ""
   },
+  "API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html": {
+    "href": "API13/api/Tizen.Network.WiFiDirect.WiFiDirectVsieFrameType.html",
+    "title": "Enum WiFiDirectVsieFrameType",
+    "keywords": ""
+  },
   "API13/api/Tizen.Network.WiFiDirect.WiFiDirectWpsType.html": {
     "href": "API13/api/Tizen.Network.WiFiDirect.WiFiDirectWpsType.html",
     "title": "Enum WiFiDirectWpsType",
