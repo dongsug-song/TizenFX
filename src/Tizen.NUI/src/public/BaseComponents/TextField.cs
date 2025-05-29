@@ -32,26 +32,25 @@ namespace Tizen.NUI.BaseComponents
     public partial class TextField : View
     {
         static private string defaultStyleName = "Tizen.NUI.BaseComponents.TextField";
-        static private string defaultFontFamily = "TizenSans";
-        private static SystemLocaleLanguageChanged systemLocaleLanguageChanged = new SystemLocaleLanguageChanged();
-        private string textFieldTextSid = null;
-        private string textFieldPlaceHolderTextSid = null;
-        private string textFieldPlaceHolderTextFocusedSid = null;
-        private InputMethodContext inputMethodCotext = null;
+        static private string defaultFontFamily = "BreezeSans";
+        private string textFieldTextSid;
+        private string textFieldPlaceHolderTextSid;
+        private string textFieldPlaceHolderTextFocusedSid;
+        private InputMethodContext inputMethodCotext;
         private string fontFamily = defaultFontFamily;
         private float fontSizeScale = 1.0f;
-        private bool hasSystemLanguageChanged = false;
-        private bool hasSystemFontSizeChanged = false;
-        private bool hasSystemFontTypeChanged = false;
-        private bool isSettingTextInCSharp = false;
+        private bool hasSystemLanguageChanged;
+        private bool hasSystemFontSizeChanged;
+        private bool hasSystemFontTypeChanged;
+        private bool isSettingTextInCSharp;
 
-        private Vector4 internalPlaceholderTextColor = null;
-        private Vector4 internalPrimaryCursorColor = null;
-        private Vector4 internalSecondaryCursorColor = null;
-        private Vector4 internalSelectionHighlightColor = null;
-        private Vector4 internalInputColor = null;
-        private Color internalTextColor = null;
-        private Color internalGrabHandleColor = null;
+        private Vector4 internalPlaceholderTextColor;
+        private Vector4 internalPrimaryCursorColor;
+        private Vector4 internalSecondaryCursorColor;
+        private Vector4 internalSelectionHighlightColor;
+        private Vector4 internalInputColor;
+        private Color internalTextColor;
+        private Color internalGrabHandleColor;
 
 
         static TextField() 
@@ -670,22 +669,13 @@ namespace Tizen.NUI.BaseComponents
             }
             set
             {
-                string newFontFamily;
-
                 if (string.Equals(fontFamily, value)) return;
-
                 fontFamily = value;
+
+                string newFontFamily;
                 if (fontFamily == Tizen.NUI.FontFamily.UseSystemSetting)
                 {
-                    try
-                    {
-                        newFontFamily = SystemFontTypeChangedManager.FontType;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("{0} Exception caught.", e);
-                        newFontFamily = defaultFontFamily;
-                    }
+                    newFontFamily = SystemFontTypeChangedManager.FontType;
                     AddSystemSettingsFontTypeChanged();
                 }
                 else
@@ -753,11 +743,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalFontStyle()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.FontStyle);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.FontStyle))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -1780,11 +1770,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionPopupStyle()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionPopupStyle);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionPopupStyle))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -1835,11 +1825,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionHandleImageLeft()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleImageLeft);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleImageLeft))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -1890,11 +1880,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionHandleImageRight()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleImageRight);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleImageRight))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2021,11 +2011,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionHandlePressedImageLeft()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandlePressedImageLeft);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandlePressedImageLeft))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2076,11 +2066,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionHandlePressedImageRight()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandlePressedImageRight);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandlePressedImageRight))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2207,11 +2197,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionHandleMarkerImageLeft()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleMarkerImageLeft);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleMarkerImageLeft))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2262,11 +2252,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalSelectionHandleMarkerImageRight()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleMarkerImageRight);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SelectionHandleMarkerImageRight))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2449,11 +2439,11 @@ namespace Tizen.NUI.BaseComponents
 
         private Rectangle GetInternalDecorationBoundingBox()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             Rectangle temp = new Rectangle(0, 0, 0, 0);
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.DecorationBoundingBox);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.DecorationBoundingBox))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2514,11 +2504,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalInputMethodSettings()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.InputMethodSettings);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.InputMethodSettings))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2714,11 +2704,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalInputFontStyle()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.InputFontStyle);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.InputFontStyle))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2872,11 +2862,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalUnderline()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.UNDERLINE);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.UNDERLINE))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -3032,11 +3022,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalShadow()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SHADOW);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SHADOW))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -3280,11 +3270,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalOutline()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.OUTLINE);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.OUTLINE))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -3452,11 +3442,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalHiddenInputSettings()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.HiddenInputSettings);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.HiddenInputSettings))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -4168,11 +4158,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalPlaceholder()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap map = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.PLACEHOLDER);
-            prop.Get(map);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.PLACEHOLDER))
+            {
+                prop.Get(map);
+            }
 
             string defalutText = "";
 
@@ -4451,24 +4441,13 @@ namespace Tizen.NUI.BaseComponents
             }
             set
             {
-                float newFontSizeScale;
-
                 if (fontSizeScale == value) return;
-
                 fontSizeScale = value;
+
+                float newFontSizeScale;
                 if (fontSizeScale == Tizen.NUI.FontSizeScale.UseSystemSetting)
                 {
-                    SystemSettingsFontSize systemSettingsFontSize;
-
-                    try
-                    {
-                        systemSettingsFontSize = SystemFontSizeChangedManager.FontSize;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("{0} Exception caught.", e);
-                        systemSettingsFontSize = SystemSettingsFontSize.Normal;
-                    }
+                    var systemSettingsFontSize = SystemFontSizeChangedManager.FontSize;
                     newFontSizeScale = TextUtils.GetFontSizeScale(systemSettingsFontSize);
                     AddSystemSettingsFontSizeChanged();
                 }
@@ -4679,6 +4658,57 @@ namespace Tizen.NUI.BaseComponents
         }
 
         /// <summary>
+        /// Registers FontVariationsProperty with string tag.
+        /// </summary>
+        /// <param name="tag">The tag of font variation.</param>
+        /// <returns>The index of the font variation.</returns>
+        /// <remarks>
+        /// The returned index can be used with setting property or animations.
+        /// </remarks>
+        /// <example>
+        /// The following example demonstrates how to use the SetFontStyle method.
+        /// <code>
+        /// TextField field = new TextField();
+        /// int index = field.RegisterFontVariationProperty("wght");
+        /// Animation anim = new Animation(1000);
+        /// anim.AnimateTo(field, "wght", 900.0f);
+        /// </code>
+        /// </example>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int RegisterFontVariationProperty(string tag)
+        {
+            int index = Interop.TextField.RegisterFontVariationProperty(SwigCPtr, tag);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return index;
+        }
+
+        /// <summary>
+        /// Sets Font Variation with string tag.
+        /// </summary>
+        /// <param name="tag">The tag of font variation.</param>
+        /// <param name="value">The value of font variation.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SetFontVariation(string tag, float value)
+        {
+            int index = RegisterFontVariationProperty(tag);
+            Object.InternalSetPropertyFloat(SwigCPtr, index, value);
+        }
+
+        /// <summary>
+        /// Sets Font Variation with index.
+        /// </summary>
+        /// <param name="index">The index of font variation property.</param>
+        /// <param name="value">The value of font variation.</param>
+        /// <remarks>
+        /// To use the index, RegisterFontVariationProperty must precede it.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SetFontVariation(int index, float value)
+        {
+            Object.InternalSetPropertyFloat(SwigCPtr, index, value);
+        }
+
+        /// <summary>
         /// Dispose.
         /// Releases unmanaged and optionally managed resources.
         /// </summary>
@@ -4702,11 +4732,7 @@ namespace Tizen.NUI.BaseComponents
             internalTextColor?.Dispose();
             internalGrabHandleColor?.Dispose();
 
-            if (hasSystemLanguageChanged)
-            {
-                systemLocaleLanguageChanged.Remove(SystemSettingsLocaleLanguageChanged);
-            }
-
+            RemoveSystemSettingsLocaleLanguageChanged();
             RemoveSystemSettingsFontTypeChanged();
             RemoveSystemSettingsFontSizeChanged();
 
@@ -4724,32 +4750,38 @@ namespace Tizen.NUI.BaseComponents
             {
                 if (textFieldCursorPositionChangedCallbackDelegate != null)
                 {
-                    this.CursorPositionChangedSignal().Disconnect(textFieldCursorPositionChangedCallbackDelegate);
+                    using var signal = CursorPositionChangedSignal();
+                    signal.Disconnect(textFieldCursorPositionChangedCallbackDelegate);
                 }
 
                 if (textFieldMaxLengthReachedCallbackDelegate != null)
                 {
-                    this.MaxLengthReachedSignal().Disconnect(textFieldMaxLengthReachedCallbackDelegate);
+                    using var signal = MaxLengthReachedSignal();
+                    signal.Disconnect(textFieldMaxLengthReachedCallbackDelegate);
                 }
 
                 if (textFieldSelectionStartedCallbackDelegate != null)
                 {
-                    this.SelectionStartedSignal().Disconnect(textFieldSelectionStartedCallbackDelegate);
+                    using var signal = SelectionStartedSignal();
+                    signal.Disconnect(textFieldSelectionStartedCallbackDelegate);
                 }
 
                 if (textFieldSelectionClearedCallbackDelegate != null)
                 {
-                    this.SelectionClearedSignal().Disconnect(textFieldSelectionClearedCallbackDelegate);
+                    using var signal = SelectionClearedSignal();
+                    signal.Disconnect(textFieldSelectionClearedCallbackDelegate);
                 }
 
                 if (textFieldSelectionChangedCallbackDelegate != null)
                 {
-                    this.SelectionChangedSignal().Disconnect(textFieldSelectionChangedCallbackDelegate);
+                    using var signal = SelectionChangedSignal();
+                    signal.Disconnect(textFieldSelectionChangedCallbackDelegate);
                 }
 
                 if (textFieldTextChangedCallbackDelegate != null)
                 {
-                    TextChangedSignal().Disconnect(textFieldTextChangedCallbackDelegate);
+                    using var signal = TextChangedSignal();
+                    signal.Disconnect(textFieldTextChangedCallbackDelegate);
                 }
             }
 
@@ -4774,26 +4806,24 @@ namespace Tizen.NUI.BaseComponents
         internal void SetTextWithoutTextChanged(string text)
         {
             invokeTextChanged = false;
-            Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, TextField.Property.TEXT, new Tizen.NUI.PropertyValue(text));
+            using var pv = new Tizen.NUI.PropertyValue(text);
+            Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, TextField.Property.TEXT, pv);
             invokeTextChanged = true;
         }
 
         private string SetTranslatable(string textFieldSid)
         {
             string translatableText = null;
-            translatableText = NUIApplication.MultilingualResourceManager?.GetString(textFieldSid, new CultureInfo(SystemSettings.LocaleLanguage.Replace("_", "-")));
+            translatableText = NUIApplication.MultilingualResourceManager?.GetString(textFieldSid, new CultureInfo(SystemLocaleLanguageChangedManager.LocaleLanguage.Replace("_", "-")));
             if (translatableText != null)
             {
-                if (hasSystemLanguageChanged == false)
-                {
-                    systemLocaleLanguageChanged.Add(SystemSettingsLocaleLanguageChanged);
-                    hasSystemLanguageChanged = true;
-                }
+                AddSystemSettingsLocaleLanguageChanged();
                 return translatableText;
             }
             else
             {
                 translatableText = "";
+                RemoveSystemSettingsLocaleLanguageChanged();
                 return translatableText;
             }
         }
@@ -4814,6 +4844,24 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
+        private void AddSystemSettingsLocaleLanguageChanged()
+        {
+            if (!hasSystemLanguageChanged)
+            {
+                SystemLocaleLanguageChangedManager.Add(SystemSettingsLocaleLanguageChanged);
+                hasSystemLanguageChanged = true;
+            }
+        }
+        
+        private void RemoveSystemSettingsLocaleLanguageChanged()
+        {
+            if (hasSystemLanguageChanged)
+            {
+                SystemLocaleLanguageChangedManager.Remove(SystemSettingsLocaleLanguageChanged);
+                hasSystemLanguageChanged = false;
+            }
+        }
+
         private void SystemSettingsFontSizeChanged(object sender, FontSizeChangedEventArgs e)
         {
             float newFontSizeScale = TextUtils.GetFontSizeScale(e.Value);
@@ -4822,35 +4870,19 @@ namespace Tizen.NUI.BaseComponents
 
         private void AddSystemSettingsFontSizeChanged()
         {
-            if (hasSystemFontSizeChanged != true)
+            if (!hasSystemFontSizeChanged)
             {
-                try
-                {
-                    SystemFontSizeChangedManager.Add(SystemSettingsFontSizeChanged);
-                    hasSystemFontSizeChanged = true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontSizeChanged = false;
-                }
+                SystemFontSizeChangedManager.Add(SystemSettingsFontSizeChanged);
+                hasSystemFontSizeChanged = true;
             }
         }
 
         private void RemoveSystemSettingsFontSizeChanged()
         {
-            if (hasSystemFontSizeChanged == true)
+            if (hasSystemFontSizeChanged)
             {
-                try
-                {
-                    SystemFontSizeChangedManager.Remove(SystemSettingsFontSizeChanged);
-                    hasSystemFontSizeChanged = false;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontSizeChanged = true;
-                }
+                SystemFontSizeChangedManager.Remove(SystemSettingsFontSizeChanged);
+                hasSystemFontSizeChanged = false;
             }
         }
 
@@ -4863,16 +4895,8 @@ namespace Tizen.NUI.BaseComponents
         {
             if (HasStyle() && !hasSystemFontTypeChanged)
             {
-                try
-                {
-                    SystemFontTypeChangedManager.Add(SystemSettingsFontTypeChanged);
-                    hasSystemFontTypeChanged = true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontTypeChanged = false;
-                }
+                SystemFontTypeChangedManager.Add(SystemSettingsFontTypeChanged);
+                hasSystemFontTypeChanged = true;
             }
         }
         
@@ -4880,16 +4904,8 @@ namespace Tizen.NUI.BaseComponents
         {
             if (hasSystemFontTypeChanged)
             {
-                try
-                {
-                    SystemFontTypeChangedManager.Remove(SystemSettingsFontTypeChanged);
-                    hasSystemFontTypeChanged = false;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontTypeChanged = true;
-                }
+                SystemFontTypeChangedManager.Remove(SystemSettingsFontTypeChanged);
+                hasSystemFontTypeChanged = false;
             }
         }
 
@@ -5042,8 +5058,10 @@ namespace Tizen.NUI.BaseComponents
                 // Padding will be automatically applied by DALi TextField.
                 var totalWidth = widthMeasureSpec.Size.AsDecimal();
                 var totalHeight = heightMeasureSpec.Size.AsDecimal();
-                var minSize = Owner.MinimumSize;
-                var maxSize = Owner.MaximumSize;
+                var minWidth = Owner.GetMinimumWidth();
+                var minHeight = Owner.GetMinimumHeight();
+                var maxWidth = Owner.GetMaximumWidth();
+                var maxHeight = Owner.GetMaximumHeight();
                 var naturalSize = Owner.GetNaturalSize();
 
                 if (((TextField)Owner).Text.Length == 0)
@@ -5077,13 +5095,15 @@ namespace Tizen.NUI.BaseComponents
                 if (widthMeasureSpec.Mode != MeasureSpecification.ModeType.Exactly)
                 {
                     float width = naturalSize != null ? naturalSize.Width : 0;
-                    totalWidth = Math.Min(Math.Max(width, minSize.Width), maxSize.Width);
+                    // Since priority of MinimumSize is higher than MaximumSize in DALi, here follows it.
+                    totalWidth = Math.Max(Math.Min(width, maxWidth), minWidth);
                 }
 
                 if (heightMeasureSpec.Mode != MeasureSpecification.ModeType.Exactly)
                 {
                     float height = naturalSize != null ? naturalSize.Height : 0;
-                    totalHeight = Math.Min(Math.Max(height, minSize.Height), maxSize.Height);
+                    // Since priority of MinimumSize is higher than MaximumSize in DALi, here follows it.
+                    totalHeight = Math.Max(Math.Min(height, maxHeight), minHeight);
                 }
 
                 widthMeasureSpec = new MeasureSpecification(new LayoutLength(totalWidth), MeasureSpecification.ModeType.Exactly);
@@ -5094,6 +5114,13 @@ namespace Tizen.NUI.BaseComponents
 
                 SetMeasuredDimensions(ResolveSizeAndState(new LayoutLength(totalWidth), widthMeasureSpec, childWidthState),
                                       ResolveSizeAndState(new LayoutLength(totalHeight), heightMeasureSpec, childHeightState));
+            }
+
+            /// <inheritdoc/>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            public override bool IsPaddingHandledByNative()
+            {
+                return true;
             }
         }
     }

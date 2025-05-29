@@ -151,9 +151,9 @@ namespace Tizen.NUI.BaseComponents
             ImageVisualProperty.FastTrackUploading,
         };
         internal PropertyMap cachedImagePropertyMap;
-        internal bool imagePropertyUpdatedFlag = false;
+        internal bool imagePropertyUpdatedFlag;
 
-        private bool imagePropertyUpdateProcessAttachedFlag = false;
+        private bool imagePropertyUpdateProcessAttachedFlag;
         private Rectangle _border;
 
         // Development Guide : Please make ensure that these 5 values are matched with current image.
@@ -161,7 +161,7 @@ namespace Tizen.NUI.BaseComponents
         private string _alphaMaskUrl = "";
         private int _desired_width = -1;
         private int _desired_height = -1;
-        private bool _fastTrackUploading = false;
+        private bool _fastTrackUploading;
 
         private TriggerableSelector<string> resourceUrlSelector;
         private TriggerableSelector<Rectangle> borderSelector;
@@ -632,11 +632,11 @@ namespace Tizen.NUI.BaseComponents
                 UpdateImage();
 
                 // Get current properties force.
-#pragma warning disable CA2000 // Dispose objects before losing scope
                 PropertyMap returnValue = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-                using var prop = Object.GetProperty(SwigCPtr, Property.IMAGE);
-                prop.Get(returnValue);
+                using (var prop = Object.GetProperty(SwigCPtr, Property.IMAGE))
+                {
+                    prop.Get(returnValue);
+                }
 
                 // Update cached property map
                 if (returnValue != null)
@@ -1618,7 +1618,8 @@ namespace Tizen.NUI.BaseComponents
                 transition.Add("initialValue", initValue);
                 transition.Add("targetValue", destValue);
 
-                SetProperty(ImageView.Property.TransitionEffectOption, new Tizen.NUI.PropertyValue(transition));
+                using var pv = new Tizen.NUI.PropertyValue(transition);
+                SetProperty(ImageView.Property.TransitionEffectOption, pv);
                 if (NDalicPINVOKE.SWIGPendingException.Pending)
                     throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             }
@@ -1679,7 +1680,7 @@ namespace Tizen.NUI.BaseComponents
                 {
                     _desired_width = value;
                     using PropertyValue setValue = new PropertyValue(value);
-                    UpdateImage(ImageVisualProperty.DesiredWidth, setValue, false);
+                    UpdateImage(ImageVisualProperty.DesiredWidth, setValue);
                 }
             }
         }
@@ -1739,7 +1740,7 @@ namespace Tizen.NUI.BaseComponents
                 {
                     _desired_height = value;
                     using PropertyValue setValue = new PropertyValue(value);
-                    UpdateImage(ImageVisualProperty.DesiredHeight, setValue, false);
+                    UpdateImage(ImageVisualProperty.DesiredHeight, setValue);
                 }
             }
         }
@@ -1947,7 +1948,7 @@ namespace Tizen.NUI.BaseComponents
                 NotifyPropertyChanged();
             }
         }
-        private bool adjustViewSize = false;
+        private bool adjustViewSize;
 
         /// <summary>
         /// ImageView PlaceHolderUrl, type string.
@@ -2231,7 +2232,7 @@ namespace Tizen.NUI.BaseComponents
             return ret;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Do not use this, that is deprecated in API13.")]
         internal override void ApplyCornerRadius()
         {
             base.ApplyCornerRadius();
@@ -2250,22 +2251,6 @@ namespace Tizen.NUI.BaseComponents
                     _ = Interop.View.InternalUpdateVisualPropertyVector4(this.SwigCPtr, ImageView.Property.IMAGE, Visual.Property.CornerSquareness, Vector4.getCPtr(backgroundExtraData.CornerSquareness));
                 }
                 _ = Interop.View.InternalUpdateVisualPropertyInt(this.SwigCPtr, ImageView.Property.IMAGE, Visual.Property.CornerRadiusPolicy, (int)backgroundExtraData.CornerRadiusPolicy);
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal override void ApplyBorderline()
-        {
-            base.ApplyBorderline();
-
-            if (backgroundExtraData == null) return;
-
-            if (backgroundExtraDataUpdatedFlag.HasFlag(BackgroundExtraDataUpdatedFlag.ContentsBorderline))
-            {
-                // Update borderline properties to image by ActionUpdateProperty
-                _ = Interop.View.InternalUpdateVisualPropertyFloat(this.SwigCPtr, ImageView.Property.IMAGE, Visual.Property.BorderlineWidth, backgroundExtraData.BorderlineWidth);
-                _ = Interop.View.InternalUpdateVisualPropertyVector4(this.SwigCPtr, ImageView.Property.IMAGE, Visual.Property.BorderlineColor, Vector4.getCPtr(backgroundExtraData.BorderlineColor ?? Color.Black));
-                _ = Interop.View.InternalUpdateVisualPropertyFloat(this.SwigCPtr, ImageView.Property.IMAGE, Visual.Property.BorderlineOffset, backgroundExtraData.BorderlineOffset);
             }
         }
 
@@ -2372,7 +2357,8 @@ namespace Tizen.NUI.BaseComponents
             if (_border != value)
             {
                 _border = new Rectangle(value);
-                UpdateImage(NpatchImageVisualProperty.Border, new PropertyValue(_border));
+                using var pv = new PropertyValue(_border);
+                UpdateImage(NpatchImageVisualProperty.Border, pv);
             }
         }
 
@@ -2385,7 +2371,7 @@ namespace Tizen.NUI.BaseComponents
             // Unregist and detach process only if previous resourceUrl was not empty
             if (!string.IsNullOrEmpty(_resourceUrl))
             {
-                PropertyValue emptyValue = new PropertyValue();
+                using PropertyValue emptyValue = new PropertyValue();
 
                 // Remove current registed Image.
                 SetProperty(ImageView.Property.IMAGE, emptyValue);
@@ -2448,7 +2434,8 @@ namespace Tizen.NUI.BaseComponents
                     }
                 }
 
-                SetProperty(ImageView.Property.IMAGE, new Tizen.NUI.PropertyValue(map));
+                using var pv = new Tizen.NUI.PropertyValue(map);
+                SetProperty(ImageView.Property.IMAGE, pv);
             }
             else
             {
@@ -2573,16 +2560,8 @@ namespace Tizen.NUI.BaseComponents
                 }
             }
 
-            if (backgroundExtraData != null && backgroundExtraData.BorderlineWidth > 0.0f)
-            {
-                cachedImagePropertyMap.Set(Visual.Property.BorderlineWidth, backgroundExtraData.BorderlineWidth);
-                cachedImagePropertyMap.Set(Visual.Property.BorderlineColor, backgroundExtraData.BorderlineColor);
-                cachedImagePropertyMap.Set(Visual.Property.BorderlineOffset, backgroundExtraData.BorderlineOffset);
-            }
-
             // We already applied background extra data now.
             backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.ContentsCornerRadius;
-            backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.ContentsBorderline;
 
             UpdateImageMap();
         }
@@ -2844,15 +2823,16 @@ namespace Tizen.NUI.BaseComponents
                 float specHeight = heightMeasureSpec.Size.AsDecimal();
                 float naturalWidth = Owner.NaturalSize.Width;
                 float naturalHeight = Owner.NaturalSize.Height;
-                float minWidth = Owner.MinimumSize.Width;
-                float maxWidth = Owner.MaximumSize.Width;
-                float minHeight = Owner.MinimumSize.Height;
-                float maxHeight = Owner.MaximumSize.Height;
+                var minWidth = Owner.GetMinimumWidth();
+                var minHeight = Owner.GetMinimumHeight();
+                var maxWidth = Owner.GetMaximumWidth();
+                var maxHeight = Owner.GetMaximumHeight();
                 float aspectRatio = (naturalWidth > 0) ? (naturalHeight / naturalWidth) : 0;
 
                 // Assume that the new width and height are given from the view's suggested size by default.
-                float newWidth = Math.Min(Math.Max(naturalWidth, minWidth), (maxWidth < 0 ? Int32.MaxValue : maxWidth));
-                float newHeight = Math.Min(Math.Max(naturalHeight, minHeight), (maxHeight < 0 ? Int32.MaxValue : maxHeight));
+                // Since priority of MinimumSize is higher than MaximumSize in DALi, here follows it.
+                float newWidth = Math.Max(Math.Min(naturalWidth, maxWidth < 0 ? Int32.MaxValue : maxWidth), minWidth);
+                float newHeight = Math.Max(Math.Min(naturalHeight, maxHeight < 0 ? Int32.MaxValue : maxHeight), minHeight);
 
                 // The width and height measure specs are going to be used to set measured size.
                 // Mark that the measure specs are changed by default to update measure specs later.

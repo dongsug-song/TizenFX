@@ -35,16 +35,13 @@ namespace Tizen.NUI.BaseComponents
         internal enum BackgroundExtraDataUpdatedFlag : byte
         {
             BackgroundCornerRadius = 1 << 0,
-            BackgroundBorderline = 1 << 1,
             ShadowCornerRadius = 1 << 2,
             ContentsCornerRadius = 1 << 3, /// Subclass cases.
-            ContentsBorderline = 1 << 4, /// Subclass cases.
 
-            Background = BackgroundCornerRadius | BackgroundBorderline,
+            Background = BackgroundCornerRadius,
             Shadow = ShadowCornerRadius,
 
             CornerRadius = BackgroundCornerRadius | ShadowCornerRadius | ContentsCornerRadius,
-            Borderline = BackgroundBorderline | ContentsBorderline,
 
             None = 0,
             All = Background | Shadow,
@@ -345,11 +342,6 @@ namespace Tizen.NUI.BaseComponents
                 }
             }
         }
-
-        /// <summary>
-        /// Indicates that this View should listen Touch event to handle its ControlState.
-        /// </summary>
-        private bool enableControlState = false;
 
         private int LeftFocusableViewId
         {
@@ -840,6 +832,8 @@ namespace Tizen.NUI.BaseComponents
             Interop.Actor.SetVisible(SwigCPtr, visible);
             if (NDalicPINVOKE.SWIGPendingException.Pending)
                 throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+
+            EnsureLayoutExtraData()?.Layout?.RequestLayout();
         }
 
         /// <summary>
@@ -1226,6 +1220,7 @@ namespace Tizen.NUI.BaseComponents
             {
                 backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Shadow;
             }
+
             if (!Rectangle.IsNullOrZero(backgroundExtraData.BackgroundImageBorder))
             {
                 backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Background;
@@ -1236,20 +1231,19 @@ namespace Tizen.NUI.BaseComponents
                 return;
             }
 
-            if ((backgroundExtraDataUpdatedFlag & BackgroundExtraDataUpdatedFlag.Borderline) != BackgroundExtraDataUpdatedFlag.None)
-            {
-                ApplyBorderline();
-            }
             if ((backgroundExtraDataUpdatedFlag & BackgroundExtraDataUpdatedFlag.CornerRadius) != BackgroundExtraDataUpdatedFlag.None)
             {
                 ApplyCornerRadius();
             }
+
             backgroundExtraDataUpdatedFlag = BackgroundExtraDataUpdatedFlag.None;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        //[Obsolete("Do not use this, that is deprecated in API13.")]
         internal virtual void ApplyCornerRadius()
         {
+            //Tizen.Log.Error("NUI", "ApplyCornerRadius() deprecated internally, Please don't use it.\n");
+
             if (backgroundExtraData == null) return;
 
             // Update corner radius properties to background and shadow by ActionUpdateProperty
@@ -1279,29 +1273,10 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Do not use this, that is deprecated in API13.")]
         internal virtual void ApplyBorderline()
         {
-            if (backgroundExtraData == null) return;
-
-            // ActionUpdateProperty works well only if BACKGROUND visual setup before.
-            // If view don't have BACKGROUND visual, we set transparent background color in default.
-            if (IsBackgroundEmpty())
-            {
-                // BACKGROUND visual doesn't exist.
-                SetBackgroundColor(Color.Transparent);
-                // SetBackgroundColor function apply borderline internally.
-                // So we can just return now.
-                return;
-            }
-
-            // Update borderline properties to background by ActionUpdateProperty
-            if (backgroundExtraDataUpdatedFlag.HasFlag(BackgroundExtraDataUpdatedFlag.BackgroundBorderline))
-            {
-                _ = Interop.View.InternalUpdateVisualPropertyFloat(this.SwigCPtr, View.Property.BACKGROUND, Visual.Property.BorderlineWidth, backgroundExtraData.BorderlineWidth);
-                _ = Interop.View.InternalUpdateVisualPropertyVector4(this.SwigCPtr, View.Property.BACKGROUND, Visual.Property.BorderlineColor, Vector4.getCPtr(backgroundExtraData.BorderlineColor ?? Color.Black));
-                _ = Interop.View.InternalUpdateVisualPropertyFloat(this.SwigCPtr, View.Property.BACKGROUND, Visual.Property.BorderlineOffset, backgroundExtraData.BorderlineOffset);
-            }
+            Tizen.Log.Error("NUI", "ApplyBorderline() deprecated internally, Please don't use it.\n");
         }
 
         /// <summary>
@@ -1360,8 +1335,6 @@ namespace Tizen.NUI.BaseComponents
             {
                 return;
             }
-
-            disposeDebugging(type);
 
             if (SwigCMemOwn && !IsNativeHandleInvalid())
             {
@@ -1441,6 +1414,11 @@ namespace Tizen.NUI.BaseComponents
                 internalCurrentScreenPosition?.Dispose();
                 internalCurrentScreenPosition = null;
 
+                backgroundExtraData?.Dispose();
+                backgroundExtraData = null;
+                layoutExtraData?.Dispose();
+                layoutExtraData = null;
+
                 if (visualContainers != null)
                 {
                     foreach (var visualContainer in visualContainers)
@@ -1468,12 +1446,10 @@ namespace Tizen.NUI.BaseComponents
                 }
                 if (widthConstraint != null)
                 {
-                    widthConstraint.Remove();
                     widthConstraint.Dispose();
                 }
                 if (heightConstraint != null)
                 {
-                    heightConstraint.Remove();
                     heightConstraint.Dispose();
                 }
 
@@ -1486,8 +1462,6 @@ namespace Tizen.NUI.BaseComponents
             //Release your own unmanaged resources here.
             //You should not access any managed member here except static instance.
             //because the execution order of Finalizes is non-deterministic.
-
-            backgroundExtraDataUpdatedFlag = BackgroundExtraDataUpdatedFlag.None;
 
             LayoutCount = 0;
 
@@ -1937,21 +1911,6 @@ namespace Tizen.NUI.BaseComponents
             if (themeData == null) themeData = new ThemeData();
 
             return themeData.selectorData ?? (themeData.selectorData = new ViewSelectorData());
-        }
-
-        [Conditional("NUI_DISPOSE_DEBUG_ON")]
-        private void disposeDebugging(DisposeTypes type)
-        {
-            DebugFileLogging.Instance.WriteLog($"View.Dispose({type}) START");
-            DebugFileLogging.Instance.WriteLog($"type:{GetType()} copyNativeHandle:{GetBaseHandleCPtrHandleRef.Handle.ToString("X8")}");
-            if (HasBody())
-            {
-                DebugFileLogging.Instance.WriteLog($"ID:{Interop.Actor.GetId(GetBaseHandleCPtrHandleRef)} Name:{Interop.Actor.GetName(GetBaseHandleCPtrHandleRef)}");
-            }
-            else
-            {
-                DebugFileLogging.Instance.WriteLog($"has no native body!");
-            }
         }
 
         private void NotifyBackgroundChanged()

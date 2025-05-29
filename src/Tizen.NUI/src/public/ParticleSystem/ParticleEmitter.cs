@@ -223,12 +223,13 @@ namespace Tizen.NUI.ParticleSystem
         {
             set
             {
-                var pixelBuffer = ImageLoader.LoadImageFromFile(value);
+                using var pixelBuffer = ImageLoader.LoadImageFromFile(value);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
 
-                Texture tex = new Texture(TextureType.TEXTURE_2D, PixelFormat.RGBA8888, pixelBuffer.GetWidth(),
+                using Texture tex = new Texture(TextureType.TEXTURE_2D, PixelFormat.RGBA8888, pixelBuffer.GetWidth(),
                         pixelBuffer.GetHeight());
-                tex.Upload(pixelBuffer.CreatePixelData());
+                using var pd = pixelBuffer.CreatePixelData();
+                tex.Upload(pd);
 
                 Interop.ParticleEmitter.SetTexture(SwigCPtr, tex.SwigCPtr);
                 if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
@@ -367,7 +368,7 @@ namespace Tizen.NUI.ParticleSystem
 
         // Internal proxy object to be used on the update thread
         internal ParticleEmitterProxy EmitterProxy => mProxy;
-        private ParticleEmitterProxy mProxy = null;
+        private ParticleEmitterProxy mProxy;
     }
     
     /// <summary>

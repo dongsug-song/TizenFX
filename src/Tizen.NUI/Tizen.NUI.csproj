@@ -8,6 +8,13 @@
         <DefineConstants>$(DefineConstants);NUI_DEBUG_OFF;</DefineConstants>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(NuiRoslynAnalysis)' == 'true'">
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    </PropertyGroup>
+
+    <Import Project="$(MSBuildThisFileDirectory)../../build/analyzers.props"
+            Condition="'$(NuiRoslynAnalysis)' == 'True'" />
+
     <ItemGroup>
         <TizenPreloadFile Include="Tizen.NUI.preload" Sequence="30" />
     </ItemGroup>

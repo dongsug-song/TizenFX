@@ -20,7 +20,6 @@ using Tizen.NUI.BaseComponents;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Tizen.NUI.Binding;
-using System.Collections.Generic;
 
 namespace Tizen.NUI
 {
@@ -89,23 +88,13 @@ namespace Tizen.NUI
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static readonly BindableProperty FlexGrowProperty = null;
 
-        private static Dictionary<View, AlignmentType> flexAlignmentSelfMap = null;
-        private static Dictionary<View, float> flexAspectRatioMap = null;
-        private static Dictionary<View, float> flexBasisMap = null;
-        private static Dictionary<View, float> flexShrinkMap = null;
-        private static Dictionary<View, float> flexGrowMap = null;
-
-        private Dictionary<View, HandleRef> childHandleRefMap = null;
-
         private global::System.Runtime.InteropServices.HandleRef swigCPtr;
         private bool swigCMemOwn;
         private bool disposed;
-        private bool isDisposeQueued = false;
+        private bool isDisposeQueued;
 
         private MeasureSpecification parentMeasureSpecificationWidth;
         private MeasureSpecification parentMeasureSpecificationHeight;
-
-        private IntPtr _rootFlex;  // Pointer to the unmanaged flex layout class.
 
         internal const float FlexUndefined = 10E20F; // Auto setting which is equivalent to WrapContent.
 
@@ -136,14 +125,8 @@ namespace Tizen.NUI
             }
             else
             {
-                if (flexAlignmentSelfMap.TryGetValue(view, out var flexAlignmentSelf))
-                {
-                    return flexAlignmentSelf;
-                }
-                else
-                {
-                    return AlignmentType.Auto;
-                }
+                _ = view ?? throw new ArgumentNullException(nameof(view));
+                return view.GetAttached<LayoutParams>()?.FlexAlignmentSelf ?? AlignmentType.Auto;
             }
         }
 
@@ -163,7 +146,11 @@ namespace Tizen.NUI
             }
             else
             {
-                return (PositionType)GetInternalFlexPositionTypeProperty(view);
+                _ = view ?? throw new ArgumentNullException(nameof(view));
+                if (view.ExcludeLayouting)
+                    return PositionType.Absolute;
+
+                return PositionType.Relative;
             }
         }
 
@@ -183,14 +170,8 @@ namespace Tizen.NUI
             }
             else
             {
-                if (flexAspectRatioMap.TryGetValue(view, out var flexAspectRatio))
-                {
-                    return flexAspectRatio;
-                }
-                else
-                {
-                    return FlexUndefined;
-                }
+                _ = view ?? throw new ArgumentNullException(nameof(view));
+                return view.GetAttached<LayoutParams>()?.FlexAspectRatio ?? FlexUndefined;
             }
         }
 
@@ -210,14 +191,8 @@ namespace Tizen.NUI
             }
             else
             {
-                if (flexBasisMap.TryGetValue(view, out var flexBasis))
-                {
-                    return flexBasis;
-                }
-                else
-                {
-                    return FlexUndefined;
-                }
+                _ = view ?? throw new ArgumentNullException(nameof(view));
+                return view.GetAttached<LayoutParams>()?.FlexBasis ?? FlexUndefined;
             }
         }
 
@@ -237,14 +212,8 @@ namespace Tizen.NUI
             }
             else
             {
-                if (flexShrinkMap.TryGetValue(view, out var flexShrink))
-                {
-                    return flexShrink;
-                }
-                else
-                {
-                    return 1.0f;
-                }
+                _ = view ?? throw new ArgumentNullException(nameof(view));
+                return view.GetAttached<LayoutParams>()?.FlexShrink ?? 1.0f;
             }
         }
 
@@ -264,14 +233,8 @@ namespace Tizen.NUI
             }
             else
             {
-                if (flexGrowMap.TryGetValue(view, out var flexGrow))
-                {
-                    return flexGrow;
-                }
-                else
-                {
-                    return FlexUndefined;
-                }
+                _ = view ?? throw new ArgumentNullException(nameof(view));
+                return view.GetAttached<LayoutParams>()?.FlexGrow ?? FlexUndefined;
             }
         }
 
@@ -294,10 +257,18 @@ namespace Tizen.NUI
             }
             else
             {
+                _ = view ?? throw new ArgumentNullException(nameof(view));
                 if (value >= AlignmentType.Auto && value <= AlignmentType.Stretch)
                 {
-                    flexAlignmentSelfMap[view] = value;
-                    OnChildPropertyChanged(view, null, value);
+                    var layoutParams = view.GetAttached<LayoutParams>();
+                    if (layoutParams != null)
+                    {
+                        layoutParams.FlexAlignmentSelf = value;
+                    }
+                    else
+                    {
+                        view.SetAttached(new LayoutParams() { FlexAlignmentSelf = value });
+                    }
                 }
             }
         }
@@ -323,9 +294,10 @@ namespace Tizen.NUI
             }
             else
             {
+                _ = view ?? throw new ArgumentNullException(nameof(view));
                 if (value >= PositionType.Relative && value <= PositionType.Absolute)
                 {
-                    SetInternalFlexPositionTypeProperty(view, null, value);
+                    view.ExcludeLayouting = value == PositionType.Absolute;
                 }
             }
         }
@@ -349,10 +321,18 @@ namespace Tizen.NUI
             }
             else
             {
+                _ = view ?? throw new ArgumentNullException(nameof(view));
                 if (value > 0)
                 {
-                    flexAspectRatioMap[view] = value;
-                    OnChildPropertyChanged(view, null, value);
+                    var layoutParams = view.GetAttached<LayoutParams>();
+                    if (layoutParams != null)
+                    {
+                        layoutParams.FlexAspectRatio = value;
+                    }
+                    else
+                    {
+                        view.SetAttached(new LayoutParams() { FlexAspectRatio = value });
+                    }
                 }
             }
         }
@@ -377,10 +357,18 @@ namespace Tizen.NUI
             }
             else
             {
+                _ = view ?? throw new ArgumentNullException(nameof(view));
                 if (value >= 0)
                 {
-                    flexBasisMap[view] = value;
-                    OnChildPropertyChanged(view, null, value);
+                    var layoutParams = view.GetAttached<LayoutParams>();
+                    if (layoutParams != null)
+                    {
+                        layoutParams.FlexBasis = value;
+                    }
+                    else
+                    {
+                        view.SetAttached(new LayoutParams() { FlexBasis = value });
+                    }
                 }
             }
         }
@@ -405,10 +393,18 @@ namespace Tizen.NUI
             }
             else
             {
+                _ = view ?? throw new ArgumentNullException(nameof(view));
                 if (value >= 0)
                 {
-                    flexShrinkMap[view] = value;
-                    OnChildPropertyChanged(view, null, value);
+                    var layoutParams = view.GetAttached<LayoutParams>();
+                    if (layoutParams != null)
+                    {
+                        layoutParams.FlexShrink = value;
+                    }
+                    else
+                    {
+                        view.SetAttached(new LayoutParams() { FlexShrink = value });
+                    }
                 }
             }
         }
@@ -433,10 +429,18 @@ namespace Tizen.NUI
             }
             else
             {
+                _ = view ?? throw new ArgumentNullException(nameof(view));
                 if (value >= 0)
                 {
-                    flexGrowMap[view] = value;
-                    OnChildPropertyChanged(view, null, value);
+                    var layoutParams = view.GetAttached<LayoutParams>();
+                    if (layoutParams != null)
+                    {
+                        layoutParams.FlexGrow = value;
+                    }
+                    else
+                    {
+                        view.SetAttached(new LayoutParams() { FlexGrow = value });
+                    }
                 }
             }
         }
@@ -464,26 +468,13 @@ namespace Tizen.NUI
                 FlexGrowProperty = BindableProperty.CreateAttached("FlexGrow", typeof(float), typeof(FlexLayout), FlexUndefined,
                     validateValue: (bindable, value) => (float)value >= 0, propertyChanged: OnChildPropertyChanged);
             }
-            else
-            {
-                flexAlignmentSelfMap = new Dictionary<View, AlignmentType>();
-                flexAspectRatioMap = new Dictionary<View, float>();
-                flexBasisMap = new Dictionary<View, float>();
-                flexShrinkMap = new Dictionary<View, float>();
-                flexGrowMap = new Dictionary<View, float>();
-            }
         }
 
         internal FlexLayout(global::System.IntPtr cPtr, bool cMemoryOwn)
         {
             swigCMemOwn = cMemoryOwn;
             swigCPtr = new global::System.Runtime.InteropServices.HandleRef(this, cPtr);
-            _rootFlex = Interop.FlexLayout.New();
             measureChildDelegate = new ChildMeasureCallback(measureChild);
-            if (!NUIApplication.IsUsingXaml)
-            {
-                childHandleRefMap = new Dictionary<View, HandleRef>();
-            }
         }
 
         internal static global::System.Runtime.InteropServices.HandleRef getCPtr(FlexLayout obj)
@@ -892,7 +883,15 @@ namespace Tizen.NUI
             }
             else
             {
-                childHandleRefMap[child.Owner] = childHandleRef;
+                var layoutParams = child.Owner.GetAttached<LayoutParams>();
+                if (layoutParams != null)
+                {
+                    layoutParams.FlexItem = childHandleRef;
+                }
+                else
+                {
+                    child.Owner.SetAttached(new LayoutParams() { FlexItem = childHandleRef });
+                }
             }
         }
 
@@ -968,6 +967,9 @@ namespace Tizen.NUI
             {
                 LayoutItem layoutItem = LayoutChildren[i];
                 View Child = layoutItem?.Owner;
+                if (Child == null)
+                    continue;
+
                 HandleRef childHandleRef;
                 if (NUIApplication.IsUsingXaml)
                 {
@@ -975,9 +977,9 @@ namespace Tizen.NUI
                 }
                 else
                 {
-                    childHandleRef = childHandleRefMap[Child];
+                    childHandleRef = Child.GetAttached<LayoutParams>()?.FlexItem ?? new HandleRef();
                 }
-                if (childHandleRef.Handle == IntPtr.Zero || Child == null)
+                if (childHandleRef.Handle == IntPtr.Zero)
                     continue;
 
                 AlignmentType flexAlignemnt = GetFlexAlignmentSelf(Child);
@@ -1059,6 +1061,70 @@ namespace Tizen.NUI
                     frame.Dispose();
                 }
             }
+        }
+
+        private class LayoutParams
+        {
+            /// <summary>
+            /// Constructs LayoutParams.
+            /// </summary>
+            public LayoutParams()
+            {
+            }
+
+            /// <summary>
+            /// Gets or sets the alignment of the flex layout item.
+            /// </summary>
+            public AlignmentType FlexAlignmentSelf
+            {
+                get;
+                set;
+            } = AlignmentType.Auto;
+
+            /// <summary>
+            /// Gets or sets the aspect ratio of the flex layout item.
+            /// </summary>
+            public float FlexAspectRatio
+            {
+                get;
+                set;
+            } = FlexUndefined;
+
+            /// <summary>
+            /// Gets or sets the basis of the flex layout item.
+            /// </summary>
+            public float FlexBasis
+            {
+                get;
+                set;
+            } = FlexUndefined;
+
+            /// <summary>
+            /// Gets or sets the shrink of the flex layout item.
+            /// </summary>
+            public float FlexShrink
+            {
+                get;
+                set;
+            } = 1.0f;
+
+            /// <summary>
+            /// Gets or sets the grow of the flex layout item.
+            /// </summary>
+            public float FlexGrow
+            {
+                get;
+                set;
+            } = FlexUndefined;
+
+            /// <summary>
+            /// Gets or sets the item handle of the flex layout item.
+            /// </summary>
+            public HandleRef FlexItem
+            {
+                get;
+                set;
+            } = new HandleRef();
         }
     } // FLexlayout
 } // namesspace Tizen.NUI

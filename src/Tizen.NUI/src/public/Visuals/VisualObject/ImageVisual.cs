@@ -28,9 +28,9 @@ namespace Tizen.NUI.Visuals
     {
         #region Internal And Private
         internal static readonly int ActionReload = Tizen.NUI.BaseComponents.ImageView.ActionReload;
-        internal bool isResourceUrlValid = false;
+        internal bool isResourceUrlValid;
 
-        private PropertyMap temperalStoredPropertyMap = null; // To store property map when resource url is not valid.
+        private PropertyMap temperalStoredPropertyMap; // To store property map when resource url is not valid.
         #endregion
 
         /// <summary>
@@ -108,8 +108,10 @@ namespace Tizen.NUI.Visuals
             get
             {
                 Vector4 ret = new Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-                using var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.ImageVisualProperty.PixelArea);
-                propertyValue?.Get(ret);
+                using (var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.ImageVisualProperty.PixelArea))
+                {
+                    propertyValue?.Get(ret);
+                }
                 return ret;
             }
         }
@@ -495,8 +497,10 @@ namespace Tizen.NUI.Visuals
             get
             {
                 Vector4 ret = new Vector4();
-                using var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.CornerRadius);
-                propertyValue?.Get(ret);
+                using (var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.CornerRadius))
+                {
+                    propertyValue?.Get(ret);
+                }
                 return ret;
             }
         }
@@ -537,8 +541,10 @@ namespace Tizen.NUI.Visuals
             get
             {
                 Vector4 ret = new Vector4();
-                using var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.CornerSquareness);
-                propertyValue?.Get(ret);
+                using (var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.CornerSquareness))
+                {
+                    propertyValue?.Get(ret);
+                }
                 return ret;
             }
         }
@@ -576,8 +582,10 @@ namespace Tizen.NUI.Visuals
             get
             {
                 Color ret = new Color(0.0f, 0.0f, 0.0f, 1.0f);
-                using var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.BorderlineColor);
-                propertyValue?.Get(ret);
+                using (var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.BorderlineColor))
+                {
+                    propertyValue?.Get(ret);
+                }
                 return ret;
             }
         }

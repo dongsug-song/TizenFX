@@ -27,9 +27,6 @@ namespace Tizen.NUI.BaseComponents
     /// <since_tizen> 3 </since_tizen>
     public partial class View
     {
-        private float userSizeWidth = 0.0f;
-        private float userSizeHeight = 0.0f;
-
         /// <summary>
         /// StyleNameProperty (DALi json)
         /// </summary>
@@ -2176,8 +2173,6 @@ namespace Tizen.NUI.BaseComponents
         {
             if (string.IsNullOrEmpty(value))
             {
-                backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Background;
-
                 backgroundImageUrl = null;
 
                 var empty = new PropertyValue();
@@ -2221,10 +2216,7 @@ namespace Tizen.NUI.BaseComponents
             {
                 map.Add(Visual.Property.CornerRadius, backgroundExtraData.CornerRadius)
                    .Add(Visual.Property.CornerSquareness, backgroundExtraData.CornerSquareness)
-                   .Add(Visual.Property.CornerRadiusPolicy, (int)backgroundExtraData.CornerRadiusPolicy)
-                   .Add(Visual.Property.BorderlineWidth, backgroundExtraData.BorderlineWidth)
-                   .Add(Visual.Property.BorderlineColor, backgroundExtraData.BorderlineColor == null ? Color.Black : backgroundExtraData.BorderlineColor)
-                   .Add(Visual.Property.BorderlineOffset, backgroundExtraData.BorderlineOffset);
+                   .Add(Visual.Property.CornerRadiusPolicy, (int)backgroundExtraData.CornerRadiusPolicy);
             }
 
             backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Background;
@@ -2257,17 +2249,20 @@ namespace Tizen.NUI.BaseComponents
 
             int visualType = 0;
 
-            map.Find(Visual.Property.Type)?.Get(out visualType);
+            using (var pv = map.Find(Visual.Property.Type))
+            {
+                pv?.Get(out visualType);
+            }
 
             if (visualType == (int)Visual.Type.Image)
             {
                 map.Set(Visual.Property.Type, (int)Visual.Type.NPatch);
             }
 
-            // Background extra data flag is not meanful anymore.
-            backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Background;
-
-            Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, View.Property.BACKGROUND, new PropertyValue(map));
+            using (var pv = new PropertyValue(map))
+            {
+                Tizen.NUI.Object.SetProperty(SwigCPtr, View.Property.BACKGROUND, pv);
+            }
         }
 
         private void SetBorderlineColor(Color value)
@@ -2277,9 +2272,7 @@ namespace Tizen.NUI.BaseComponents
                 return;
             }
 
-            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).BorderlineColor = value;
-
-            UpdateBackgroundExtraData(BackgroundExtraDataUpdatedFlag.Borderline);
+            Object.InternalSetPropertyVector4(SwigCPtr, Property.BorderlineColor, value.SwigCPtr);
         }
 
         private void SetBackgroundColor(Color value)
@@ -2301,19 +2294,16 @@ namespace Tizen.NUI.BaseComponents
             using var map = new PropertyMap();
 
             map.Add(Visual.Property.Type, (int)Visual.Type.Color)
-               .Add(ColorVisualProperty.MixColor, value)
-               .Add(Visual.Property.CornerRadius, backgroundExtraData.CornerRadius)
+               .Add(ColorVisualProperty.MixColor, value);
+
+            map.Add(Visual.Property.CornerRadius, backgroundExtraData.CornerRadius)
                .Add(Visual.Property.CornerSquareness, backgroundExtraData.CornerSquareness)
-               .Add(Visual.Property.CornerRadiusPolicy, (int)(backgroundExtraData.CornerRadiusPolicy))
-               .Add(Visual.Property.BorderlineWidth, backgroundExtraData.BorderlineWidth)
-               .Add(Visual.Property.BorderlineColor, backgroundExtraData.BorderlineColor == null ? Color.Black : backgroundExtraData.BorderlineColor)
-               .Add(Visual.Property.BorderlineOffset, backgroundExtraData.BorderlineOffset);
+               .Add(Visual.Property.CornerRadiusPolicy, (int)backgroundExtraData.CornerRadiusPolicy);
 
             backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Background;
 
-            var mapValue = new PropertyValue(map);
+            using var mapValue = new PropertyValue(map);
             Object.SetProperty(SwigCPtr, Property.BACKGROUND, mapValue);
-
         }
 
         private void SetColor(Color value)
@@ -2377,7 +2367,15 @@ namespace Tizen.NUI.BaseComponents
         private void SetShadow(ShadowBase value)
         {
             backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Shadow;
-            Tizen.NUI.Object.SetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, View.Property.SHADOW, value == null ? new PropertyValue() : value.ToPropertyValue(this));
+
+            using var pv = value == null ? new PropertyValue() : value.ToPropertyValue(this);
+            Tizen.NUI.Object.SetProperty(SwigCPtr, View.Property.SHADOW, pv);
+        }
+
+        private void SetInnerShadow(ShadowBase value)
+        {
+            using var pv = value == null ? new PropertyValue() : value.ToPropertyValue(this);
+            Tizen.NUI.Object.SetProperty(SwigCPtr, View.Property.InnerShadow, pv);
         }
     }
 }

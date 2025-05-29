@@ -31,8 +31,8 @@ namespace Tizen.NUI.BaseComponents
         private static HashSet<BindableProperty> positionPropertyGroup = new HashSet<BindableProperty>();
         private static HashSet<BindableProperty> sizePropertyGroup = new HashSet<BindableProperty>();
         private static HashSet<BindableProperty> scalePropertyGroup = new HashSet<BindableProperty>();
-        private static bool defaultGrabTouchAfterLeave = false;
-        private static bool defaultAllowOnlyOwnTouch = false;
+        private static bool defaultGrabTouchAfterLeave;
+        private static bool defaultAllowOnlyOwnTouch;
 
         internal BackgroundExtraData backgroundExtraData;
         private int widthPolicy = LayoutParamPolicies.WrapContent;
@@ -40,51 +40,59 @@ namespace Tizen.NUI.BaseComponents
         private LayoutExtraData layoutExtraData;
         private ThemeData themeData;
         private Dictionary<Type, object> attached;
-        private bool isThemeChanged = false;
+        private bool isThemeChanged;
 
         // Collection of image-sensitive properties, and need to update C# side cache value.
         private static readonly List<int> cachedNUIViewBackgroundImagePropertyKeyList = new List<int> {
             ImageVisualProperty.URL,
             ImageVisualProperty.SynchronousLoading,
         };
-        private string backgroundImageUrl = null;
-        private bool backgroundImageSynchronousLoading = false;
+        private string backgroundImageUrl;
+        private bool backgroundImageSynchronousLoading;
 
         // List of constraints
-        private Constraint widthConstraint = null;
-        private Constraint heightConstraint = null;
+        private Constraint widthConstraint;
+        private Constraint heightConstraint;
 
-        private Size2D internalMaximumSize = null;
-        private Size2D internalMinimumSize = null;
-        private Extents internalMargin = null;
-        private Extents internalPadding = null;
-        private Vector3 internalSizeModeFactor = null;
-        private Vector2 internalCellIndex = null;
-        private Color internalBackgroundColor = null;
-        private Color internalColor = null;
-        private Position internalPivotPoint = null;
-        private Position internalPosition = null;
-        private Position2D internalPosition2D = null;
-        private Vector3 internalScale = null;
-        private Size internalSize = null;
-        private Size2D internalSize2D = null;
-        private int layoutCount = 0;
+        private float userSizeWidth;
+        private float userSizeHeight;
+
+        private Size2D internalMaximumSize;
+        private Size2D internalMinimumSize;
+        private Extents internalMargin;
+        private Extents internalPadding;
+        private Vector3 internalSizeModeFactor;
+        private Vector2 internalCellIndex;
+        private Color internalBackgroundColor;
+        private Color internalColor;
+        private Position internalPivotPoint;
+        private Position internalPosition;
+        private Position2D internalPosition2D;
+        private Vector3 internalScale;
+        private Size internalSize;
+        private Size2D internalSize2D;
+        private int layoutCount;
         private ControlState propagatableControlStates = ControlState.All;
 
         private string internalName = string.Empty;
-        private Position internalCurrentParentOrigin = null;
-        private Position internalCurrentAnchorPoint = null;
-        private Vector3 internalTargetSize = null;
-        private Size2D internalCurrentSize = null;
-        private Position internalCurrentPosition = null;
-        private Vector3 internalCurrentWorldPosition = null;
-        private Vector3 internalCurrentScale = null;
-        private Vector3 internalCurrentWorldScale = null;
-        private Vector4 internalCurrentColor = null;
-        private Vector4 internalCurrentWorldColor = null;
-        private Vector2 internalCurrentScreenPosition = null;
+        private Position internalCurrentParentOrigin;
+        private Position internalCurrentAnchorPoint;
+        private Vector3 internalTargetSize;
+        private Size2D internalCurrentSize;
+        private Position internalCurrentPosition;
+        private Vector3 internalCurrentWorldPosition;
+        private Vector3 internalCurrentScale;
+        private Vector3 internalCurrentWorldScale;
+        private Vector4 internalCurrentColor;
+        private Vector4 internalCurrentWorldColor;
+        private Vector2 internalCurrentScreenPosition;
 
-        private static int aliveCount = 0;
+        /// <summary>
+        /// Indicates that this View should listen Touch event to handle its ControlState.
+        /// </summary>
+        private bool enableControlState;
+
+        private static int aliveCount;
 
         static View()
         {
@@ -1213,10 +1221,6 @@ namespace Tizen.NUI.BaseComponents
             if (map == null)
                 return;
 
-            // Background extra data is not valid anymore. We should ignore lazy UpdateBackgroundExtraData
-            backgroundExtraData = null;
-            backgroundExtraDataUpdatedFlag = BackgroundExtraDataUpdatedFlag.None;
-
             // Update backgroundImageUrl and backgroundImageSynchronousLoading from Map
             foreach (int key in cachedNUIViewBackgroundImagePropertyKeyList)
             {
@@ -1240,9 +1244,6 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalBackground()
         {
-            // Sync as current properties
-            UpdateBackgroundExtraData();
-
             PropertyMap tmp = new PropertyMap();
             var propertyValue = Object.GetProperty(SwigCPtr, Property.BACKGROUND);
             propertyValue.Get(tmp);
@@ -1320,9 +1321,6 @@ namespace Tizen.NUI.BaseComponents
 
         private ImageShadow GetInternalImageShadow()
         {
-            // Sync as current properties
-            UpdateBackgroundExtraData();
-
             using PropertyMap map = new PropertyMap();
             using var shadowProperty = Object.GetProperty(SwigCPtr, Property.SHADOW);
             shadowProperty.Get(map);
@@ -1397,14 +1395,43 @@ namespace Tizen.NUI.BaseComponents
 
         private Shadow GetInternalBoxShadow()
         {
-            // Sync as current properties
-            UpdateBackgroundExtraData();
-
             using PropertyMap map = new PropertyMap();
             using var shadowProperty = Object.GetProperty(SwigCPtr, Property.SHADOW);
             shadowProperty.Get(map);
             var shadow = new Shadow(map);
             return shadow.IsEmpty() ? null : shadow;
+        }
+
+        /// <summary>
+        /// Describes a inner shadow shadow drawing for a View.
+        /// It is null by default.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public InnerShadow InnerShadow
+        {
+            get
+            {
+                return GetInternalInnerShadow();
+            }
+            set
+            {
+                SetInternalInnerShadow(value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private void SetInternalInnerShadow(InnerShadow innerShadow)
+        {
+            SetInnerShadow(innerShadow);
+        }
+
+        private InnerShadow GetInternalInnerShadow()
+        {
+            using PropertyMap map = new PropertyMap();
+            using var innerShadowProperty = Object.GetProperty(SwigCPtr, Property.InnerShadow);
+            innerShadowProperty.Get(map);
+            var innerShadow = new InnerShadow(map);
+            return innerShadow.IsEmpty() ? null : innerShadow;
         }
 
         /// <summary>
@@ -1450,15 +1477,20 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
-        private void SetInternalCornerRadius(Vector4 newValue)
+        private void SetInternalCornerRadius(Vector4 cornerRadius)
         {
-            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).CornerRadius = newValue;
+            // Set for animation. Will be soon deprecated.
+            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).CornerRadius = cornerRadius;
             UpdateBackgroundExtraData(BackgroundExtraDataUpdatedFlag.CornerRadius);
+
+            Object.InternalSetPropertyVector4(SwigCPtr, Property.CornerRadius, cornerRadius.SwigCPtr);
         }
 
         private Vector4 GetInternalCornerRadius()
         {
-            return backgroundExtraData == null ? Vector4.Zero : backgroundExtraData.CornerRadius;
+            Vector4 value = new Vector4();
+            Object.InternalRetrievingPropertyVector4(SwigCPtr, Property.CornerRadius, value.SwigCPtr);
+            return value;
         }
 
         /// <summary>
@@ -1493,19 +1525,21 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
-        private void SetInternalCornerRadiusPolicy(VisualTransformPolicyType value)
+        private void SetInternalCornerRadiusPolicy(VisualTransformPolicyType cornerRadiusPolicy)
         {
-            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).CornerRadiusPolicy = value;
-
+            // Set for animation. Will be soon deprecated.
+            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).CornerRadiusPolicy = cornerRadiusPolicy;
             if (backgroundExtraData.CornerRadius != null)
             {
                 UpdateBackgroundExtraData(BackgroundExtraDataUpdatedFlag.CornerRadius);
             }
+
+            Object.InternalSetPropertyInt(SwigCPtr, Property.CornerRadiusPolicy, (int)cornerRadiusPolicy);
         }
 
         private VisualTransformPolicyType GetInternalCornerRadiusPolicy()
         {
-            return backgroundExtraData == null ? VisualTransformPolicyType.Absolute : backgroundExtraData.CornerRadiusPolicy;
+            return (VisualTransformPolicyType)(Object.InternalGetPropertyInt(SwigCPtr, Property.CornerRadiusPolicy));
         }
 
         /// <summary>
@@ -1533,22 +1567,27 @@ namespace Tizen.NUI.BaseComponents
         {
             get
             {
-                return GetInternalCornerSqurenessProperty();
+                return GetInternalCornerSqureness();
             }
             set
             {
-                SetInternalCornerSqurenessProperty(value);
+                SetInternalCornerSqureness(value);
                 NotifyPropertyChanged();
             }
         }
-        internal void SetInternalCornerSqurenessProperty(Vector4 cornerSquareness)
+        internal void SetInternalCornerSqureness(Vector4 cornerSquareness)
         {
+            // Set for animation. Will be soon deprecated.
             (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).CornerSquareness = cornerSquareness;
             UpdateBackgroundExtraData(BackgroundExtraDataUpdatedFlag.CornerRadius);
+
+            Object.InternalSetPropertyVector4(SwigCPtr, Property.CornerSquareness, cornerSquareness.SwigCPtr);
         }
-        internal Vector4 GetInternalCornerSqurenessProperty()
+        internal Vector4 GetInternalCornerSqureness()
         {
-            return backgroundExtraData == null ? Vector4.Zero : backgroundExtraData.CornerSquareness;
+            Vector4 value = new Vector4();
+            Object.InternalRetrievingPropertyVector4(SwigCPtr, Property.CornerSquareness, value.SwigCPtr);
+            return value;
         }
 
         /// <summary>
@@ -1593,13 +1632,12 @@ namespace Tizen.NUI.BaseComponents
 
         private void SetInternalBorderlineWidth(float borderlineWidth)
         {
-            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).BorderlineWidth = borderlineWidth;
-            UpdateBackgroundExtraData(BackgroundExtraDataUpdatedFlag.Borderline);
+            Object.InternalSetPropertyFloat(SwigCPtr, Property.BorderlineWidth, borderlineWidth);
         }
 
         private float GetInternalBorderlineWidth()
         {
-            return backgroundExtraData == null ? 0.0f : backgroundExtraData.BorderlineWidth;
+            return Object.InternalGetPropertyFloat(SwigCPtr, Property.BorderlineWidth);
         }
 
         /// <summary>
@@ -1663,7 +1701,9 @@ namespace Tizen.NUI.BaseComponents
 
         private Color GetInternalBorderlineColor()
         {
-            return backgroundExtraData == null ? Color.Black : backgroundExtraData.BorderlineColor;
+            Vector4 value = new Vector4();
+            Object.InternalRetrievingPropertyVector4(SwigCPtr, Property.BorderlineColor, value.SwigCPtr);
+            return value;
         }
 
         /// <summary>
@@ -1750,13 +1790,12 @@ namespace Tizen.NUI.BaseComponents
 
         private void SetInternalBorderlineOffset(float borderlineOffset)
         {
-            (backgroundExtraData ?? (backgroundExtraData = new BackgroundExtraData())).BorderlineOffset = borderlineOffset;
-            UpdateBackgroundExtraData(BackgroundExtraDataUpdatedFlag.Borderline);
+            Object.InternalSetPropertyFloat(SwigCPtr, Property.BorderlineOffset, borderlineOffset);
         }
 
         private float GetInternalBorderlineOffset()
         {
-            return backgroundExtraData == null ? 0.0f : backgroundExtraData.BorderlineOffset;
+            return Object.InternalGetPropertyFloat(SwigCPtr, Property.BorderlineOffset);
         }
 
         /// <summary>
@@ -1893,11 +1932,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalTooltip()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var pv = Object.GetProperty(SwigCPtr, Property.TOOLTIP);
-            pv.Get(temp);
+            using (var pv = Object.GetProperty(SwigCPtr, Property.TOOLTIP))
+            {
+                pv.Get(temp);
+            }
             return temp;
         }
 
@@ -3903,11 +3942,11 @@ namespace Tizen.NUI.BaseComponents
 
         private Rotation GetInternalOrientation()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             Rotation temp = new Rotation();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var pv = Object.GetProperty(SwigCPtr, Property.ORIENTATION);
-            pv.Get(temp);
+            using (var pv = Object.GetProperty(SwigCPtr, Property.ORIENTATION))
+            {
+                pv.Get(temp);
+            }
             return temp;
         }
 
@@ -4624,7 +4663,6 @@ namespace Tizen.NUI.BaseComponents
             }
             else
             {
-                widthConstraint?.Remove();
                 widthConstraint?.Dispose();
                 widthConstraint = null;
 
@@ -4705,7 +4743,6 @@ namespace Tizen.NUI.BaseComponents
             }
             else
             {
-                heightConstraint?.Remove();
                 heightConstraint?.Dispose();
                 heightConstraint = null;
 
@@ -4918,7 +4955,7 @@ namespace Tizen.NUI.BaseComponents
                 if (layoutExtraData != null && extents is Extents newPadding)
                     SetPadding(new UIExtents(newPadding.Start, newPadding.End, newPadding.Top, newPadding.Bottom), false);
 
-                if (Layout != null)
+                if (Layout != null && !Layout.IsPaddingHandledByNative())
                 {
                     Layout.Padding = new Extents((Extents)extents);
                     if ((Padding.Start != 0) || (Padding.End != 0) || (Padding.Top != 0) || (Padding.Bottom != 0))
@@ -4939,23 +4976,20 @@ namespace Tizen.NUI.BaseComponents
 
         private Extents GetInternalPadding()
         {
-            if ((internalPadding == null) || (Layout != null))
+            if (internalPadding == null || (Layout != null && !Layout.IsPaddingHandledByNative()))
             {
                 ushort start = 0, end = 0, top = 0, bottom = 0;
-                if (Layout != null)
+                if (Layout != null && !Layout.IsPaddingHandledByNative() && Layout.Padding != null)
                 {
-                    if (Layout.Padding != null)
-                    {
-                        start = Layout.Padding.Start;
-                        end = Layout.Padding.End;
-                        top = Layout.Padding.Top;
-                        bottom = Layout.Padding.Bottom;
-                    }
+                    start = Layout.Padding.Start;
+                    end = Layout.Padding.End;
+                    top = Layout.Padding.Top;
+                    bottom = Layout.Padding.Bottom;
                 }
                 internalPadding = new Extents(OnPaddingChanged, start, end, top, bottom);
             }
 
-            if (Layout == null)
+            if (Layout == null || Layout.IsPaddingHandledByNative())
             {
                 var tmp = Object.GetProperty(SwigCPtr, Property.PADDING);
                 tmp?.Get(internalPadding);
@@ -5205,8 +5239,8 @@ namespace Tizen.NUI.BaseComponents
         /// <summary>
         /// Gets the number of renderers held by the view.
         /// </summary>
-        /// <since_tizen> 3 </since_tizen>
-        public uint RendererCount
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public uint RenderableCount
         {
             get
             {
@@ -5418,17 +5452,21 @@ namespace Tizen.NUI.BaseComponents
                 {
                     ret = new View(Layer.getCPtr(layer).Handle, false);
                     NUILog.Error("This Parent property is deprecated, should do not be used");
+                    Interop.BaseHandle.DeleteBaseHandle(CPtr);
+                    CPtr = new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero);
+
+                    if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+                    return ret;
                 }
                 else
                 {
                     ret = basehandle as View;
+                    Interop.BaseHandle.DeleteBaseHandle(CPtr);
+                    CPtr = new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero);
+
+                    if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
+                    return ret;
                 }
-
-                Interop.BaseHandle.DeleteBaseHandle(CPtr);
-                CPtr = new global::System.Runtime.InteropServices.HandleRef(null, global::System.IntPtr.Zero);
-
-                if (NDalicPINVOKE.SWIGPendingException.Pending) throw new InvalidOperationException("FATAL: get Exception", NDalicPINVOKE.SWIGPendingException.Retrieve());
-                return ret;
             }
         }
 
@@ -6290,11 +6328,7 @@ namespace Tizen.NUI.BaseComponents
 
                         // The calculation of the native size of the text component requires padding.
                         // Don't overwrite the zero padding.
-                        bool isTextLayout = (value is Tizen.NUI.BaseComponents.TextLabel.TextLabelLayout) ||
-                                            (value is Tizen.NUI.BaseComponents.TextField.TextFieldLayout) ||
-                                            (value is Tizen.NUI.BaseComponents.TextEditor.TextEditorLayout);
-
-                        if (!isTextLayout && (padding.Top != 0 || padding.Bottom != 0 || padding.Start != 0 || padding.End != 0))
+                        if (!value.IsPaddingHandledByNative() && (padding.Top != 0 || padding.Bottom != 0 || padding.Start != 0 || padding.End != 0))
                         {
                             // If View already has a padding set then store it in Layout instead.
                             value.Padding = padding;
@@ -6464,7 +6498,21 @@ namespace Tizen.NUI.BaseComponents
             }
         }
 
-        /// This will be public opened after ACR done. Before ACR, need to be hidden as inhouse API.
+        /// <summary>
+        /// Gets and Sets hint of partial update area.
+        /// </summary>
+        /// <remarks>
+        /// The property format applied as below logics.
+        /// Vector4(offsetX, offsetY, width, height).
+        /// - offsetX : Offset of the center of partial update area's X axis position from the center of View.
+        /// - offsetY : Offset of the center of partial update area's X axis position from the center of View.
+        /// - width   : Width of partial update area.
+        /// - height  : Height of partial update area.
+        ///
+        /// Special case - If we set Vector4.Zero, it will be used Vector4(0.0f, 0.0f, SizeWidth, SizeHeight) automatically.
+        ///
+        /// This update area give efforts for all Renderer and Visuals.
+        /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public Vector4 UpdateAreaHint
         {
@@ -7110,6 +7158,7 @@ namespace Tizen.NUI.BaseComponents
         {
             Object.InternalSetPropertyInt(SwigCPtr, Property.OffScreenRendering, (int)value);
         }
+
         private OffScreenRenderingType GetInternalOffScreenRendering()
         {
             int temp = Object.InternalGetPropertyInt(SwigCPtr, Property.OffScreenRendering);
@@ -7120,6 +7169,33 @@ namespace Tizen.NUI.BaseComponents
                 case 2: return OffScreenRenderingType.RefreshAlways;
                 default: return OffScreenRenderingType.None;
             }
+        }
+
+        /// <summary>
+        /// Gets of sets the flag to identify the View will be ignored or not.
+        /// If the View is marked as ignored, it will not be rendered and will be excluded from render thread computation.
+        /// So, the render thread properties like WorldPosition and WorldColor become inaccurate.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool Ignored
+        {
+            set => SetInternalIgnored(value);
+            get => IsInternalIgnored();
+        }
+
+        private void SetInternalIgnored(bool ignored)
+        {
+            Interop.Actor.SetIgnored(SwigCPtr, ignored);
+            if (NDalicPINVOKE.SWIGPendingException.Pending)
+                throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+        }
+
+        private bool IsInternalIgnored()
+        {
+            bool isIgnored = Interop.Actor.IsIgnored(SwigCPtr);
+            if (NDalicPINVOKE.SWIGPendingException.Pending)
+                throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return isIgnored;
         }
 
         private LayoutExtraData EnsureLayoutExtraData()

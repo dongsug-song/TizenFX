@@ -17,6 +17,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Tizen.NUI.Binding;
@@ -380,6 +381,7 @@ namespace Tizen.NUI.BaseComponents
         /// Once a raise or lower API is used, that view will then have an exclusive sibling order independent of insertion.
         /// </remarks>
         /// <since_tizen> 3 </since_tizen>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void RaiseToTop()
         {
             var parentChildren = GetParent()?.Children;
@@ -389,8 +391,7 @@ namespace Tizen.NUI.BaseComponents
                 parentChildren.Remove(this);
                 parentChildren.Add(this);
 
-                LayoutGroup layout = Layout as LayoutGroup;
-                layout?.ChangeLayoutSiblingOrder(parentChildren.Count - 1);
+                Layout?.ChangeLayoutSiblingOrder(parentChildren.Count - 1);
 
                 Interop.NDalic.RaiseToTop(SwigCPtr);
                 if (NDalicPINVOKE.SWIGPendingException.Pending)
@@ -416,8 +417,7 @@ namespace Tizen.NUI.BaseComponents
                 parentChildren.Remove(this);
                 parentChildren.Insert(0, this);
 
-                LayoutGroup layout = Layout as LayoutGroup;
-                layout?.ChangeLayoutSiblingOrder(0);
+                Layout?.ChangeLayoutSiblingOrder(0);
 
                 Interop.NDalic.LowerToBottom(SwigCPtr);
                 if (NDalicPINVOKE.SWIGPendingException.Pending)
@@ -499,6 +499,7 @@ namespace Tizen.NUI.BaseComponents
             {
                 // Register new camera into Registry.
                 ret = new Animatable(cPtr, true);
+                return ret;
             }
             else
             {
@@ -506,9 +507,9 @@ namespace Tizen.NUI.BaseComponents
                 HandleRef handle = new HandleRef(this, cPtr);
                 Interop.Actor.DeleteActor(handle);
                 handle = new HandleRef(null, IntPtr.Zero);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+                return ret;
             }
-            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-            return ret;
         }
 
         /// <summary>
@@ -618,62 +619,63 @@ namespace Tizen.NUI.BaseComponents
         }
 
         /// <summary>
-        /// Adds a renderer to the view.
+        /// Adds a renderable to the view.
         /// </summary>
-        /// <param name="renderer">The renderer to add.</param>
-        /// <returns>The index of the Renderer that was added to the view.</returns>
-        /// <since_tizen> 3 </since_tizen>
-        public uint AddRenderer(Renderer renderer)
+        /// <param name="renderable">The renderable to add.</param>
+        /// <returns>The index of the Renderable that was added to the view.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public uint AddRenderable(Renderable renderable)
         {
-            uint ret = Interop.Actor.AddRenderer(SwigCPtr, Renderer.getCPtr(renderer));
+            uint ret = Interop.Actor.AddRenderer(SwigCPtr, Renderable.getCPtr(renderable));
             if (NDalicPINVOKE.SWIGPendingException.Pending)
                 throw NDalicPINVOKE.SWIGPendingException.Retrieve();
             return ret;
         }
 
         /// <summary>
-        /// Retrieves the renderer at the specified index.
+        /// Retrieves the renderable at the specified index.
         /// </summary>
-        /// <param name="index">The index of the renderer to retrieve.</param>
-        /// <returns>A Renderer object at the specified index.</returns>
+        /// <param name="index">The index of the renderable to retrieve.</param>
+        /// <returns>A Renderable object at the specified index.</returns>
         /// <remarks>
-        /// The index must be between 0 and GetRendererCount()-1
+        /// The index must be between 0 and GetRenderableCount()-1
         /// </remarks>
-        /// <since_tizen> 3 </since_tizen>
-        public Renderer GetRendererAt(uint index)
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public Renderable GetRenderableAt(uint index)
         {
             IntPtr cPtr = Interop.Actor.GetRendererAt(SwigCPtr, index);
-            Renderer ret = Registry.GetManagedBaseHandleFromNativePtr(cPtr) as Renderer;
+            Renderable ret = Registry.GetManagedBaseHandleFromNativePtr(cPtr) as Renderable;
             if (ret != null)
             {
                 Interop.BaseHandle.DeleteBaseHandle(new HandleRef(this, cPtr));
+                NDalicPINVOKE.ThrowExceptionIfExists();
+                return ret;
             }
             else
             {
-                ret = new Renderer(cPtr, true);
+                ret = new Renderable(cPtr, true);
+                return ret;
             }
-            NDalicPINVOKE.ThrowExceptionIfExists();
-            return ret;
         }
 
         /// <summary>
-        /// Removes the specified renderer from the view.
+        /// Removes the specified renderable from the view.
         /// </summary>
-        /// <param name="renderer">The renderer to remove.</param>
-        /// <since_tizen> 3 </since_tizen>
-        public void RemoveRenderer(Renderer renderer)
+        /// <param name="renderable">The renderable to remove.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void RemoveRenderable(Renderable renderable)
         {
-            Interop.Actor.RemoveRenderer(SwigCPtr, Renderer.getCPtr(renderer));
+            Interop.Actor.RemoveRenderer(SwigCPtr, Renderable.getCPtr(renderable));
             if (NDalicPINVOKE.SWIGPendingException.Pending)
                 throw NDalicPINVOKE.SWIGPendingException.Retrieve();
         }
 
         /// <summary>
-        /// Removes a renderer at the specified index from the view.
+        /// Removes a renderable at the specified index from the view.
         /// </summary>
-        /// <param name="index">The index of the renderer to remove.</param>
-        /// <since_tizen> 3 </since_tizen>
-        public void RemoveRenderer(uint index)
+        /// <param name="index">The index of the renderable to remove.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void RemoveRenderable(uint index)
         {
             Interop.Actor.RemoveRenderer(SwigCPtr, index);
             if (NDalicPINVOKE.SWIGPendingException.Pending)
@@ -798,6 +800,7 @@ namespace Tizen.NUI.BaseComponents
         /// Raise view above the next sibling view.
         /// </summary>
         /// <since_tizen> 9 </since_tizen>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void Raise()
         {
             var parentChildren = GetParent()?.Children;
@@ -855,6 +858,7 @@ namespace Tizen.NUI.BaseComponents
         /// </remarks>
         /// <param name="target">Will be raised above this view.</param>
         /// <since_tizen> 9 </since_tizen>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void RaiseAbove(View target)
         {
             var parentChildren = GetParent()?.Children;

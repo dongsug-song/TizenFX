@@ -19,6 +19,7 @@ extern alias TizenSystemSettings;
 using TizenSystemSettings.Tizen.System;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Tizen.NUI
 {
@@ -28,9 +29,20 @@ namespace Tizen.NUI
     /// </summary>
     internal static class SystemFontSizeChangedManager
     {
+        private static SystemSettingsFontSize? fontSize;
+        private static WeakEvent<EventHandler<FontSizeChangedEventArgs>> proxy = new WeakEvent<EventHandler<FontSizeChangedEventArgs>>();
+
         static SystemFontSizeChangedManager()
         {
-            SystemSettings.FontSizeChanged += SystemFontSizeChanged;
+            try
+            {
+                SystemSettings.FontSizeChanged += SystemFontSizeChanged;
+            }
+            catch(Exception e)
+            {
+                Tizen.Log.Info("NUI", $"{e} Exception caught! SystemFontSizeChanged will not be detected!\n");
+                fontSize = SystemSettingsFontSize.Normal;
+            }
         }
 
         /// <summary>
@@ -63,19 +75,25 @@ namespace Tizen.NUI
             Finished?.Invoke(sender, args);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031: Do not catch general exception types", Justification = "This method is to handle system settings information that may throw an exception but ignorable. This method should not interrupt the main stream.")]
         public static SystemSettingsFontSize FontSize
         {
             get
             {
                 if (fontSize == null)
                 {
-                    fontSize = SystemSettings.FontSize;
+                    try
+                    {
+                        fontSize = SystemSettings.FontSize;
+                    }
+                    catch (Exception e)
+                    {
+                        Tizen.Log.Info("NUI", $"{e} Exception caught.\n");
+                        fontSize = SystemSettingsFontSize.Normal;
+                    }
                 }
                 return fontSize ?? SystemSettingsFontSize.Normal;
             }
         }
-
-        private static SystemSettingsFontSize? fontSize = null;
-        private static WeakEvent<EventHandler<FontSizeChangedEventArgs>> proxy = new WeakEvent<EventHandler<FontSizeChangedEventArgs>>();
     }
 }

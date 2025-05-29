@@ -17,6 +17,7 @@
 using System;
 using Tizen.NUI.BaseComponents;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Tizen.NUI
@@ -28,7 +29,7 @@ namespace Tizen.NUI
     public class Layer : Container
     {
         private Window window;
-        private int layoutCount = 0;
+        private int layoutCount;
 
         private EventHandler<VisibilityChangedEventArgs> visibilityChangedEventHandler;
         private VisibilityChangedEventCallbackType visibilityChangedEventCallback;
@@ -476,6 +477,7 @@ namespace Tizen.NUI
         /// Increments the depth of the layer.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void Raise()
         {
             var parentChildren = window?.LayersChildren;
@@ -515,6 +517,7 @@ namespace Tizen.NUI
         /// Raises the layer to the top.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void RaiseToTop()
         {
             var parentChildren = window?.LayersChildren;

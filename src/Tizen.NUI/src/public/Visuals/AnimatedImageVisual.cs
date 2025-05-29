@@ -24,11 +24,11 @@ namespace Tizen.NUI
     /// <since_tizen> 3 </since_tizen>
     public class AnimatedImageVisual : VisualMap
     {
-        private List<string> urls = null;
-        private int? batchSize = null;
-        private int? cacheSize = null;
-        private float? frameDelay = null;
-        private float? loopCount = null;
+        private List<string> urls;
+        private int? batchSize;
+        private int? cacheSize;
+        private float? frameDelay;
+        private float? loopCount;
 
         /// <summary>
         /// Default constructor of AnimatedImageVisual class.
@@ -173,16 +173,18 @@ namespace Tizen.NUI
                 }
                 else
                 {
-                    var urlArray = new PropertyArray();
+                    using var urlArray = new PropertyArray();
                     foreach (var url in urls)
                     {
-                        urlArray.Add(new PropertyValue(url));
+                        using (var pv = new PropertyValue(url))
+                        {
+                            using var _ = urlArray.Add(pv);
+                        }
                     }
                     using (var temp = new PropertyValue(urlArray))
                     {
                         _outputVisualMap.Add(ImageVisualProperty.URL, temp);
                     }
-                    urlArray.Dispose();
                 }
                 if (batchSize != null)
                 {

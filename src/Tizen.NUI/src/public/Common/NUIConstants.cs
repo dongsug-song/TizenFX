@@ -985,6 +985,23 @@ namespace Tizen.NUI
     }
 
     /// <summary>
+    /// Enumeration for the ellipsis mode of text.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public enum EllipsisMode
+    {
+        /// <summary>
+        /// When the text is long, it will be truncated with ellipsis.
+        /// </summary>
+        Truncate,
+
+        /// <summary>
+        /// When the text is long, it will automatically scroll with animation.
+        /// </summary>
+        AutoScroll
+    }
+
+    /// <summary>
     /// Enumeration type for the font's slant.
     /// </summary>
     /// <since_tizen> 5 </since_tizen>
@@ -1216,6 +1233,7 @@ namespace Tizen.NUI
     /// The HiddenInput property.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct HiddenInputProperty
     {
         /// <summary>
@@ -1244,6 +1262,7 @@ namespace Tizen.NUI
     /// The SelectionPopupStyle property.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct SelectionPopupStyleProperty
     {
         /// <summary>
@@ -1321,6 +1340,7 @@ namespace Tizen.NUI
     /// ParentOrigin constants.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct ParentOrigin
     {
         private static readonly Position topLeft = new Position(Left, Top, Middle);
@@ -1427,6 +1447,7 @@ namespace Tizen.NUI
     /// PivotPoint constants.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct PivotPoint
     {
         /// <summary>
@@ -1518,6 +1539,7 @@ namespace Tizen.NUI
     /// PositionAxis constants.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct PositionAxis
     {
         private static readonly Position xaxis = new Position(1.0f, 0.0f, 0.0f);
@@ -1575,6 +1597,7 @@ namespace Tizen.NUI
     /// <since_tizen> 3 </since_tizen>
     [Obsolete("Do not use this, that will be deprecated. Use as PivotPoint instead.")]
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct AnchorPoint
     {
         /// <summary>
@@ -1706,6 +1729,7 @@ namespace Tizen.NUI
     /// FontSizeScale constant.
     /// </summary>
     /// <since_tizen> 9 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct FontSizeScale
     {
         /// <summary>
@@ -1719,6 +1743,7 @@ namespace Tizen.NUI
     /// FontFamily constant.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct FontFamily
     {
         /// <summary>
@@ -1732,6 +1757,7 @@ namespace Tizen.NUI
     /// Offset has left, right, bottom, top value.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct Offset
     {
         /// <summary>
@@ -1773,7 +1799,6 @@ namespace Tizen.NUI
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public int Top {get; set;}
-
     }
 
     /// <summary>
@@ -1782,7 +1807,7 @@ namespace Tizen.NUI
     /// </summary>
     internal struct FrameworkInformation
     {
-        public readonly static string ResourcePath = "/usr/share/dotnet.tizen/framework/res/";
+        public const string ResourcePath = "/usr/share/dotnet.tizen/framework/res/";
     }
 
     /// <summary>
@@ -1861,6 +1886,7 @@ namespace Tizen.NUI
         /// <summary>
         /// The double underline type.
         /// </summary>
+        [SuppressMessage("Naming", "CA1720: Identifiers should not contain type names", Justification = "This is not a type name.")]
         Double
     }
 
@@ -1912,6 +1938,7 @@ namespace Tizen.NUI
     /// Pre-defined SlideTransition Direction
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct SlideTransitionDirection
     {
         private static readonly Vector2 top = new Vector2(0, -1);

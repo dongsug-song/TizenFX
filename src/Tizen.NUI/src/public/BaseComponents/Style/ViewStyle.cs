@@ -69,9 +69,9 @@ namespace Tizen.NUI.BaseComponents
         static readonly IStyleProperty IsEnabledProperty = new StyleProperty<View, bool>((v, o) => v.IsEnabled = o);
 
         private Dictionary<IStyleProperty, object> values = new Dictionary<IStyleProperty, object>();
-        private bool disposed = false;
+        private bool disposed;
 
-        private float? sizeDepth = null;
+        private float? sizeDepth;
 
         static ViewStyle() { }
 
@@ -836,9 +836,10 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static TOut Merge<TOut>(this TOut value, TOut other) where TOut : Tizen.NUI.BaseComponents.ViewStyle
         {
+            _ = value ?? throw new ArgumentNullException(nameof(value));
             var newStyle = value.Clone() as TOut;
 
-            newStyle?.CopyFrom(other);
+            newStyle.CopyFrom(other);
 
             return newStyle;
         }

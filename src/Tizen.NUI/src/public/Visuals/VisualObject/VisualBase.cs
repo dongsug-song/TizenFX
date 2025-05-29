@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Tizen.NUI.Visuals
 {
@@ -38,20 +39,20 @@ namespace Tizen.NUI.Visuals
     public abstract class VisualBase : BaseHandle
     {
         #region Internal And Private
-        internal PropertyMap cachedVisualPropertyMap = null;
-        internal PropertyMap changedPropertyMap = null;
+        internal PropertyMap cachedVisualPropertyMap;
+        internal PropertyMap changedPropertyMap;
 
         internal bool visualCreationRequiredFlag = true; // The first time should create visual.
 
-        internal bool visualCreationManually = false;
+        internal bool visualCreationManually;
 
         private int internalType = (int)Tizen.NUI.Visual.Type.Invalid;
 
-        private bool visualPropertyUpdateProcessAttachedFlag = false;
+        private bool visualPropertyUpdateProcessAttachedFlag;
 
-        private bool visualFittingModeApplied = false; // Whether we use fitting mode, or DontCare.
+        private bool visualFittingModeApplied; // Whether we use fitting mode, or DontCare.
 
-        internal struct VisualTransformInfo
+        internal class VisualTransformInfo : System.IDisposable
         {
             public float width;
             public float height;
@@ -72,6 +73,13 @@ namespace Tizen.NUI.Visuals
             public PropertyMap cachedVisualTransformPropertyMap;
 
             internal bool changed;
+
+            public VisualTransformInfo()
+            {
+                Clear();
+            }
+
+            ~VisualTransformInfo() => Dispose(false);
             
             public void Clear()
             {
@@ -97,6 +105,20 @@ namespace Tizen.NUI.Visuals
                 changed = true;
             }
 
+            public void Dispose()
+            {
+                Dispose(true);
+                global::System.GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    cachedVisualTransformPropertyMap?.Dispose();
+                }
+            }
+
             internal PropertyMap ConvertToPropertyMap()
             {
                 if (cachedVisualTransformPropertyMap == null)
@@ -107,83 +129,15 @@ namespace Tizen.NUI.Visuals
                 cachedVisualTransformPropertyMap.Clear();
 
                 // TODO : Let we optimize here after native map add API binded
-                cachedVisualTransformPropertyMap.Add((int)VisualTransformPropertyType.Size, new PropertyValue(width, height))
-                                                .Add((int)VisualTransformPropertyType.Offset, new PropertyValue(offsetX, offsetY))
-                                                .Add((int)VisualTransformPropertyType.SizePolicy, new PropertyValue((float)widthPolicy, (float)heightPolicy))
-                                                .Add((int)VisualTransformPropertyType.OffsetPolicy, new PropertyValue((float)offsetXPolicy, (float)offsetYPolicy))
-                                                .Add((int)VisualTransformPropertyType.Origin, new PropertyValue((int)origin))
-                                                .Add((int)VisualTransformPropertyType.AnchorPoint, new PropertyValue((int)pivotPoint))
-                                                .Add((int)VisualTransformPropertyType.ExtraSize, new PropertyValue(extraWidth, extraHeight));
+                cachedVisualTransformPropertyMap.Append((int)VisualTransformPropertyType.Size, new UIVector2(width, height))
+                                                .Append((int)VisualTransformPropertyType.Offset, new UIVector2(offsetX, offsetY))
+                                                .Append((int)VisualTransformPropertyType.SizePolicy, new UIVector2((float)widthPolicy, (float)heightPolicy))
+                                                .Append((int)VisualTransformPropertyType.OffsetPolicy, new UIVector2((float)offsetXPolicy, (float)offsetYPolicy))
+                                                .Add((int)VisualTransformPropertyType.Origin, (int)origin)
+                                                .Add((int)VisualTransformPropertyType.AnchorPoint, (int)pivotPoint)
+                                                .Append((int)VisualTransformPropertyType.ExtraSize, new UIVector2(extraWidth, extraHeight));
 
                 return cachedVisualTransformPropertyMap;
-            }
-
-            internal void ConvertFromPropertyMap(PropertyMap inputMap)
-            {
-                PropertyValue value = null;
-
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.Size)) != null)
-                {
-                    using var size = new Size();
-                    if (value.Get(size))
-                    {
-                        width = size.Width;
-                        height = size.Height;
-                    }
-                }
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.Offset)) != null)
-                {
-                    using var offset = new Position();
-                    if (value.Get(offset))
-                    {
-                        offsetX = offset.X;
-                        offsetY = offset.Y;
-                    }
-                }
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.SizePolicy)) != null)
-                {
-                    using var policyValue = new Vector2();
-                    if (value.Get(policyValue))
-                    {
-                        widthPolicy = (VisualTransformPolicyType)policyValue.X;
-                        heightPolicy = (VisualTransformPolicyType)policyValue.Y;
-                    }
-                }
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.OffsetPolicy)) != null)
-                {
-                    using var policyValue = new Vector2();
-                    if (value.Get(policyValue))
-                    {
-                        offsetXPolicy = (VisualTransformPolicyType)policyValue.X;
-                        offsetYPolicy = (VisualTransformPolicyType)policyValue.Y;
-                    }
-                }
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.Origin)) != null)
-                {
-                    int ret = 0;
-                    if (value.Get(out ret))
-                    {
-                        origin = (Visual.AlignType)ret;
-                    }
-                }
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.AnchorPoint)) != null)
-                {
-                    int ret = 0;
-                    if (value.Get(out ret))
-                    {
-                        pivotPoint = (Visual.AlignType)ret;
-                    }
-                }
-                if ((value = inputMap?.Find((int)VisualTransformPropertyType.ExtraSize)) != null)
-                {
-                    using var extraValue = new Vector2();
-                    if (value.Get(extraValue))
-                    {
-                        extraWidth = extraValue.Width;
-                        extraHeight = extraValue.Height;
-                    }
-                }
-                value?.Dispose();
             }
         };
         internal VisualTransformInfo transformInfo;
@@ -196,7 +150,7 @@ namespace Tizen.NUI.Visuals
 
         internal VisualBase(global::System.IntPtr cPtr, bool cMemoryOwn, bool cRegister) : base(cPtr, cMemoryOwn, cRegister)
         {
-            transformInfo.Clear();
+            transformInfo = new VisualTransformInfo();
         }
         #endregion
 
@@ -310,13 +264,18 @@ namespace Tizen.NUI.Visuals
                 UpdateVisualProperty((int)Tizen.NUI.Visual.Property.MixColor, value, false);
 
                 // warning : We should set cached Opacity after set MixColor.
-                UpdateVisualProperty((int)Tizen.NUI.Visual.Property.Opacity, value.A, false);
+                if (value != null)
+                {
+                    UpdateVisualProperty((int)Tizen.NUI.Visual.Property.Opacity, value.A, false);
+                }
             }
             get
             {
                 Tizen.NUI.Color ret = new Tizen.NUI.Color(1.0f, 1.0f, 1.0f, 1.0f);
-                using var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.MixColor);
-                propertyValue?.Get(ret);
+                using (var propertyValue = GetCachedVisualProperty((int)Tizen.NUI.Visual.Property.MixColor))
+                {
+                    propertyValue?.Get(ret);
+                }
                 return ret;
             }
         }
@@ -734,6 +693,7 @@ namespace Tizen.NUI.Visuals
         /// Raise above the next sibling visual object
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void Raise()
         {
             Interop.VisualObject.Raise(SwigCPtr);
@@ -754,6 +714,7 @@ namespace Tizen.NUI.Visuals
         /// Raise above all other sibling visual objects
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void RaiseToTop()
         {
             Interop.VisualObject.RaiseToTop(SwigCPtr);
@@ -774,6 +735,7 @@ namespace Tizen.NUI.Visuals
         /// Raise above target visual objects. No effects if visual object is already above target.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void RaiseAbove(Visuals.VisualBase target)
         {
             Interop.VisualObject.RaiseAbove(SwigCPtr, Visuals.VisualBase.getCPtr(target));
@@ -819,7 +781,9 @@ namespace Tizen.NUI.Visuals
                 }
                 else
                 {
+#pragma warning disable CA2000 // Dispose objects before losing scope
                     ret = new Visuals.VisualObjectsContainer(cPtr, true);
+#pragma warning restore CA2000 // Dispose objects before losing scope
                 }
             }
             NDalicPINVOKE.ThrowExceptionIfExists();
@@ -843,41 +807,6 @@ namespace Tizen.NUI.Visuals
         /// </remarks>
         internal PropertyMap Properties
         {
-            private set
-            {
-                visualCreationRequiredFlag = true;
-                cachedVisualPropertyMap = value;
-
-                changedPropertyMap?.Dispose();
-                changedPropertyMap = null;
-
-                transformInfo.Clear();
-
-                // Get transform informations from input property map.
-                using var transformValue = cachedVisualPropertyMap?.Find((int)Tizen.NUI.Visual.Property.Transform);
-                if (transformValue != null)
-                {
-                    PropertyMap transformMap = new PropertyMap();
-                    if (transformValue.Get(ref transformMap) && transformMap != null)
-                    {
-                        transformInfo.ConvertFromPropertyMap(transformMap);
-                    }
-                    transformMap?.Dispose();
-                }
-                transformInfo.changed = false;
-
-                // Get type from the property map.
-                internalType = (int)Tizen.NUI.Visual.Type.Invalid;
-                if (cachedVisualPropertyMap?.Find((int)Tizen.NUI.Visual.Property.Type)?.Get(out internalType) ?? false)
-                {
-                    UpdateVisualPropertyMap();
-                }
-                else
-                {
-                    // If type is not set, then remove the visual.
-                    UnregisterVisual();
-                }
-            }
             get
             {
                 // Sync as current properties
@@ -1130,14 +1059,16 @@ namespace Tizen.NUI.Visuals
                 // Since if visual is already under some VisualObjectsContainer,
                 // it will never be GC.
                 Detach();
+
+                changedPropertyMap?.Dispose();
+                changedPropertyMap = null;
+                cachedVisualPropertyMap?.Dispose();
+                cachedVisualPropertyMap = null;
+                transformInfo?.Dispose();
+                transformInfo = null;
             }
 
             visualCreationRequiredFlag = false;
-
-            changedPropertyMap?.Dispose();
-            changedPropertyMap = null;
-            cachedVisualPropertyMap?.Dispose();
-            cachedVisualPropertyMap = null;
 
             base.Dispose(type);
         }

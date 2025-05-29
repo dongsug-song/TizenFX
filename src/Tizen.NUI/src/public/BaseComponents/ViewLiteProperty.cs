@@ -27,6 +27,7 @@ namespace Tizen.NUI.BaseComponents
             // Background property will be Color after now. Remove background image url information.
             backgroundImageUrl = null;
 
+
             if (backgroundExtraData == null)
             {
                 Object.InternalSetPropertyColor(SwigCPtr, Property.BACKGROUND, color);
@@ -38,10 +39,7 @@ namespace Tizen.NUI.BaseComponents
                     .Append(ColorVisualProperty.MixColor, color)
                     .Append(Visual.Property.CornerRadius, backgroundExtraData.CornerRadius)
                     .Append(Visual.Property.CornerSquareness, backgroundExtraData.CornerSquareness)
-                    .Append(Visual.Property.CornerRadiusPolicy, (int)backgroundExtraData.CornerRadiusPolicy)
-                    .Append(Visual.Property.BorderlineWidth, backgroundExtraData.BorderlineWidth)
-                    .Append(Visual.Property.BorderlineColor, backgroundExtraData.BorderlineColor ?? Color.Black)
-                    .Append(Visual.Property.BorderlineOffset, backgroundExtraData.BorderlineOffset);
+                    .Append(Visual.Property.CornerRadiusPolicy, (int)backgroundExtraData.CornerRadiusPolicy);
 
                 backgroundExtraDataUpdatedFlag &= ~BackgroundExtraDataUpdatedFlag.Background;
 
@@ -67,9 +65,6 @@ namespace Tizen.NUI.BaseComponents
 
         internal UIShadow GetBoxShadow()
         {
-            // Sync as current properties
-            UpdateBackgroundExtraData();
-
             using PropertyValue shadowMapValue = Object.GetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, Property.SHADOW);
             if (shadowMapValue != null)
             {
@@ -80,7 +75,7 @@ namespace Tizen.NUI.BaseComponents
                     var shadow = new Shadow(map);
                     return new UIShadow()
                     {
-                        Color = new UIColor(shadow.Color),
+                        Color = UIColor.From(shadow.Color),
                         BlurRadius = shadow.BlurRadius,
                         OffsetX = shadow.Offset.X,
                         OffsetY = shadow.Offset.Y,
@@ -90,14 +85,11 @@ namespace Tizen.NUI.BaseComponents
                     };
                 }
             }
-            return UIShadow.Default;
+            return UIShadow.None;
         }
 
         internal bool UpdateBoxShadowColor(UIColor color)
         {
-            // Sync as current properties
-            UpdateBackgroundExtraData();
-
             using PropertyValue shadowMapValue = Object.GetProperty((System.Runtime.InteropServices.HandleRef)SwigCPtr, Property.SHADOW);
             if (shadowMapValue != null)
             {

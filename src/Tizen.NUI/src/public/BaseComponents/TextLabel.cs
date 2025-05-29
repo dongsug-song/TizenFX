@@ -45,29 +45,36 @@ namespace Tizen.NUI.BaseComponents
                 {
                     if (heightMeasureSpec.Mode != MeasureSpecification.ModeType.Exactly)
                     {
-                        totalHeight = Owner.GetHeightForWidth(totalWidth);
+                        var padding = Owner.Padding;
+                        totalHeight = Owner.GetHeightForWidth(totalWidth - (padding.Start + padding.End));
                         heightMeasureSpec = new MeasureSpecification(new LayoutLength(totalHeight), MeasureSpecification.ModeType.Exactly);
                     }
                 }
                 else
                 {
-                    var minSize = Owner.MinimumSize;
-                    var maxSize = Owner.MaximumSize;
+                    var minWidth = Owner.GetMinimumWidth();
+                    var minHeight = Owner.GetMinimumHeight();
+                    var maxWidth = Owner.GetMaximumWidth();
+                    var maxHeight = Owner.GetMaximumHeight();
                     var naturalSize = Owner.GetNaturalSize();
 
                     if (heightMeasureSpec.Mode == MeasureSpecification.ModeType.Exactly)
                     {
                         // GetWidthForHeight is not implemented.
                         float width = naturalSize != null ? naturalSize.Width : 0;
-                        totalWidth = Math.Min(Math.Max(width, minSize.Width), (maxSize.Width < 0 ? Int32.MaxValue : maxSize.Width));
+                        // Since priority of MinimumSize is higher than MaximumSize in DALi, here follows it.
+                        totalWidth = Math.Max(Math.Min(width, maxWidth < 0 ? Int32.MaxValue : maxWidth), minWidth);
                         widthMeasureSpec = new MeasureSpecification(new LayoutLength(totalWidth), MeasureSpecification.ModeType.Exactly);
                     }
                     else
                     {
                         float width = naturalSize != null ? naturalSize.Width : 0;
-                        float height = naturalSize != null ? naturalSize.Height : 0;
-                        totalWidth = Math.Min(Math.Max(width, minSize.Width), (maxSize.Width < 0 ? Int32.MaxValue : maxSize.Width));
-                        totalHeight = Math.Min(Math.Max(height, minSize.Height), (maxSize.Height < 0 ? Int32.MaxValue : maxSize.Height));
+                        // Since priority of MinimumSize is higher than MaximumSize in DALi, here follows it.
+                        totalWidth = Math.Max(Math.Min(width, maxWidth < 0 ? Int32.MaxValue : maxWidth), minWidth);
+
+                        var padding = Owner.Padding;
+                        float height = Owner.GetHeightForWidth(totalWidth - (padding.Start + padding.End));
+                        totalHeight = Math.Max(Math.Min(height, maxHeight < 0 ? Int32.MaxValue : maxHeight), minHeight);
 
                         heightMeasureSpec = new MeasureSpecification(new LayoutLength(totalHeight), MeasureSpecification.ModeType.Exactly);
                         widthMeasureSpec = new MeasureSpecification(new LayoutLength(totalWidth), MeasureSpecification.ModeType.Exactly);
@@ -79,6 +86,13 @@ namespace Tizen.NUI.BaseComponents
 
                 SetMeasuredDimensions(ResolveSizeAndState(new LayoutLength(totalWidth), widthMeasureSpec, childWidthState),
                                        ResolveSizeAndState(new LayoutLength(totalHeight), heightMeasureSpec, childHeightState));
+            }
+
+            /// <inheritdoc/>
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            public override bool IsPaddingHandledByNative()
+            {
+                return true;
             }
         }
 
@@ -228,19 +242,17 @@ namespace Tizen.NUI.BaseComponents
             // Do nothing. Just call for load static values.
         }
 
-        private static SystemLocaleLanguageChanged systemLocaleLanguageChanged = new SystemLocaleLanguageChanged();
         static private string defaultStyleName = "Tizen.NUI.BaseComponents.TextLabel";
         static private string defaultFontFamily = "BreezeSans";
-        private string textLabelSid = null;
+        private string textLabelSid;
         private TextLabelSelectorData selectorData;
         private string fontFamily = defaultFontFamily;
         private float fontSizeScale = 1.0f;
-
         private bool textIsEmpty = true;
 
-        private bool hasSystemLanguageChanged = false;
-        private bool hasSystemFontSizeChanged = false;
-        private bool hasSystemFontTypeChanged = false;
+        private bool hasSystemLanguageChanged;
+        private bool hasSystemFontSizeChanged;
+        private bool hasSystemFontTypeChanged;
 
         private Color internalTextColor;
         private Color internalAnchorColor;
@@ -464,19 +476,16 @@ namespace Tizen.NUI.BaseComponents
                 }
                 string translatableText = null;
                 textLabelSid = value;
-                translatableText = NUIApplication.MultilingualResourceManager?.GetString(textLabelSid, new CultureInfo(SystemSettings.LocaleLanguage.Replace("_", "-")));
+                translatableText = NUIApplication.MultilingualResourceManager?.GetString(textLabelSid, new CultureInfo(SystemLocaleLanguageChangedManager.LocaleLanguage.Replace("_", "-")));
                 if (translatableText != null)
                 {
                     Text = translatableText;
-                    if (hasSystemLanguageChanged == false)
-                    {
-                        systemLocaleLanguageChanged.Add(SystemSettingsLocaleLanguageChanged);
-                        hasSystemLanguageChanged = true;
-                    }
+                    AddSystemSettingsLocaleLanguageChanged();
                 }
                 else
                 {
                     Text = "";
+                    RemoveSystemSettingsLocaleLanguageChanged();
                 }
                 NotifyPropertyChanged();
             }
@@ -570,22 +579,13 @@ namespace Tizen.NUI.BaseComponents
             }
             set
             {
-                string newFontFamily;
-
                 if (string.Equals(fontFamily, value)) return;
-
                 fontFamily = value;
+
+                string newFontFamily;
                 if (fontFamily == Tizen.NUI.FontFamily.UseSystemSetting)
                 {
-                    try
-                    {
-                        newFontFamily = SystemFontTypeChangedManager.FontType;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("{0} Exception caught.", e);
-                        newFontFamily = defaultFontFamily;
-                    }
+                    newFontFamily = SystemFontTypeChangedManager.FontType;
                     AddSystemSettingsFontTypeChanged();
                 }
                 else
@@ -655,11 +655,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalFontStyle()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.FontStyle);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.FontStyle))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -1686,11 +1686,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalUnderline()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.UNDERLINE);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.UNDERLINE))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -1801,11 +1801,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalShadow()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.SHADOW);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.SHADOW))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -1906,9 +1906,7 @@ namespace Tizen.NUI.BaseComponents
 
         private TextShadow GetInternalTextShadow()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            using PropertyMap temp = new PropertyMap();
             using var prop = Object.GetProperty(SwigCPtr, Property.SHADOW);
             prop.Get(temp);
             return temp.Empty() ? null : new TextShadow(temp);
@@ -2008,11 +2006,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalOutline()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.OUTLINE);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.OUTLINE))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -2242,6 +2240,152 @@ namespace Tizen.NUI.BaseComponents
         }
 
         /// <summary>
+        /// The EllipsisMode property.
+        /// </summary>
+        /// <remarks>
+        /// This property is valid when Ellipsis is true.<br />
+        /// Truncate(default), if the text exceeds the layout, it will be truncated with an ellipsis.<br />
+        /// AutoScroll, if the text exceeds the layout, it will be auto scroll animated.<br />
+        /// EllipsisMode.AutoScroll shares the properties of AutoScroll Animation: AutoScrollSpeed, AutoScrollLoopCount, AutoScrollGap, AutoScrollLoopDelay<br />
+        /// EllipsisMode.AutoScroll forces the setting of AutoScrollStopMode to Immediate.<br />
+        /// To dynamically turn off EllipsisMode.AutoScroll, set EllipsisMode.Truncate.<br />
+        /// Cannot be used simultaneously with EnableAutoScroll.<br />
+        /// This property supports get/set operations in XAML scripts, but does not support XAML Data Binding functionality.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public EllipsisMode EllipsisMode
+        {
+            get
+            {
+                return (EllipsisMode)Object.InternalGetPropertyInt(this.SwigCPtr, TextLabel.Property.EllipsisMode);
+            }
+            set
+            {
+                Object.InternalSetPropertyInt(this.SwigCPtr, TextLabel.Property.EllipsisMode, (int)value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Whether the auto scroll animation is playing or not.
+        /// </summary>
+        /// <remarks>
+        /// This property supports get operations in XAML scripts, but does not support XAML Data Binding functionality.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool IsScrolling
+        {
+            get => Object.InternalGetPropertyBool(SwigCPtr, Property.IsScrolling);
+        }
+
+        /// <summary>
+        /// Renders a texture at a specified scale to prevent text rendering quality degradation when scaling up with View.Scale.
+        /// </summary>
+        /// <remarks>
+        /// RenderScale is only available in TextRenderMode.AsyncAuto and TextRenderMode.AsyncManual.<br />
+        /// It is only valid when set to 1.0 or greater.<br />
+        /// This property scales up the point size and texture size to the specified scale.<br />
+        /// For example, the results of the rendered textures below are nearly identical:<br />
+        /// FontSize: 20, RenderScale: 1.5<br />
+        /// FontSize: 20, FontSizeScale: 1.5<br />
+        /// However, the texture rendered with the specified RenderScale is downscaled to the original(1.0 scale) size and applied to the visual transform.<br />
+        /// When the texture is increased by View.Scale, its size becomes 100%, ensuring high-quality rendering.<br />
+        /// To achieve optimal text rendering results when using View.Scale, RenderScale should be set to the same value.
+        /// </remarks>
+        /// <example>
+        /// The following example demonstrates how to use the RenderScale.
+        /// <code>
+        /// label.FocusGained += (s, e) =>
+        /// {
+        ///     float scaleUp = 1.5f;
+        ///     label.RenderScale = scaleUp;
+        ///     scaleAnimation = new Animation(200);
+        ///     scaleAnimation.AnimateTo(label, "scale", new Vector3(scaleUp, scaleUp, 1.0f));
+        ///     scaleAnimation.Play();
+        /// };
+        /// label.FocusLost += (s, e) =>
+        /// {
+        ///     float normalScale = 1.0f;
+        ///     label.RenderScale = normalScale;
+        ///     scaleAnimation = new Animation(200);
+        ///     scaleAnimation.AnimateTo(label, "scale", new Vector3(normalScale, normalScale, 1.0f));
+        ///     scaleAnimation.Play();
+        /// };
+        /// </code>
+        /// </example>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public float RenderScale
+        {
+            get
+            {
+                return (float)Object.InternalGetPropertyFloat(this.SwigCPtr, Property.RenderScale);
+            }
+            set
+            {
+                Object.InternalSetPropertyFloat(this.SwigCPtr, Property.RenderScale, (float)value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// A factor of pixel snap.
+        /// </summary>
+        /// <remarks>
+        /// It should be 0.0 ~ 1.0.<br />
+        /// Controls the degree of pixel snapping applied to the visual position.<br />
+        /// A value of 0.0 means no snapping is applied (original position is preserved), while 1.0 applies full pixel alignment.<br />
+        /// Intermediate values blend smoothly between the original and snapped positions using linear interpolation (mix) in the vertex shader.<br />
+        /// Typical usage:<br />
+        /// To ensure both smooth animations and sharp visual alignment,<br />
+        /// transition the pixelSnapFactor value gradually from 0.0 to 1.0 during or after animations.<br />
+        /// This allows the snapping to engage seamlessly without visible jitter or popping, maintaining both visual quality and motion fluidity.<br />
+        /// Use 0.0 during animation to avoid snapping artifacts.<br />
+        /// Gradually increase to 1.0 as the animation settles, for crisp pixel alignment.
+        /// </remarks>
+        /// <example>
+        /// The following example demonstrates how to use the PixelSnapFactor with RenderScale.
+        /// <code>
+        /// label.FocusGained += (s, e) =>
+        /// {
+        ///     float scaleUp = 1.5f;
+        ///     label.RenderScale = scaleUp;
+        ///     scaleAnimation = new Animation(200);
+        ///     scaleAnimation.AnimateTo(label, "scale", new Vector3(scaleUp, scaleUp, 1.0f));
+        ///     scaleAnimation.Play();
+        ///
+        ///     pixelSnapAnimation = new Animation(200);
+        ///     pixelSnapAnimation.AnimateTo(label, "pixelSnapFactor", 1.0f);
+        ///     pixelSnapAnimation.Play();
+        /// };
+        /// label.FocusLost += (s, e) =>
+        /// {
+        ///     float normalScale = 1.0f;
+        ///     label.RenderScale = normalScale;
+        ///     scaleAnimation = new Animation(200);
+        ///     scaleAnimation.AnimateTo(label, "scale", new Vector3(normalScale, normalScale, 1.0f));
+        ///     scaleAnimation.Play();
+        ///
+        ///     pixelSnapAnimation = new Animation(200);
+        ///     pixelSnapAnimation.AnimateTo(label, "pixelSnapFactor", 0.0f);
+        ///     pixelSnapAnimation.Play();
+        /// };
+        /// </code>
+        /// </example>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public float PixelSnapFactor
+        {
+            get
+            {
+                return (float)Object.InternalGetPropertyFloat(this.SwigCPtr, Property.PixelSnapFactor);
+            }
+            set
+            {
+                Object.InternalSetPropertyFloat(this.SwigCPtr, Property.PixelSnapFactor, (float)value);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// The AutoScrollLoopDelay property.<br />
         /// The amount of time to delay the starting time of auto scrolling and further loops.<br />
         /// </summary>
@@ -2333,15 +2477,7 @@ namespace Tizen.NUI.BaseComponents
         /// <since_tizen> 3 </since_tizen>
         public int LineCount
         {
-            get
-            {
-                int lineCount = 0;
-                using (var propertyValue = GetProperty(TextLabel.Property.LineCount))
-                {
-                    propertyValue.Get(out lineCount);
-                }
-                return lineCount;
-            }
+            get => Object.InternalGetPropertyInt(SwigCPtr, Property.LineCount);
         }
 
         /// <summary>
@@ -2393,15 +2529,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public TextDirection TextDirection
         {
-            get
-            {
-                int textDirection = 0;
-                using (var propertyValue = GetProperty(TextLabel.Property.TextDirection))
-                {
-                    propertyValue.Get(out textDirection);
-                }
-                return (TextDirection)textDirection;
-            }
+            get => (TextDirection)Object.InternalGetPropertyInt(SwigCPtr, Property.TextDirection);
         }
 
         /// <summary>
@@ -2539,11 +2667,11 @@ namespace Tizen.NUI.BaseComponents
 
         private PropertyMap GetInternalTextFit()
         {
-#pragma warning disable CA2000 // Dispose objects before losing scope
             PropertyMap temp = new PropertyMap();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            using var prop = Object.GetProperty(SwigCPtr, Property.TextFit);
-            prop.Get(temp);
+            using (var prop = Object.GetProperty(SwigCPtr, Property.TextFit))
+            {
+                prop.Get(temp);
+            }
             return temp;
         }
 
@@ -3043,24 +3171,13 @@ namespace Tizen.NUI.BaseComponents
             }
             set
             {
-                float newFontSizeScale;
-
                 if (fontSizeScale == value) return;
-
                 fontSizeScale = value;
+
+                float newFontSizeScale;
                 if (fontSizeScale == Tizen.NUI.FontSizeScale.UseSystemSetting)
                 {
-                    SystemSettingsFontSize systemSettingsFontSize;
-
-                    try
-                    {
-                        systemSettingsFontSize = SystemFontSizeChangedManager.FontSize;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("{0} Exception caught.", e);
-                        systemSettingsFontSize = SystemSettingsFontSize.Normal;
-                    }
+                    var systemSettingsFontSize = SystemFontSizeChangedManager.FontSize;
                     newFontSizeScale = TextUtils.GetFontSizeScale(systemSettingsFontSize);
                     AddSystemSettingsFontSizeChanged();
                 }
@@ -3211,15 +3328,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool ManualRendered
         {
-            get
-            {
-                bool manualRendered = false;
-                using (var propertyValue = GetProperty(TextLabel.Property.ManualRendered))
-                {
-                    propertyValue.Get(out manualRendered);
-                }
-                return manualRendered;
-            }
+            get => Object.InternalGetPropertyBool(SwigCPtr, Property.ManualRendered);
         }
 
         /// <summary>
@@ -3238,15 +3347,7 @@ namespace Tizen.NUI.BaseComponents
         [EditorBrowsable(EditorBrowsableState.Never)]
         public int AsyncLineCount
         {
-            get
-            {
-                int asyncLineCount = 0;
-                using (var propertyValue = GetProperty(TextLabel.Property.AsyncLineCount))
-                {
-                    propertyValue.Get(out asyncLineCount);
-                }
-                return asyncLineCount;
-            }
+            get => Object.InternalGetPropertyInt(SwigCPtr, Property.AsyncLineCount);
         }
 
         private TextLabelSelectorData EnsureSelectorData() => selectorData ?? (selectorData = new TextLabelSelectorData());
@@ -3275,6 +3376,57 @@ namespace Tizen.NUI.BaseComponents
             return ret;
         }
 
+        /// <summary>
+        /// Registers FontVariationsProperty with string tag.
+        /// </summary>
+        /// <param name="tag">The tag of font variation.</param>
+        /// <returns>The index of the font variation.</returns>
+        /// <remarks>
+        /// The returned index can be used with setting property or animations.
+        /// </remarks>
+        /// <example>
+        /// The following example demonstrates how to use the SetFontStyle method.
+        /// <code>
+        /// TextLabel label = new TextLabel();
+        /// int index = label.RegisterFontVariationProperty("wght");
+        /// Animation anim = new Animation(1000);
+        /// anim.AnimateTo(label, "wght", 900.0f);
+        /// </code>
+        /// </example>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public int RegisterFontVariationProperty(string tag)
+        {
+            int index = Interop.TextLabel.RegisterFontVariationProperty(SwigCPtr, tag);
+            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            return index;
+        }
+
+        /// <summary>
+        /// Sets Font Variation with string tag.
+        /// </summary>
+        /// <param name="tag">The tag of font variation.</param>
+        /// <param name="value">The value of font variation.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SetFontVariation(string tag, float value)
+        {
+            int index = RegisterFontVariationProperty(tag);
+            Object.InternalSetPropertyFloat(SwigCPtr, index, value);
+        }
+
+        /// <summary>
+        /// Sets Font Variation with index.
+        /// </summary>
+        /// <param name="index">The index of font variation property.</param>
+        /// <param name="value">The value of font variation.</param>
+        /// <remarks>
+        /// To use the index, RegisterFontVariationProperty must precede it.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void SetFontVariation(int index, float value)
+        {
+            Object.InternalSetPropertyFloat(SwigCPtr, index, value);
+        }
+
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         protected override void Dispose(DisposeTypes type)
@@ -3288,11 +3440,7 @@ namespace Tizen.NUI.BaseComponents
             internalAnchorColor?.Dispose();
             internalAnchorClickedColor?.Dispose();
 
-            if (hasSystemLanguageChanged)
-            {
-                systemLocaleLanguageChanged.Remove(SystemSettingsLocaleLanguageChanged);
-            }
-
+            RemoveSystemSettingsLocaleLanguageChanged();
             RemoveSystemSettingsFontTypeChanged();
             RemoveSystemSettingsFontSizeChanged();
 
@@ -3308,12 +3456,14 @@ namespace Tizen.NUI.BaseComponents
             {
                 if (textLabelAnchorClickedCallbackDelegate != null)
                 {
-                    AnchorClickedSignal().Disconnect(textLabelAnchorClickedCallbackDelegate);
+                    using var signal = AnchorClickedSignal();
+                    signal.Disconnect(textLabelAnchorClickedCallbackDelegate);
                 }
 
                 if (textLabelTextFitChangedCallbackDelegate != null)
                 {
-                    TextFitChangedSignal().Disconnect(textLabelTextFitChangedCallbackDelegate);
+                    using var signal = TextFitChangedSignal();
+                    signal.Disconnect(textLabelTextFitChangedCallbackDelegate);
                 }
 
                 if (textLabelAsyncTextRenderedCallbackDelegate != null)
@@ -3372,6 +3522,24 @@ namespace Tizen.NUI.BaseComponents
             Text = NUIApplication.MultilingualResourceManager?.GetString(textLabelSid, new CultureInfo(e.Value.Replace("_", "-")));
         }
 
+        private void AddSystemSettingsLocaleLanguageChanged()
+        {
+            if (!hasSystemLanguageChanged)
+            {
+                SystemLocaleLanguageChangedManager.Add(SystemSettingsLocaleLanguageChanged);
+                hasSystemLanguageChanged = true;
+            }
+        }
+        
+        private void RemoveSystemSettingsLocaleLanguageChanged()
+        {
+            if (hasSystemLanguageChanged)
+            {
+                SystemLocaleLanguageChangedManager.Remove(SystemSettingsLocaleLanguageChanged);
+                hasSystemLanguageChanged = false;
+            }
+        }
+
         private void SystemSettingsFontSizeChanged(object sender, FontSizeChangedEventArgs e)
         {
             float newFontSizeScale = TextUtils.GetFontSizeScale(e.Value);
@@ -3380,35 +3548,19 @@ namespace Tizen.NUI.BaseComponents
 
         private void AddSystemSettingsFontSizeChanged()
         {
-            if (hasSystemFontSizeChanged != true)
+            if (!hasSystemFontSizeChanged)
             {
-                try
-                {
-                    SystemFontSizeChangedManager.Add(SystemSettingsFontSizeChanged);
-                    hasSystemFontSizeChanged = true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontSizeChanged = false;
-                }
+                SystemFontSizeChangedManager.Add(SystemSettingsFontSizeChanged);
+                hasSystemFontSizeChanged = true;
             }
         }
 
         private void RemoveSystemSettingsFontSizeChanged()
         {
-            if (hasSystemFontSizeChanged == true)
+            if (hasSystemFontSizeChanged)
             {
-                try
-                {
-                    SystemFontSizeChangedManager.Remove(SystemSettingsFontSizeChanged);
-                    hasSystemFontSizeChanged = false;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontSizeChanged = true;
-                }
+                SystemFontSizeChangedManager.Remove(SystemSettingsFontSizeChanged);
+                hasSystemFontSizeChanged = false;
             }
         }
 
@@ -3421,16 +3573,8 @@ namespace Tizen.NUI.BaseComponents
         {
             if (HasStyle() && !hasSystemFontTypeChanged)
             {
-                try
-                {
-                    SystemFontTypeChangedManager.Add(SystemSettingsFontTypeChanged);
-                    hasSystemFontTypeChanged = true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontTypeChanged = false;
-                }
+                SystemFontTypeChangedManager.Add(SystemSettingsFontTypeChanged);
+                hasSystemFontTypeChanged = true;
             }
         }
         
@@ -3438,16 +3582,8 @@ namespace Tizen.NUI.BaseComponents
         {
             if (hasSystemFontTypeChanged)
             {
-                try
-                {
-                    SystemFontTypeChangedManager.Remove(SystemSettingsFontTypeChanged);
-                    hasSystemFontTypeChanged = false;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("{0} Exception caught.", e);
-                    hasSystemFontTypeChanged = true;
-                }
+                SystemFontTypeChangedManager.Remove(SystemSettingsFontTypeChanged);
+                hasSystemFontTypeChanged = false;
             }
         }
 
@@ -3501,6 +3637,10 @@ namespace Tizen.NUI.BaseComponents
             internal static readonly int RenderMode = Interop.TextLabel.RenderModeGet();
             internal static readonly int ManualRendered = Interop.TextLabel.ManualRenderedGet();
             internal static readonly int AsyncLineCount = Interop.TextLabel.AsyncLineCountGet();
+            internal static readonly int EllipsisMode = Interop.TextLabel.EllipsisModeGet();
+            internal static readonly int IsScrolling = Interop.TextLabel.IsScrollingGet();
+            internal static readonly int RenderScale = Interop.TextLabel.RenderScaleGet();
+            internal static readonly int PixelSnapFactor = Interop.TextLabel.PixelSnapFactorGet();
 
 
             internal static void Preload()

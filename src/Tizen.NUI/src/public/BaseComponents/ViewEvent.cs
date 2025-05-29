@@ -106,12 +106,12 @@ namespace Tizen.NUI.BaseComponents
         private delegate void LayoutDirectionChangedEventCallbackType(IntPtr data, ViewLayoutDirectionType type);
 
         // List of dispatch Event
-        private PanGestureDetector panGestureDetector = null;
-        private LongPressGestureDetector longGestureDetector = null;
-        private PinchGestureDetector pinchGestureDetector = null;
-        private TapGestureDetector tapGestureDetector = null;
-        private RotationGestureDetector rotationGestureDetector = null;
-        private int configGestureCount = 0;
+        private PanGestureDetector panGestureDetector;
+        private LongPressGestureDetector longGestureDetector;
+        private PinchGestureDetector pinchGestureDetector;
+        private TapGestureDetector tapGestureDetector;
+        private RotationGestureDetector rotationGestureDetector;
+        private int configGestureCount;
         private bool dispatchTouchEvents = true;
         private bool dispatchParentTouchEvents = true;
         private bool dispatchHoverEvents = true;
@@ -837,6 +837,8 @@ namespace Tizen.NUI.BaseComponents
             keyInputFocusLostEventHandler?.Invoke(this, null);
         }
 
+        private KeyEventArgs keyEventArgs;
+
         private bool OnKeyEvent(IntPtr view, IntPtr keyEvent)
         {
             if (Disposed || IsDisposeQueued)
@@ -851,23 +853,23 @@ namespace Tizen.NUI.BaseComponents
                 return true;
             }
 
-            KeyEventArgs e = new KeyEventArgs();
+            if (keyEventArgs == null)
+            {
+                keyEventArgs = new KeyEventArgs();
+            }
 
             bool result = false;
-
-            e.Key = Tizen.NUI.Key.GetKeyFromPtr(keyEvent);
-
+            using var key = Tizen.NUI.Key.GetKeyFromPtr(keyEvent);
+            keyEventArgs.Key = key;
             if (keyEventHandler != null)
             {
                 Delegate[] delegateList = keyEventHandler.GetInvocationList();
-
-                // Oring the result of each callback.
+                // ORing the result of each callback.
                 foreach (EventHandlerWithReturnType<object, KeyEventArgs, bool> del in delegateList)
                 {
-                    result |= del(this, e);
+                    result |= del(this, keyEventArgs);
                 }
             }
-
             return result;
         }
 
@@ -883,6 +885,14 @@ namespace Tizen.NUI.BaseComponents
             if (onRelayoutEventHandler != null)
             {
                 onRelayoutEventHandler(this, null);
+            }
+        }
+
+        internal virtual void NotifyLayoutUpdated(bool forceTriggerRelayout)
+        {
+            if (forceTriggerRelayout && !IsDisposedOrQueued)
+            {
+                onRelayoutEventHandler?.Invoke(this, EventArgs.Empty);
             }
         }
 

@@ -27,19 +27,6 @@ namespace Tizen.NUI.Extension
     public static class ViewExtensions
     {
         /// <summary>
-        /// Assign this view reference to the given variable.
-        /// </summary>
-        /// <typeparam name="T">The type of the view.</typeparam>
-        /// <param name="view">The extension target.</param>
-        /// <param name="self">The variable to save the reference to.</param>
-        /// <returns>The view itself.</returns>
-        public static T Self<T>(this T view, out T self) where T : View
-        {
-            self = view;
-            return view;
-        }
-
-        /// <summary>
         /// Sets the color of the view.
         /// </summary>
         /// <typeparam name="T">The type of the view.</typeparam>
@@ -291,7 +278,7 @@ namespace Tizen.NUI.Extension
         /// <returns>The view itself.</returns>
         public static T BoxShadow<T>(this T view, float blurRadius, float offsetX = 0, float offsetY = 0) where T : View
         {
-            return view.BoxShadow(new UIShadow(blurRadius, offsetX, offsetY));
+            return view.BoxShadow(new UIShadow(blurRadius, UIColor.Black, offsetX, offsetY));
         }
 
         /// <summary>
@@ -644,8 +631,11 @@ namespace Tizen.NUI.Extension
             {
                 return (UIColor)token;
             }
+
+            var color = view.Color;
+
             //FIXME: we need to set UI value type directly without converting reference value.
-            return new UIColor(view.Color);
+            return color != null ? UIColor.From(color) : UIColor.Transparent;
         }
 
         /// <summary>
@@ -671,7 +661,8 @@ namespace Tizen.NUI.Extension
         {
             // TODO Do not use Vector4 here
             var corner = view.CornerRadius;
-            return new UICorner(corner.X, corner.Y, corner.Z, corner.W, view.CornerRadiusPolicy == VisualTransformPolicyType.Relative);
+
+            return corner != null ? new UICorner(corner.X, corner.Y, corner.Z, corner.W, view.CornerRadiusPolicy == VisualTransformPolicyType.Relative) : UICorner.Zero;
         }
 
         /// <summary>
@@ -685,8 +676,11 @@ namespace Tizen.NUI.Extension
             {
                 return (UIColor)token;
             }
+
+            var color = view.BorderlineColor;
+
             //FIXME: we need to set UI value type directly without converting reference value.
-            return new UIColor(view.BorderlineColor);
+            return color != null ? UIColor.From(color) : UIColor.Transparent;
         }
     }
 }

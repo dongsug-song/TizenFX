@@ -19,6 +19,7 @@ extern alias TizenSystemSettings;
 using TizenSystemSettings.Tizen.System;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Tizen.NUI
 {
@@ -28,9 +29,21 @@ namespace Tizen.NUI
     /// </summary>
     internal static class SystemFontTypeChangedManager
     {
+        private static string fontType = string.Empty;
+        private static string defaultFontType = "BreezeSans";
+        private static WeakEvent<EventHandler<FontTypeChangedEventArgs>> proxy = new WeakEvent<EventHandler<FontTypeChangedEventArgs>>();
+
         static SystemFontTypeChangedManager()
         {
-            SystemSettings.FontTypeChanged += SystemFontTypeChanged;
+            try
+            {
+                SystemSettings.FontTypeChanged += SystemFontTypeChanged;
+            }
+            catch(Exception e)
+            {
+                Tizen.Log.Info("NUI", $"{e} Exception caught! SystemFontTypeChanged will not be detected!\n");
+                fontType = defaultFontType;
+            }
         }
 
         /// <summary>
@@ -63,19 +76,25 @@ namespace Tizen.NUI
             Finished?.Invoke(sender, args);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031: Do not catch general exception types", Justification = "This method is to handle system settings information that may throw an exception but ignorable. This method should not interrupt the main stream.")]
         public static string FontType
         {
             get
             {
                 if (string.IsNullOrEmpty(fontType))
                 {
-                    fontType = SystemSettings.FontType;
+                    try
+                    {
+                        fontType = SystemSettings.FontType;
+                    }
+                    catch (Exception e)
+                    {
+                        Tizen.Log.Info("NUI", $"{e} Exception caught.\n");
+                        fontType = defaultFontType;
+                    }
                 }
                 return fontType;
             }
         }
-
-        private static string fontType = string.Empty;
-        private static WeakEvent<EventHandler<FontTypeChangedEventArgs>> proxy = new WeakEvent<EventHandler<FontTypeChangedEventArgs>>();
     }
 }

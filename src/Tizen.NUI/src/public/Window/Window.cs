@@ -21,6 +21,7 @@ using TizenSystemInformation.Tizen.System;
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Tizen.NUI.BaseComponents;
 using Tizen.Common;
@@ -990,6 +991,7 @@ namespace Tizen.NUI
         /// Raises the window to the top of the window stack.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method used to raise the object, not event")]
         public void Raise()
         {
             Interop.Window.Raise(SwigCPtr);
@@ -1360,6 +1362,7 @@ namespace Tizen.NUI
             }
             Interop.Window.FeedHoverEvent(SwigCPtr, TouchPoint.getCPtr(touchPoint));
             if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+            touchPoint.Dispose();
         }
 
         /// <summary>
@@ -1643,14 +1646,14 @@ namespace Tizen.NUI
                 HandleRef CPtr = new HandleRef(this, cPtr);
                 Interop.BaseHandle.DeleteBaseHandle(CPtr);
                 CPtr = new HandleRef(null, global::System.IntPtr.Zero);
+                if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
+                return ret;
             }
             else
             {
                 ret = new RenderTaskList(cPtr, true);
+                return ret;
             }
-
-            if (NDalicPINVOKE.SWIGPendingException.Pending) throw NDalicPINVOKE.SWIGPendingException.Retrieve();
-            return ret;
         }
 
         /// <summary>
@@ -2389,7 +2392,7 @@ namespace Tizen.NUI
 
         private static readonly object locker = new object();
 
-        private static int key = 0;
+        private static int key;
 
         private static FrameCallbackType internalHookFrameCallback = OnInternalHookFrameCallback;
 

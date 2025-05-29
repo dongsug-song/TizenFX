@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Tizen.NUI
 {
@@ -403,6 +404,7 @@ namespace Tizen.NUI
     /// This specifies visual types.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct Visual
     {
         /// <summary>
@@ -482,7 +484,8 @@ namespace Tizen.NUI
         /// This specifies visual properties.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716: Identifiers should not match keywords")]
+        [SuppressMessage("Naming", "CA1716: Identifiers should not match keywords")]
+        [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
         public struct Property
         {
             /// <summary>
@@ -563,6 +566,7 @@ namespace Tizen.NUI
         /// This specifies shader properties.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
+        [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
         public struct ShaderProperty
         {
             /// <summary>
@@ -650,6 +654,7 @@ namespace Tizen.NUI
     /// This specifies properties of the BorderVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct BorderVisualProperty
     {
         /// <summary>
@@ -673,6 +678,7 @@ namespace Tizen.NUI
     /// This specifies properties of the ColorVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct ColorVisualProperty
     {
         /// <summary>
@@ -704,6 +710,7 @@ namespace Tizen.NUI
     /// This specifies properties of the GradientVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct GradientVisualProperty
     {
         /// <summary>
@@ -717,7 +724,7 @@ namespace Tizen.NUI
         /// <since_tizen> 3 </since_tizen>
         public static readonly int EndPosition = NDalic.GradientVisualEndPosition;
         /// <summary>
-        /// The center point of a radial gradient.
+        /// The center point of a radial and conic gradient.
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public static readonly int Center = NDalic.GradientVisualCenter;
@@ -746,12 +753,23 @@ namespace Tizen.NUI
         /// </summary>
         /// <since_tizen> 3 </since_tizen>
         public static readonly int SpreadMethod = NDalic.GradientVisualSpreadMethod;
+        /// <summary>
+        /// Sets the gradient's start position offset.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly int StartOffset = NDalic.GradientVisualStartOffset;
+        /// <summary>
+        /// Sets the gradient's start angle of a conic gradiant.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly int StartAngle = NDalic.GradientVisualStartAngle;
     }
 
     /// <summary>
     /// This specifies properties of the ImageVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct ImageVisualProperty
     {
         /// <summary>
@@ -1069,6 +1087,7 @@ namespace Tizen.NUI
     /// This specifies properties of the MeshVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct MeshVisualProperty
     {
         /// <summary>
@@ -1117,6 +1136,7 @@ namespace Tizen.NUI
     /// This specifies properties of the PrimitiveVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct PrimitiveVisualProperty
     {
         /// <summary>
@@ -1185,6 +1205,7 @@ namespace Tizen.NUI
     /// This specifies properties of the TextVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct TextVisualProperty
     {
         /// <summary>
@@ -1258,6 +1279,7 @@ namespace Tizen.NUI
     /// This specifies properties of the NpatchImageVisual.
     /// </summary>
     /// <since_tizen> 3 </since_tizen>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     public struct NpatchImageVisualProperty
     {
         /// <summary>
@@ -1320,6 +1342,7 @@ namespace Tizen.NUI
     /// <summary>
     /// This specifies properties of the ArcVisual.
     /// </summary>
+    [SuppressMessage("Performance", "CA1815: Override equals and operator equals on value types", Justification = "This is a struct and does not need to override equals.")]
     internal struct ArcVisualProperty
     {
         /// <summary>

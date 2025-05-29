@@ -28,7 +28,7 @@ namespace Tizen.NUI
         private const string logTag = "Tizen.NUI";
         private Window window;
         private int resourceId;
-        private bool disposed = false;
+        private bool disposed;
 
         /// <summary>
         /// Initializes the NUI Window class.
@@ -60,7 +60,8 @@ namespace Tizen.NUI
 
         public void InitializeWindow(int width, int height)
         {
-            window.WindowSize = new Size(width, height);
+            using var size = new Size(width, height);
+            window.WindowSize = size;
         }
 
         /// <summary>

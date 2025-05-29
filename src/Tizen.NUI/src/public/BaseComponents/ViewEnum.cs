@@ -289,10 +289,20 @@ namespace Tizen.NUI.BaseComponents
             internal static readonly int DispatchKeyEvents = Interop.ViewProperty.DispatchKeyEventsGet();
             internal static readonly int AccessibilityHidden = Interop.ViewProperty.AccessibilityHiddenGet();
             internal static readonly int AutomationId = Interop.ViewProperty.AutomationIdGet();
+            internal static readonly int AccessibilityState = Interop.ViewProperty.AccessibilityStateGet();
+            internal static readonly int AccessibilityIsModal = Interop.ViewProperty.AccessibilityIsModalGet();
             internal static readonly int UpdateAreaHint = Interop.ActorProperty.UpdateAreaHintGet();
             internal static readonly int DispatchTouchMotion = Interop.ActorProperty.DispatchTouchMotionGet();
             internal static readonly int DispatchHoverMotion = Interop.ActorProperty.DispatchHoverMotionGet();
             internal static readonly int OffScreenRendering = Interop.ViewProperty.OffScreenRenderingGet();
+            internal static readonly int InnerShadow = Interop.ViewProperty.InnerShadowGet();
+            internal static readonly int Borderline = Interop.ViewProperty.BorderlineGet();
+            internal static readonly int CornerRadiusPolicy = Interop.ViewProperty.CornerRadiusPolicyGet();
+            internal static readonly int CornerRadius = Interop.ViewProperty.CornerRadiusGet();
+            internal static readonly int CornerSquareness = Interop.ViewProperty.CornerSquarenessGet();
+            internal static readonly int BorderlineWidth = Interop.ViewProperty.BorderlineWidthGet();
+            internal static readonly int BorderlineColor = Interop.ViewProperty.BorderlineColorGet();
+            internal static readonly int BorderlineOffset = Interop.ViewProperty.BorderlineOffsetGet();
         }
     }
 }
