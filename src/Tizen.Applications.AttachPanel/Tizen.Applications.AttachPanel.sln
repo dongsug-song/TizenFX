@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizen", "..\Tizen\Tizen.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizen.Log", "..\Tizen.Log\Tizen.Log.csproj", "{AFF3D5BA-42DA-40CE-BC57-0DC1E92673B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElmSharp", "..\ElmSharp\ElmSharp.csproj", "{AF2CEEB1-B3B2-4E2D-8854-A54871CD0D1C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizen.System.Information", "..\Tizen.System.Information\Tizen.System.Information.csproj", "{0FF56FE4-CBFA-4E8E-B0A2-0FEDB856498D}"
 EndProject
 Global

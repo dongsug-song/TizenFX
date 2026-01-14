@@ -151,13 +151,13 @@ namespace Tizen.Multimedia.Remoting
             _display = display;
         }
 
-        ScreenMirroringErrorCode IDisplayable<ScreenMirroringErrorCode>.ApplyEvasDisplay(DisplayType type,
-            ElmSharp.EvasObject evasObject)
-        {
-            Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
+        // ScreenMirroringErrorCode IDisplayable<ScreenMirroringErrorCode>.ApplyEvasDisplay(DisplayType type,
+        //     ElmSharp.EvasObject evasObject)
+        // {
+        //     Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
 
-            return Native.SetDisplay(Handle, (int)type, evasObject);
-        }
+        //     return Native.SetDisplay(Handle, (int)type, evasObject);
+        // }
 
         ScreenMirroringErrorCode IDisplayable<ScreenMirroringErrorCode>.ApplyEcoreWindow(IntPtr windowHandle, Rectangle rect, Rotation rotation)
         {

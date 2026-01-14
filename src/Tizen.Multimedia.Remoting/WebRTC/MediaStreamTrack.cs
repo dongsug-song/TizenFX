@@ -117,14 +117,14 @@ namespace Tizen.Multimedia.Remoting
             }
         }
 
-        WebRTCErrorCode IDisplayable<WebRTCErrorCode>.ApplyEvasDisplay(DisplayType type, ElmSharp.EvasObject evasObject)
-        {
-            Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
-            Debug.Assert(type != DisplayType.None);
+        // WebRTCErrorCode IDisplayable<WebRTCErrorCode>.ApplyEvasDisplay(DisplayType type, ElmSharp.EvasObject evasObject)
+        // {
+        //     Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
+        //     Debug.Assert(type != DisplayType.None);
 
-            return NativeWebRTC.SetDisplay(_webRtc.Handle, _trackId,
-                type == DisplayType.Overlay ? WebRTCDisplayType.Overlay : WebRTCDisplayType.Evas, evasObject);
-        }
+        //     return NativeWebRTC.SetDisplay(_webRtc.Handle, _trackId,
+        //         type == DisplayType.Overlay ? WebRTCDisplayType.Overlay : WebRTCDisplayType.Evas, evasObject);
+        // }
 
         WebRTCErrorCode IDisplayable<WebRTCErrorCode>.ApplyEcoreWindow(IntPtr windowHandle, Rectangle rect, Rotation rotation)
         {

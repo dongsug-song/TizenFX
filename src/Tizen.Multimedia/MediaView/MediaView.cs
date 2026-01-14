@@ -1,3 +1,4 @@
+#if false
 /*
  * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
@@ -15,7 +16,7 @@
  */
 
 using System;
-using ElmSharp;
+// using ElmSharp;
 
 namespace Tizen.Multimedia
 {
@@ -56,3 +57,4 @@ namespace Tizen.Multimedia
     }
 }
 
+#endif

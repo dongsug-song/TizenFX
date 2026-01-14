@@ -715,17 +715,17 @@ namespace Tizen.Multimedia.Remoting
             return new MediaStreamTrack(WebRtc, MediaType, trackId);
         }
 
-        uint IDisplayable<uint>.ApplyEvasDisplay(DisplayType type, ElmSharp.EvasObject evasObject)
-        {
-            Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
-            Debug.Assert(type != DisplayType.None);
+        // uint IDisplayable<uint>.ApplyEvasDisplay(DisplayType type, ElmSharp.EvasObject evasObject)
+        // {
+        //     Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
+        //     Debug.Assert(type != DisplayType.None);
 
-            NativeWebRTC.SetVideoLoopback(WebRtc.Handle, SourceId.Value,
-                type == DisplayType.Overlay ? WebRTCDisplayType.Overlay : WebRTCDisplayType.Evas, evasObject,
-                out uint trackId).ThrowIfFailed("Failed to set video loopback");
+        //     NativeWebRTC.SetVideoLoopback(WebRtc.Handle, SourceId.Value,
+        //         type == DisplayType.Overlay ? WebRTCDisplayType.Overlay : WebRTCDisplayType.Evas, evasObject,
+        //         out uint trackId).ThrowIfFailed("Failed to set video loopback");
 
-            return trackId;
-        }
+        //     return trackId;
+        // }
 
         uint IDisplayable<uint>.ApplyEcoreWindow(IntPtr windowHandle, Rectangle rect, Rotation rotation)
         {

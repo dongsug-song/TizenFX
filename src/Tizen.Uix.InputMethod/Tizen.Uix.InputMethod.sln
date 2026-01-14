@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizen.Uix.InputMethod", "Tizen.Uix.InputMethod.csproj", "{20D10C62-6D3C-4B63-9136-7CEEC564E02F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElmSharp", "..\ElmSharp\ElmSharp.csproj", "{4C740EB3-26AB-49C8-B25B-3568FBAB5067}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizen", "..\Tizen\Tizen.csproj", "{AEB3A15E-F174-4436-84CD-3AAF4D6B91A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizen.Log", "..\Tizen.Log\Tizen.Log.csproj", "{88A7DD62-995F-4772-A6D5-97CE462631EA}"

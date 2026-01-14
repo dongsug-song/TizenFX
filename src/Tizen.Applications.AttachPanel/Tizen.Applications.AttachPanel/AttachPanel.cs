@@ -1,4 +1,4 @@
-using ElmSharp;
+// using ElmSharp;
 using System;
 
 namespace Tizen.Applications.AttachPanel
@@ -19,41 +19,41 @@ namespace Tizen.Applications.AttachPanel
         /// <exception cref="OutOfMemoryException">Thrown when an attempt to allocate the memory fails.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the AttachPanel already exists or the <paramref name="conformant"/> is not a conformant object.</exception>
         /// <exception cref="NotSupportedException">Thrown when the AttachPanel is not supported in the device.</exception>
-        [Obsolete("Deprecated since API Level 12. Will be removed in API Level 14.")]
-        public AttachPanel(EvasObject conformant)
-        {
-            if (conformant == IntPtr.Zero)
-            {
-                throw new ArgumentNullException("Invalid conformant, it's null");
-            }
+        // [Obsolete("Deprecated since API Level 12. Will be removed in API Level 14.")]
+        // public AttachPanel(EvasObject conformant)
+        // {
+        //     if (conformant == IntPtr.Zero)
+        //     {
+        //         throw new ArgumentNullException("Invalid conformant, it's null");
+        //     }
 
-            if (IsAttachPanelSupported() == false)
-            {
-                CheckException(Interop.AttachPanel.ErrorCode.NotSupported);
-            }
+        //     if (IsAttachPanelSupported() == false)
+        //     {
+        //         CheckException(Interop.AttachPanel.ErrorCode.NotSupported);
+        //     }
 
-            if (IsInitialized())
-            {
-                CheckException(Interop.AttachPanel.ErrorCode.AlreadyExists);
-            }
+        //     if (IsInitialized())
+        //     {
+        //         CheckException(Interop.AttachPanel.ErrorCode.AlreadyExists);
+        //     }
 
-            var candidateAttachPanel = IntPtr.Zero;
-            var err = Interop.AttachPanel.CreateAttachPanel(conformant, out candidateAttachPanel);
-            CheckException(err);
+        //     var candidateAttachPanel = IntPtr.Zero;
+        //     var err = Interop.AttachPanel.CreateAttachPanel(conformant, out candidateAttachPanel);
+        //     CheckException(err);
 
-            Tizen.Log.Debug("AttachPanelSharp", "Success to create an AttachPanel Instance");
-            s_attachPanel = candidateAttachPanel;
+        //     Tizen.Log.Debug("AttachPanelSharp", "Success to create an AttachPanel Instance");
+        //     s_attachPanel = candidateAttachPanel;
 
-            if (s_eventEventHandler == null)
-            {
-                StateEventListenStart();
-            }
+        //     if (s_eventEventHandler == null)
+        //     {
+        //         StateEventListenStart();
+        //     }
 
-            if (s_resultEventHandler == null)
-            {
-                ResultEventListenStart();
-            }
-        }
+        //     if (s_resultEventHandler == null)
+        //     {
+        //         ResultEventListenStart();
+        //     }
+        // }
 
         /// <summary>
         /// Represents the immutable class for the attach panel.
@@ -65,10 +65,10 @@ namespace Tizen.Applications.AttachPanel
         /// <exception cref="InvalidOperationException">Thrown when the AttachPanel already exists or the <paramref name="conformant"/> is not a conformant object.</exception>
         /// <exception cref="NotSupportedException">Thrown when the AttachPanel is not supported in the device.</exception>
         /// <exception cref="ArgumentNullException">Thrown when the parameter is null</exception>
-        [Obsolete("Deprecated since API Level 12. Will be removed in API Level 14.")]
-        public AttachPanel(Conformant conformant) : this(conformant as EvasObject)
-        {
-        }
+        // [Obsolete("Deprecated since API Level 12. Will be removed in API Level 14.")]
+        // public AttachPanel(Conformant conformant) : this(conformant as EvasObject)
+        // {
+        // }
 
         /// <summary>
         /// A destructor which deallocates the attach panel resources.

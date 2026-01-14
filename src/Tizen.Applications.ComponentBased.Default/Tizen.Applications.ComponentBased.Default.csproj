@@ -13,7 +13,7 @@
     <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ElmSharp\ElmSharp.csproj" />
+    <!-- <ProjectReference Include="..\ElmSharp\ElmSharp.csproj" /> -->
     <ProjectReference Include="..\Tizen.Applications.Common\Tizen.Applications.Common.csproj" />
     <ProjectReference Include="..\Tizen.Applications.ComponentBased\Tizen.Applications.ComponentBased.csproj" />
     <ProjectReference Include="..\Tizen.Log\Tizen.Log.csproj" />

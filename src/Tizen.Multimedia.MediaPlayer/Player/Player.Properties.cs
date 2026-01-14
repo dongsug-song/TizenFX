@@ -362,16 +362,16 @@ namespace Tizen.Multimedia
             }
         }
 
-        PlayerErrorCode IDisplayable<PlayerErrorCode>.ApplyEvasDisplay(DisplayType type, ElmSharp.EvasObject evasObject)
-        {
-            Debug.Assert(IsDisposed == false);
+        // PlayerErrorCode IDisplayable<PlayerErrorCode>.ApplyEvasDisplay(DisplayType type, ElmSharp.EvasObject evasObject)
+        // {
+        //     Debug.Assert(IsDisposed == false);
 
-            Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
-            Debug.Assert(type != DisplayType.None);
+        //     Debug.Assert(Enum.IsDefined(typeof(DisplayType), type));
+        //     Debug.Assert(type != DisplayType.None);
 
-            return NativeDisplay.SetDisplay(Handle,
-                type == DisplayType.Overlay ? PlayerDisplayType.Overlay : PlayerDisplayType.Evas, evasObject);
-        }
+        //     return NativeDisplay.SetDisplay(Handle,
+        //         type == DisplayType.Overlay ? PlayerDisplayType.Overlay : PlayerDisplayType.Evas, evasObject);
+        // }
 
         PlayerErrorCode IDisplayable<PlayerErrorCode>.ApplyEcoreWindow(IntPtr windowHandle, Rectangle rect, Rotation rotation)
         {
